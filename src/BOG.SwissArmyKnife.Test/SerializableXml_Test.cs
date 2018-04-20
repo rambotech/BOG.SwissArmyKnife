@@ -71,7 +71,7 @@ namespace BOG.SwissArmyKnife.Test
 		{
 			var result = new Support.MyDataSet();
 			result.s1 = "A large set of strings in the list";
-			using (var sr = new StreamReader(@"UrlTestData.tsv"))
+			using (var sr = new StreamReader(@"UrlTestItems.json"))
 			{
 				while (!sr.EndOfStream)
 				{

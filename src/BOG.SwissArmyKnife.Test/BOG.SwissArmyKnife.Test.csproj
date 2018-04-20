@@ -13,10 +13,20 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BOG.SwissArmyKnife\BOG.SwissArmyKnife.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="UrlTestData.tsv">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="UrlTestItems.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

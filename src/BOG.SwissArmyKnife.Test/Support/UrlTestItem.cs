@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace BOG.SwissArmyKnife.Test.Support
 {
     [JsonObject]
-    public class UrlTestSet
+    public class UrlTestItem
     {
         [JsonRequired]
         public string DataRow { get; set; }
