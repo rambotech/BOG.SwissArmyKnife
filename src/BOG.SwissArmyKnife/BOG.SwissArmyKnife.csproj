@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Collection of utility classes migrated to NET Standard 2.0 from BOG.Framework</Description>
+    <Authors>John J Schultz</Authors>
+    <Company>Bits of Genius</Company>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/rambotech/BOG.SwissArmyKnife</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/rambotech/BOG.SwissArmyKnife/src/Assets/multitool.png</PackageIconUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <RepositoryUrl>https://github.com/rambotech/BOG.SwissArmyKnife</RepositoryUrl>
+    <PackageTags>C# netstandardc20 utility harvest monitor strings exception format formatting directory file scripting fuse logging password hash serialize serializing</PackageTags>
+    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+</Project>
