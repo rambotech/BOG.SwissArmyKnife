@@ -7,7 +7,7 @@
     <Company>Bits of Genius</Company>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/rambotech/BOG.SwissArmyKnife</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/rambotech/BOG.SwissArmyKnife/src/Assets/multitool.png</PackageIconUrl>
+    <PackageIconUrl>https://github.com/rambotech/BOG.SwissArmyKnife/src/Assets/multitool.ico</PackageIconUrl>
     <RepositoryType>GIT</RepositoryType>
     <RepositoryUrl>https://github.com/rambotech/BOG.SwissArmyKnife</RepositoryUrl>
     <PackageTags>C# netstandardc20 utility harvest monitor strings exception format formatting directory file scripting fuse logging password hash serialize serializing</PackageTags>
