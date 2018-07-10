@@ -307,4 +307,31 @@ namespace BOG.SwissArmyKnife
 			return result.ToString();
 		}
 	}
+
+    /// <summary>
+    /// Newtonsoft serializer wrappers
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+
+    public static class Serializer<T> where T : class
+    {
+        public static T FromJson(string json) => JsonConvert.DeserializeObject<T>(json, Converter.Config);
+
+        public static string ToJson(T obj) => JsonConvert.SerializeObject(obj, typeof(T), Converter.Config);
+    }
+
+    /// <summary>
+    /// Standard serialization settings for Newtonsoft JSON.
+    /// </summary>
+    public static class Converter
+    {
+        public static readonly JsonSerializerSettings Config = new JsonSerializerSettings
+        {
+            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+            DateParseHandling = DateParseHandling.DateTime,
+            DateFormatHandling = DateFormatHandling.IsoDateFormat,
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Newtonsoft.Json.Formatting.Indented
+        };
+    }
 }

@@ -13,6 +13,9 @@
     <PackageTags>C# netstandardc20 utility harvest monitor strings exception format formatting directory file scripting fuse logging password hash serialize serializing</PackageTags>
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
+    <Version>1.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

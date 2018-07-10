@@ -18,7 +18,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BOG.SwissArmyKnife.Test", "BOG.SwissArmyKnife.Test\BOG.SwissArmyKnife.Test.csproj", "{22A7EDDE-C7AE-4236-A203-B36CE25E58B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOG.SwissArmyKnife.Demo", "BOG.SwissArmyKnife.Demo\BOG.SwissArmyKnife.Demo.csproj", "{0EF4F680-88D8-43E7-9325-6801B6F7CBD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BOG.SwissArmyKnife.Demo", "BOG.SwissArmyKnife.Demo\BOG.SwissArmyKnife.Demo.csproj", "{0EF4F680-88D8-43E7-9325-6801B6F7CBD3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{8435FD01-538E-40EF-9CD5-3A9A8FA233F1}"
+	ProjectSection(SolutionItems) = preProject
+		Assets\multitool.ico = Assets\multitool.ico
+		Assets\multitool.png = Assets\multitool.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
