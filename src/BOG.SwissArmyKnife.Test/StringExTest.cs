@@ -99,5 +99,5 @@ namespace BOG.SwissArmyKnife.Test
 			string Result = "76.34F.25.41C".FilterOut(Filter, false);
 			Assert.IsTrue(string.Compare("FC", Result) == 0);
 		}
-	}
+    }
 }

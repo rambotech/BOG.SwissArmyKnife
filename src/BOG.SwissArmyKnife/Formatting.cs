@@ -227,5 +227,21 @@ namespace BOG.SwissArmyKnife
 				Char.ToUpper(builder[0]),
 				builder.ToString(1, builder.Length - 1));
 		}
-	}
+
+        /// <summary>
+        /// Takes a long value and prefixes the left side with zeros to a achieve a specific length.
+        /// (aka RJLZ: right-justified, left-zero pad).  Examples: 12, 5 returns "00012", 135,10 returns "0000000135"
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="length"></param>
+        /// <returns>string value padded to specfied length.  Note: If the string length exceeds the specified length before padding,
+        /// The full number is returned (i.e. longer than the specificed length).</returns>
+        public static string RJLZ(long value, int length)
+        {
+            var s = value.ToString();
+            if (s.Length > length) return s;
+            s = (new string('0', length)) + s;
+            return s.Substring(s.Length - length, length);
+        }
+    }
 }

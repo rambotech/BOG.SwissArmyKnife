@@ -168,5 +168,40 @@ namespace BOG.SwissArmyKnife.Test
 
 			Assert.That(answer == "1.000T", "1024.0 * 1024.0 * 1024.0 * 1024.0 == 1.000T");
 		}
-	}
+
+        [Test, Description("RJLZ(): length less than length parameter")]
+        public void Formatting_RJLZ_long_OK()
+        {
+            long number = 72889;
+            int length = 6;
+            string Result = Formatting.RJLZ(number, length);
+            Assert.IsTrue(string.Compare("072889", Result) == 0);
+        }
+
+        [Test, Description("RJLZ(): length equal to length parameter")]
+        public void Formatting_RJLZ_long_Same()
+        {
+            long number = 72889;
+            int length = 5;
+            string Result = Formatting.RJLZ(number, length);
+            Assert.IsTrue(string.Compare("72889", Result) == 0);
+        }
+
+        [Test, Description("RJLZ(): length less than length parameter")]
+        public void Formatting_RJLZ_long_lessthan()
+        {
+            long number = 72889;
+            int length = 4;
+            string Result = Formatting.RJLZ(number, length);
+            Assert.IsTrue(string.Compare("72889", Result) == 0);
+        }
+        [Test, Description("RJLZ(): 0")]
+        public void Formatting_RJLZ_long_0()
+        {
+            long number = 0;
+            int length = 6;
+            string Result = Formatting.RJLZ(number, length);
+            Assert.IsTrue(string.Compare("000000", Result) == 0);
+        }
+    }
 }
