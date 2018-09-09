@@ -1,7 +1,7 @@
 ![alt text](https://github.com/rambotech/BOG.SwissArmyKnife/blob/master/src/Assets/multitool.png "The most useful collection of miscellaneous tools for .NET Standard 2.0!")
 
 # BOG.SwissArmyKnife
-This is a .NET Standard port of BOG.Framework, which is deprecated.  As of April 2018, the migration is far enough to call this release 1.0.0.  More classes will be migrated as Microsoft transfers the needed functionality needed to .NET Standard / .NET Core.
+This is a .NET Standard port of BOG.Framework, which is deprecated.
 
 The classes are:
 
