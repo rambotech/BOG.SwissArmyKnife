@@ -76,11 +76,12 @@ The classes are:
 ### StringEx
   Some useful string methods:
   - Search and replace with wildcards
+  - Check against flexible wildcard pattern without using regular expressions.  E.g. "The * fox * jump??"
   - Currency parsing
   - Hex to/from methods.
   - Filtering (include and exclude)
   - Placeholder replacement for allowing Environment, Common Folders and Custom Dictionary replacement in 
-    a path string.
+    a string, i.e. directory path, etc.
 
 ### Url
   A Url parser which is designed to validate listener url's for a HttpListener object, is less restrictive on

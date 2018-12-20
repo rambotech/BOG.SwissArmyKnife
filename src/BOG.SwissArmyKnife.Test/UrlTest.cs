@@ -17,9 +17,9 @@ using Newtonsoft.Json;
 
 namespace BOG.SwissArmyKnife.Test
 {
-    public class TestData : IEnumerable
+    public class UrlTestData : IEnumerable
     {
-        private Newtonsoft.Json.JsonSerializerSettings _JsonSetting=
+        private Newtonsoft.Json.JsonSerializerSettings _JsonSetting =
             new JsonSerializerSettings
             {
                 Formatting = Newtonsoft.Json.Formatting.Indented,
@@ -28,7 +28,7 @@ namespace BOG.SwissArmyKnife.Test
                 NullValueHandling = NullValueHandling.Include
             };
 
-        public TestData()
+        public UrlTestData()
         {
         }
 
@@ -53,17 +53,16 @@ namespace BOG.SwissArmyKnife.Test
     [TestFixture]
     public class UrlTest
     {
-        [TestCaseSource(typeof(TestData)), Description("Iterative: url parsing")]
+        [TestCaseSource(typeof(UrlTestData)), Description("Iterative: url parsing")]
         public void UrlTests_Iterative(UrlTestItem testItem)
         {
-            /* uncomment the lines below to debug a specific line in an iterative test from a CSV source */
-
-            //if (DataRow == 2)
-            //{
-            //	string ignored = "break point here";  // set breakpoint here to debug a particular row.
-            //}
-
             BOG.SwissArmyKnife.Url testObj = null;
+
+            // Set a breakpoint on Console.WriteLine to debug a particular test in the set.
+            if (testItem.DataRow == "28")
+            {
+                Console.WriteLine("break point here");
+            }
 
             if (!string.IsNullOrWhiteSpace(testItem.ThrowsException))
             {

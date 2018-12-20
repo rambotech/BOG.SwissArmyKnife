@@ -1,13 +1,50 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using BOG.SwissArmyKnife;
 using BOG.SwissArmyKnife.Extensions;
+using BOG.SwissArmyKnife.Test.Support;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace BOG.SwissArmyKnife.Test
 {
+    public class WildCardTestData : IEnumerable
+    {
+        private readonly Newtonsoft.Json.JsonSerializerSettings _JsonSetting =
+            new JsonSerializerSettings
+            {
+                Formatting = Newtonsoft.Json.Formatting.Indented,
+                DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+                DateParseHandling = DateParseHandling.None,
+                NullValueHandling = NullValueHandling.Include
+            };
+
+        public WildCardTestData()
+        {
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            List<WildcardTestItem> urlTestItemList = null;
+            using (var sr = new StreamReader(@"WildcardTestItems.json"))
+            {
+                urlTestItemList = new List<WildcardTestItem>(
+                    JsonConvert.DeserializeObject<List<WildcardTestItem>>(
+                        sr.ReadToEnd(),
+                        _JsonSetting));
+            }
+
+            foreach (var testItem in urlTestItemList)
+            {
+                yield return testItem;
+            }
+        }
+    }
+
     [TestFixture]
     public class StringExTest
     {
@@ -233,6 +270,48 @@ namespace BOG.SwissArmyKnife.Test
             Assert.IsTrue(Result["general"]["key"].Count == 2);
             Assert.IsTrue(string.Compare(Result["general"]["key"][0], "value3", false) == 0);
             Assert.IsTrue(string.Compare(Result["general"]["key"][1], "value4", false) == 0);
+        }
+
+        [TestCaseSource(typeof(WildCardTestData)), Description("Iterative: url parsing")]
+        public void WildcardTests_Iterative(WildcardTestItem testItem)
+        {
+            // Set a breakpoint on Console.WriteLine to debug a particular test in the set.
+            if (testItem.DataRow == "7")
+            {
+                Console.WriteLine ("break point here");
+            }
+            var result = false;
+            if (!string.IsNullOrWhiteSpace(testItem.ThrowsException))
+            {
+                try
+                {
+                    result = testItem.Value.ContainsWildcardPattern(
+                        testItem.WildcardPattern,
+                        bool.Parse(testItem.CaseSensitive));
+                }
+                catch (Exception err1)
+                {
+                    string[] err = err1.GetType().ToString().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+                    Assert.Multiple(() =>
+                    {
+                        Assert.AreEqual(testItem.ThrowsException, err[err.Length - 1], "Exception expected, but caught a different exception (Row {0}).", testItem.DataRow);
+                        if (!string.IsNullOrWhiteSpace(testItem.ExceptionContains))
+                        {
+                            Assert.IsTrue(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
+                        }
+                    });
+                    return;
+                }
+                Assert.IsTrue(false, "Expected Exception " + testItem.ThrowsException + ", but no exception was thrown. (Row {0}).", testItem.DataRow);
+            }
+            else
+            {
+                result = testItem.Value.ContainsWildcardPattern(
+                    testItem.WildcardPattern,
+                    bool.Parse(testItem.CaseSensitive));
+
+                Assert.AreEqual(bool.Parse(testItem.ExpectedResult), result, "(Row {0}): {1}", testItem.DataRow, testItem.ExpectedResult);
+            }
         }
     }
 }

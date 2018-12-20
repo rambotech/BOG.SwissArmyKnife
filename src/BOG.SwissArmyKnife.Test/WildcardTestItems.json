@@ -1,0 +1,152 @@
+[
+  {
+    "DataRow": "0",
+    "Value": "The quick brown fox jumped",
+    "WildcardPattern": "The quick brown fox jumped",
+    "CaseSensitive": "TRUE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "1",
+    "Value": "The quick brown chicken jumped",
+    "WildcardPattern": "The Quick Brown Fox Jumped ",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "FALSE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "2",
+    "Value": "The quick brown chicken jumped",
+    "WildcardPattern": "The quick * fox jumped ",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "FALSE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "3",
+    "Value": "The quick brown chicken jumped",
+    "WildcardPattern": "The quick * chicken jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "4",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "The quick ??? fox jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "5",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "The quick ?? fox jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "FALSE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "6",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "The quick ???? fox jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "FALSE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "7",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "The quick*fox jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "8",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "The quick?*?fox jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "9",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "The quick *? fox jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "10",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "The quick ?* fox jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "11",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "The quick?*fox jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "12",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "The quick?*fox jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "13",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "The quick*",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "14",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "*The * red *jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  }
+]

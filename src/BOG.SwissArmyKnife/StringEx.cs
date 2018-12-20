@@ -175,6 +175,34 @@ namespace BOG.SwissArmyKnife.Extensions
         }
 
         /// <summary>
+        /// For the given value, return true if the value can be represented by the wildcard pattern (*=any (multiple), ?=any (single))
+        /// "The quick * fox" would match "The quick brown fox" or "The quick red fox"
+        /// "The quick ??? fox" would not match "The quick brown fox" but would match "The quick red fox".
+        /// "* quick ??? fox" would match "quick old fox", "A quick red fox" or "The very quick red fox".
+        /// See the test code for more examples.
+        /// </summary>
+        /// <param name="value">The string to match</param>
+        /// <param name="wildcardPattern">The pattern to qualify the match</param>
+        /// <param name="caseSensitive">Whther to honor upper/lower case matching</param>
+        /// <returns>true for a match</returns>
+        public static bool ContainsWildcardPattern(this string value, string wildcardPattern, bool caseSensitive)
+        {
+            if (string.IsNullOrWhiteSpace(wildcardPattern))
+                return false;
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            var regexExpression = WildCardToRegularExpression(wildcardPattern);
+
+            return Regex.IsMatch(value, regexExpression , caseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase);
+        }
+
+        private static String WildCardToRegularExpression(String value)
+        {
+            return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
+        }
+
+        /// <summary>
         /// Trims a string which is enclosed by quotes.  The quotes and the left-side and right-side whitespace 
         /// from the enclosed string is removed.
         /// E.g.  " \" ex \" " becomes "ex"

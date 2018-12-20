@@ -670,5 +670,29 @@
     "UrlDecodedFragment": "?/",
     "AsString": "Waldo://Kimbo%3aTron:Lucky5%40@www.maced0n.tv:8044/x/y/{placeholder}?y=42&en%61ble%26it#%3f/",
     "Note": "About as complex as it can get.  User name and password. Allows placeholder in the path for RestAPI patterns."
+  },
+  {
+    "DataRow": "28",
+    "OriginalUrl": "ftp://user:pass@myserver:8202/.",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Scheme": "ftp",
+    "User": "user",
+    "Password": "pass",
+    "Host": "myserver",
+    "Port": "8202",
+    "Path": "/.",
+    "Query": "",
+    "Fragment": "",
+    "UrlDecodedScheme": "ftp",
+    "UrlDecodedUser": "user",
+    "UrlDecodedPassword": "pass",
+    "UrlDecodedHost": "myserver",
+    "UrlDecodedPort": "8202",
+    "UrlDecodedPath": "/.",
+    "UrlDecodedQuery": "",
+    "UrlDecodedFragment": "",
+    "AsString": "ftp://user:pass@myserver:8202/.",
+    "Note": "Validates proper parsing of port and user:password combination."
   }
 ]

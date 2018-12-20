@@ -5,8 +5,9 @@ using System.Linq;
 namespace BOG.SwissArmyKnife
 {
 	/// <summary>
-	/// Allows Parameter sets to be added for loops, and allows the lopp enumerations to be represented by an index, and
-	/// vice-versa.  Intended to support large and deep looping with millions to even trillions of combinations.
+	/// Allows Parameter sets to be added for loops, and allows the loop enumerations 
+    /// to be represented by an index, and vice-versa.  Intended to support large and 
+    /// deep looping with millions to even trillions of combinations.
 	/// </summary>
 	public class Iteration
 	{
