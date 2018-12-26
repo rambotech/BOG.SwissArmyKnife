@@ -123,12 +123,14 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationItem (NumberRange:Inclusive, Negative) is accurate")]
 		public void Iteration_MultiEntry_areCountsOK()
 		{
-			Dictionary<string, string[]> IterationSets = new Dictionary<string, string[]>();
-			IterationSets.Add("List", new string[] { "A", "B", "C" });
-			IterationSets.Add("Numbers01", new string[] { "10", "9", "8", "7", "6", "5", "4", "3", "2", "1", "0" });
-			IterationSets.Add("Numbers02", new string[] { "250", "255", "260", "265", "270", "275", "280" });
+            var IterationSets = new Dictionary<string, string[]>
+            {
+                { "List", new string[] { "A", "B", "C" } },
+                { "Numbers01", new string[] { "10", "9", "8", "7", "6", "5", "4", "3", "2", "1", "0" } },
+                { "Numbers02", new string[] { "250", "255", "260", "265", "270", "275", "280" } }
+            };
 
-			Iteration iter = new Iteration();
+            Iteration iter = new Iteration();
 
 			iter.AddListItems("List", new List<string>(IterationSets["List"]));
 			Assert.AreEqual(iter.IterationItems.Count, 1);
@@ -185,12 +187,14 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationItem (NumberRange:Inclusive, Negative) is accurate")]
 		public void Iteration_GetSet_OK()
 		{
-			Dictionary<string, string[]> IterationSets = new Dictionary<string, string[]>();
-			IterationSets.Add("List", new string[] { "A", "B", "C" });
-			IterationSets.Add("Numbers01", new string[] { "10", "9", "8", "7", "6", "5", "4", "3", "2", "1", "0" });
-			IterationSets.Add("Numbers02", new string[] { "250", "255", "260", "265", "270", "275", "280" });
+            Dictionary<string, string[]> IterationSets = new Dictionary<string, string[]>
+            {
+                { "List", new string[] { "A", "B", "C" } },
+                { "Numbers01", new string[] { "10", "9", "8", "7", "6", "5", "4", "3", "2", "1", "0" } },
+                { "Numbers02", new string[] { "250", "255", "260", "265", "270", "275", "280" } }
+            };
 
-			Iteration iter = new Iteration();
+            Iteration iter = new Iteration();
 
 			iter.AddListItems("List", new List<string>(IterationSets["List"]));
 			iter.AddNumberRange("Numbers01", 10, -1, 0, Iteration.EndValueEval.Inclusive);

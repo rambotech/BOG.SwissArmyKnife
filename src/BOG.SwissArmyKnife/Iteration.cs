@@ -109,8 +109,8 @@ namespace BOG.SwissArmyKnife
 
 		/// <summary>
 		/// Add numbers by range and increment as an iteration item.  This is equivalent to:
-		/// for (double value = initialValue, value &lt; limitValue, value += incrementValue)  // when increment is positive
-		/// for (double value = initialValue, value &gt; limitValue, value -= incrementValue)  // when increment is negative
+		/// for (decimal value = initialValue, value &lt; limitValue, value += incrementValue)  // when increment is positive
+		/// for (decimal value = initialValue, value &gt; limitValue, value -= incrementValue)  // when increment is negative
 		/// </summary>
 		/// <param name="name">Name of the parameter</param>
 		/// <param name="initialValue">the starting value</param>
@@ -118,7 +118,7 @@ namespace BOG.SwissArmyKnife
 		/// <param name="limitValue">the end value</param>
 		/// <param name="endValueEval">whether the end value itself can be included in the list of items.</param>
 		/// <returns>The number of items created for the iteration item.</returns>
-		public int AddNumberRange(string name, double initialValue, double incrementValue, double limitValue, EndValueEval endValueEval)
+		public int AddNumberRange(string name, decimal initialValue, decimal incrementValue, decimal limitValue, EndValueEval endValueEval)
 		{
 			if (IterationItemNameExists(name))
 			{
@@ -140,10 +140,12 @@ namespace BOG.SwissArmyKnife
 			}
 
 			int result = 0;
-			IterationItem item = new IterationItem();
-			item.Name = name;
-			item.IterationValues = new SerializableDictionary<int, string>();
-			double v = initialValue;
+            IterationItem item = new IterationItem
+            {
+                Name = name,
+                IterationValues = new SerializableDictionary<int, string>()
+            };
+            decimal v = initialValue;
 			if (Math.Sign(incrementValue) == -1)
 			{
 				limitValue += endValueEval == EndValueEval.Inclusive ? -1 : 0;
@@ -182,7 +184,7 @@ namespace BOG.SwissArmyKnife
 		/// <param name="incrementValue">the step or increment to the next value</param>
 		/// <param name="iterationCount">the number of times to increment the value and add the new value to list.</param>
 		/// <returns>The number of items created for the iteration item.</returns>
-		public int AddNumberSequence(string name, double initialValue, double incrementValue, int iterationCount)
+		public int AddNumberSequence(string name, decimal initialValue, decimal incrementValue, int iterationCount)
 		{
 			if (IterationItemNameExists(name))
 			{
@@ -195,10 +197,12 @@ namespace BOG.SwissArmyKnife
 			}
 
 			int result = 0;
-			IterationItem item = new IterationItem();
-			item.Name = name;
-			item.IterationValues = new SerializableDictionary<int, string>();
-			double v = initialValue;
+            IterationItem item = new IterationItem
+            {
+                Name = name,
+                IterationValues = new SerializableDictionary<int, string>()
+            };
+            decimal v = initialValue;
 			while (iterationCount > 0)
 			{
 				item.IterationValues.Add(item.IterationValues.Count, v.ToString());
@@ -237,10 +241,12 @@ namespace BOG.SwissArmyKnife
 			}
 
 			int result = 0;
-			IterationItem item = new IterationItem();
-			item.Name = name;
-			item.IterationValues = new SerializableDictionary<int, string>();
-			foreach (string value in itemValues)
+            IterationItem item = new IterationItem
+            {
+                Name = name,
+                IterationValues = new SerializableDictionary<int, string>()
+            };
+            foreach (string value in itemValues)
 			{
 				item.IterationValues.Add(item.IterationValues.Count, value);
 			}
