@@ -1,12 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using System.Xml.XPath;
 
 namespace BOG.SwissArmyKnife.Extensions
 {
@@ -194,7 +192,7 @@ namespace BOG.SwissArmyKnife.Extensions
 
             var regexExpression = WildCardToRegularExpression(wildcardPattern);
 
-            return Regex.IsMatch(value, regexExpression , caseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase);
+            return Regex.IsMatch(value, regexExpression, caseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase);
         }
 
         private static String WildCardToRegularExpression(String value)

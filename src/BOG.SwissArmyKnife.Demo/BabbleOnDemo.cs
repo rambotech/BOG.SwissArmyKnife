@@ -1,8 +1,7 @@
-﻿using System;
+﻿using BOG.SwissArmyKnife.Demo.Support;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using BOG.SwissArmyKnife.Demo.Support;
 
 namespace BOG.SwissArmyKnife.Demo
 {

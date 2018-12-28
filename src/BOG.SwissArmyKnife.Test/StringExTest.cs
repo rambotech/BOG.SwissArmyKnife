@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using BOG.SwissArmyKnife;
-using BOG.SwissArmyKnife.Extensions;
+﻿using BOG.SwissArmyKnife.Extensions;
 using BOG.SwissArmyKnife.Test.Support;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 
 namespace BOG.SwissArmyKnife.Test
 {
@@ -278,7 +275,7 @@ namespace BOG.SwissArmyKnife.Test
             // Set a breakpoint on Console.WriteLine to debug a particular test in the set.
             if (testItem.DataRow == "7")
             {
-                Console.WriteLine ("break point here");
+                Console.WriteLine("break point here");
             }
             var result = false;
             if (!string.IsNullOrWhiteSpace(testItem.ThrowsException))

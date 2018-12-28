@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using NUnit.Framework;
+using System;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using BOG.SwissArmyKnife;
-using BOG.SwissArmyKnife.Extensions;
-using NUnit.Framework;
 
 namespace BOG.SwissArmyKnife.Test
 {

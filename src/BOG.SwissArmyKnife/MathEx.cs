@@ -22,7 +22,7 @@ namespace BOG.SwissArmyKnife
             try
             {
                 Max = data.Length;
-                		
+
                 if (Max == 0) { return ret; }
 
                 DataAverage = Average(data);
@@ -32,7 +32,7 @@ namespace BOG.SwissArmyKnife
                     TotalVariance += Math.Pow(data[i] - DataAverage, 2);
                 }
 
-                ret = Math.Sqrt (SafeDivide (TotalVariance,Max));
+                ret = Math.Sqrt(SafeDivide(TotalVariance, Max));
 
             }
             catch (Exception) { throw; }
@@ -52,11 +52,11 @@ namespace BOG.SwissArmyKnife
             try
             {
 
-              for(int i=0;i<data.Length;i++)
-              {
-                DataTotal += data[i]; 
-              }
-              ret = SafeDivide(DataTotal, data.Length);
+                for (int i = 0; i < data.Length; i++)
+                {
+                    DataTotal += data[i];
+                }
+                ret = SafeDivide(DataTotal, data.Length);
             }
             catch (Exception) { throw; }
             return ret;
@@ -75,14 +75,14 @@ namespace BOG.SwissArmyKnife
             try
             {
 
-                if ((value1 == 0) || ( value2 == 0))
+                if ((value1 == 0) || (value2 == 0))
                 {
                     return ret;
                 }
 
-                ret =  value1 / value2;
+                ret = value1 / value2;
             }
-            catch { } 
+            catch { }
             return ret;
         }
     }

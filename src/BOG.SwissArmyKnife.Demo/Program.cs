@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using BOG.SwissArmyKnife.Demo;
 
 namespace BOG.SwissArmyKnife.Demo
 {

@@ -1,19 +1,10 @@
-﻿using System;
+﻿using BOG.SwissArmyKnife.Test.Support;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BOG.SwissArmyKnife;
-using BOG.SwissArmyKnife.Test.Support;
-using CsvHelper;
-using NUnit.Framework;
-using NUnit.Framework.Interfaces;
-using Newtonsoft.Json;
 
 namespace BOG.SwissArmyKnife.Test
 {
