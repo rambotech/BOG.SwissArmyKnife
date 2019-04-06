@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System.IO;
 
-namespace BOG.SwissArmyKnife
+namespace BOG.SwissArmyKnife.Test
 {
     [TestFixture]
     public class SettingsDictionaryTest
