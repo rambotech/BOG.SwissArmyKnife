@@ -1,0 +1,15 @@
+[
+  {
+    "DataRow": "0",
+    "HandleAs": "IterationItem.Handling.OrdinalNumber",
+    "Method": "OrdinalNumberMethod.Count",
+    "StartValue": 0,
+    "StepValue": 1,
+    "CountValue": 15,
+    "EndValue": 15,
+    "EndEval": "Iteration.EndValueEval.Exclusive",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "HasCount": 15
+  }
+]

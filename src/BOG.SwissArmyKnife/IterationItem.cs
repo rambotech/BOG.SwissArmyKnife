@@ -1,139 +1,63 @@
-﻿using System;
-using System.Runtime.Serialization;
-using System.Security.Permissions;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace BOG.SwissArmyKnife
 {
-    //[Serializable]
-    //class IterationItem : ISerializable, ICloneable
-    //{
-    //	string Name = string.Empty;
-    //	SerializableDictionary<int, string> IterationValues = new SerializableDictionary<int, string>();
-    //}
-
     /// <summary>
     /// Represents the values for a single iteration, used in a set of iterations.
     /// </summary>
-    [Serializable]
-    public class IterationItem : ISerializable, ICloneable
+    [JsonObject]
+    public class IterationItem
     {
-        private string _Name = string.Empty;
-        private SerializableDictionary<int, string> _IterationValues = new SerializableDictionary<int, string>();
-
         /// <summary>
-        /// Creates an uninitialized object.
+        /// Describes the internal handling of the item ordinal.
         /// </summary>
-        public IterationItem()
+        public enum Handling : int
         {
+            /// <summary>
+            /// It is an ordinal type.  The start and step values are used to calculate the value.
+            /// </summary>
+            OrdinalNumber = 0,
+            /// <summary>
+            /// It is a literal string.  The dictionary is used to resolve the value.
+            /// </summary>
+            Literal = 1
         }
 
         /// <summary>
-        /// Creates an object with the specified iteration.
+        /// The name of the iteration item.  Must be unique.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="iterationValues"></param>
-        public IterationItem(string name, SerializableDictionary<int, string> iterationValues)
-        {
-            this._Name = name;
-            this._IterationValues = iterationValues;
-        }
+        [JsonProperty]
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Created an iteration item from an existing object.
+        /// Whether the item represents a list of strings, or a calculated numeric sequence.
         /// </summary>
-        /// <param name="obj"></param>
-        public IterationItem(IterationItem obj)
-        {
-            this.Load(obj);
-        }
+        [JsonProperty]
+        public Handling HandleAs { get; set; } = Handling.OrdinalNumber;
 
         /// <summary>
-        /// Creates an iteration item from ordinal objects.
+        /// The index 0 value for the numeri sequence
         /// </summary>
-        /// <param name="obj"></param>
-        public IterationItem(object[] obj)
-        {
-            this._Name = (string)obj[0];
-            this._IterationValues = (SerializableDictionary<int, string>)obj[1];
-        }
+        [JsonProperty]
+        public decimal NumericStartValue { get; set; } = 0.0M;
 
         /// <summary>
-        /// Creates an iteration item from de-serialization.
+        /// The step value to get the next ordinal value.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public IterationItem(SerializationInfo info, StreamingContext context)
-        {
-            if (info != null)
-            {
-                this._Name = (string)info.GetValue("Name", typeof(string));
-                this._IterationValues = (SerializableDictionary<int, string>)info.GetValue("IterationValues", typeof(SerializableDictionary<int, string>));
-            }
-        }
+        [JsonProperty]
+        public decimal NumericStepValue { get; set; } = 0.0M;
 
         /// <summary>
-        /// Loads the existing instance with replacement values for its properties.
+        /// The number of indexed values (equivalent to count() on a list).
         /// </summary>
-        /// <param name="obj"></param>
-        public void Load(IterationItem obj)
-        {
-            this._Name = obj.Name;
-            this._IterationValues = obj.IterationValues;
-        }
+        [JsonProperty]
+        public long NumericValueCount { get; set; } = 0;
 
         /// <summary>
-        /// The name of the iteration.
+        /// 
         /// </summary>
-        public string Name
-        {
-            get { return this._Name; }
-            set { this._Name = value; }
-        }
-
-        /// <summary>
-        /// The set of value in the iteration.
-        /// </summary>
-        public SerializableDictionary<int, string> IterationValues
-        {
-            get { return this._IterationValues; }
-            set { this._IterationValues = value; }
-        }
-
-        /// <summary>
-        /// Creates a new instance populated by the properties of this instance.
-        /// </summary>
-        /// <returns></returns>
-        public object Clone()
-        {
-            return new IterationItem(this);
-        }
-
-        /// <summary>
-        /// Creates a new instance populated by the properties of this instance. (pseudonym)
-        /// </summary>
-        /// <returns></returns>
-        public object CloneNew()
-        {
-            return this.Clone();
-        }
-
-        /// <summary>
-        /// Returns properties from this instance for a serializer.
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            // base.GetObjectData(info, context);
-
-            if (info == null)
-            {
-                throw new System.ArgumentNullException("Not a valid object");
-            }
-
-            info.AddValue("Name", this._Name);
-            info.AddValue("IterationValues", this._IterationValues);
-        }
+        [JsonProperty]
+        public Dictionary<int, string> LiteralValues { get; set; } = new Dictionary<int, string>();
     }
 }

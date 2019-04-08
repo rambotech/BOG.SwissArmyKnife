@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BOG.SwissArmyKnife
 {
@@ -8,6 +10,7 @@ namespace BOG.SwissArmyKnife
     /// to be represented by an index, and vice-versa.  Intended to support large and 
     /// deep looping with millions to even trillions of combinations.
     /// </summary>
+    [JsonObject]
     public class Iteration
     {
         /// <summary>
@@ -25,45 +28,14 @@ namespace BOG.SwissArmyKnife
             Exclusive = 1
         }
 
-        private SerializableDictionary<int, IterationItem> _IterationItems = new SerializableDictionary<int, IterationItem>();
-        private long _TotalIterationCount = 0L;
-
         /// <summary>
-        /// Gets the number of items in this iteration.
+        /// 
         /// </summary>
-        public long TotalIterationCount { get { return _TotalIterationCount; } }
+        [JsonProperty]
+        public Dictionary<int, IterationItem> IterationItems { get; set; } = new Dictionary<int, IterationItem>();
 
-        /// <summary>
-        /// Gets a copy of the iteration set, or sets the iteration set values.
-        /// </summary>
-        public SerializableDictionary<int, IterationItem> IterationItems
-        {
-            get
-            {
-                SerializableDictionary<int, IterationItem> returnValue = new SerializableDictionary<int, IterationItem>();
-                foreach (int key in _IterationItems.Keys)
-                {
-                    returnValue.Add(key, (IterationItem)_IterationItems[key].Clone());
-                }
-                return returnValue;
-            }
-            set
-            {
-                _IterationItems.Clear();
-                foreach (int key in value.Keys)
-                {
-                    _IterationItems.Add(key, (IterationItem)value[key].Clone());
-                    if (_TotalIterationCount == 0L)
-                    {
-                        _TotalIterationCount = _IterationItems[key].IterationValues.Count;
-                    }
-                    else
-                    {
-                        _TotalIterationCount *= _IterationItems[key].IterationValues.Count;
-                    }
-                }
-            }
-        }
+        [JsonProperty]
+        public Int64 TotalIterationCount { get; set; } = 0L;
 
         /// <summary>
         /// Creates a default instantiation.
@@ -72,43 +44,50 @@ namespace BOG.SwissArmyKnife
         {
         }
 
+        #region Helper methods
+
         /// <summary>
         /// Gets whether an iteration with a specific name already exists in the iteration items.
         /// </summary>
         /// <param name="name"></param>
         /// <returns>false if not found</returns>
-        public bool IterationItemNameExists(string name)
-        {
-            bool result = false;
-            foreach (int key in _IterationItems.Keys)
-            {
-                // SerializableDictionary<> and Dictionary<> are case-sensitive when the key is a string.
-                if (string.Compare(_IterationItems[key].Name, name, false) == 0)
-                {
-                    result = true;
-                    break;
-                }
-            }
-            return result;
-        }
+        public bool IterationItemNameExists(string name) => IterationItems.Values.Where(o => string.Compare(o.Name, name, false) == 0).FirstOrDefault() != null;
 
         /// <summary>
         /// Gets a list of the items associated with an iteration name.
         /// </summary>
         /// <param name="forName">the iteration name.</param>
         /// <returns>A dictionary of the items, with the key being the ordinal sequence (0...N)</returns>
-        public SerializableDictionary<int, IterationItem> GetIterationItemsForName(string forName)
+        public Dictionary<int, string> GetIterationItemsForName(string name)
         {
-            SerializableDictionary<int, IterationItem> result = new SerializableDictionary<int, IterationItem>();
-            if (IterationItemNameExists(forName))
+            var result = new Dictionary<int, string>();
+            if (IterationItemNameExists(name))
             {
-                foreach (int key in _IterationItems.Keys)
+                foreach (int key in IterationItems.Keys)
                 {
-                    if (_IterationItems[key].Name != forName)
+                    if (IterationItems[key].Name != name)
                     {
                         continue;
                     }
-                    result.Add(key, _IterationItems[key]);
+                    switch (IterationItems[key].HandleAs)
+                    {
+                        case IterationItem.Handling.Literal:
+                            foreach (var i in IterationItems.Keys)
+                            {
+                                result.Add(i, IterationItems[key].LiteralValues[i]);
+                            }
+                            break;
+
+                        case IterationItem.Handling.OrdinalNumber:
+                            var value = IterationItems[key].NumericStartValue;
+                            while (result.Values.Count < IterationItems[key].NumericValueCount)
+                            {
+                                result.Add(result.Count, value.ToString());
+                                value += IterationItems[key].NumericStepValue;
+                            }
+                            break;
+                    }
+                    break;
                 }
             }
             return result;
@@ -129,64 +108,47 @@ namespace BOG.SwissArmyKnife
         {
             if (IterationItemNameExists(name))
             {
-                throw new ArgumentException(string.Format("The name \"{0}\" is already used by another itermation item.", name));
-            }
-
-            if (Math.Sign(incrementValue) == 1 && initialValue > limitValue)
-            {
-                throw new ArgumentException(string.Format("The increment value for \"{0}\" can not be zero.", name));
-            }
-
-            if ((limitValue > initialValue && Math.Sign(incrementValue) == -1) || (initialValue > limitValue && Math.Sign(incrementValue) == 1))
-            {
-                throw new ArgumentException(string.Format(
-                    "The increment value must be {0} to iterate from {1} to {2}",
-                    Math.Sign(incrementValue) == -1 ? "positive" : "negative",
-                    initialValue,
-                    limitValue));
+                throw new ArgumentException($"The name \"{name}\" is already used by another itermation item.");
             }
 
             if (Math.Sign(incrementValue) == 0)
             {
-                throw new ArgumentException(string.Format("The increment value for \"{0}\" can not be zero.", name));
+                throw new ArgumentException($"The increment value for \"{name}\" can not be zero.");
             }
 
-            int result = 0;
+            if (Math.Sign(incrementValue) == 1 && initialValue > limitValue)
+            {
+                throw new ArgumentException($"The increment value for \"{name}\" is invalid: it should be negative, but is postive.");
+            }
+
+            if (Math.Sign(incrementValue) == -1 && initialValue < limitValue)
+            {
+                throw new ArgumentException($"The increment value for \"{name}\" is invalid: it should be postive, but is negative.");
+            }
+
+            // decimal initialValue, decimal incrementValue, decimal limitValue, EndValueEval endValueEval
+            var count = (int)(Math.Abs(limitValue - initialValue) / Math.Abs(incrementValue));
+            var modulo = Math.Abs(limitValue - initialValue) - ((decimal)count * Math.Abs(incrementValue));
+            if (endValueEval == Iteration.EndValueEval.Inclusive && modulo == 0.0M) count++;
+
+            int result = count;
             IterationItem item = new IterationItem
             {
                 Name = name,
-                IterationValues = new SerializableDictionary<int, string>()
+                HandleAs = IterationItem.Handling.OrdinalNumber,
+                NumericStartValue = initialValue,
+                NumericStepValue = incrementValue,
+                NumericValueCount = (long) count,
+                LiteralValues = null
             };
-            decimal v = initialValue;
-            if (Math.Sign(incrementValue) != 0)
+            IterationItems.Add(IterationItems.Count, item);
+            if (TotalIterationCount == 0L)
             {
-                limitValue += endValueEval == EndValueEval.Inclusive ? incrementValue : 0;
-            }
-
-            bool keepGoing = true;
-            while (keepGoing)
-            {
-                keepGoing = Math.Sign(incrementValue) == -1 ? (v > limitValue) : (v < limitValue);
-                if (!keepGoing)
-                {
-                    break;
-                }
-                item.IterationValues.Add(item.IterationValues.Count, v.ToString());
-                v += incrementValue;
-            }
-            result = item.IterationValues.Count;
-            if (result == 0)
-            {
-                throw new ArgumentException(string.Format("The name \"{0}\" has no items: at least one must be defined.", name));
-            }
-            _IterationItems.Add(_IterationItems.Count, item);
-            if (_TotalIterationCount == 0L)
-            {
-                _TotalIterationCount = item.IterationValues.Count;
+                TotalIterationCount = count;
             }
             else
             {
-                _TotalIterationCount *= item.IterationValues.Count;
+                TotalIterationCount *= count;
             }
             return result;
         }
@@ -203,40 +165,37 @@ namespace BOG.SwissArmyKnife
         {
             if (IterationItemNameExists(name))
             {
-                throw new ArgumentException(string.Format("The name \"{0}\" is already used by another itermation item.", name));
+                throw new ArgumentException($"The name \"{name}\" is already used by another itermation item.");
+            }
+
+            if (iterationCount == 0)
+            {
+                throw new ArgumentException($"The iteration count for \"{name}\" can not be zero.");
             }
 
             if (Math.Sign(incrementValue) == 0)
             {
-                throw new ArgumentException(string.Format("The increment value for \"{0}\" can not be zero.", name));
+                throw new ArgumentException($"The increment value for \"{name}\" can not be zero.");
             }
 
-            int result = 0;
+            int result = iterationCount;
             IterationItem item = new IterationItem
             {
                 Name = name,
-                IterationValues = new SerializableDictionary<int, string>()
+                HandleAs = IterationItem.Handling.OrdinalNumber,
+                NumericStartValue=initialValue,
+                NumericStepValue=incrementValue,
+                NumericValueCount = iterationCount,
+                LiteralValues = null
             };
-            decimal v = initialValue;
-            while (iterationCount > 0)
+            IterationItems.Add(IterationItems.Count, item);
+            if (TotalIterationCount == 0L)
             {
-                item.IterationValues.Add(item.IterationValues.Count, v.ToString());
-                v += incrementValue;
-                iterationCount--;
-            }
-            result = item.IterationValues.Count;
-            if (result == 0)
-            {
-                throw new ArgumentException(string.Format("The name \"{0}\" has no items: at least one must be defined.", name));
-            }
-            _IterationItems.Add(_IterationItems.Count, item);
-            if (_TotalIterationCount == 0L)
-            {
-                _TotalIterationCount = item.IterationValues.Count;
+                TotalIterationCount = iterationCount;
             }
             else
             {
-                _TotalIterationCount *= item.IterationValues.Count;
+                TotalIterationCount *= iterationCount;
             }
             return result;
         }
@@ -266,25 +225,22 @@ namespace BOG.SwissArmyKnife
             IterationItem item = new IterationItem
             {
                 Name = name,
-                IterationValues = new SerializableDictionary<int, string>()
+                HandleAs = IterationItem.Handling.Literal,
+                LiteralValues = new Dictionary<int, string>()
             };
             foreach (string value in itemValues)
             {
-                item.IterationValues.Add(item.IterationValues.Count, value);
+                item.LiteralValues.Add(item.LiteralValues.Count, value);
             }
-            result = item.IterationValues.Count;
-            if (result == 0)
+            result = item.LiteralValues.Count;
+            IterationItems.Add(IterationItems.Count, item);
+            if (TotalIterationCount == 0L)
             {
-                throw new ArgumentException(string.Format("The name \"{0}\" has no items: at least one must be defined.", name));
-            }
-            _IterationItems.Add(_IterationItems.Count, item);
-            if (_TotalIterationCount == 0L)
-            {
-                _TotalIterationCount = item.IterationValues.Count;
+                TotalIterationCount = item.LiteralValues.Count;
             }
             else
             {
-                _TotalIterationCount *= item.IterationValues.Count;
+                TotalIterationCount *= item.LiteralValues.Count;
             }
             return result;
         }
@@ -300,25 +256,39 @@ namespace BOG.SwissArmyKnife
             {
                 throw new ArgumentException("The requested index can not be negative.");
             }
-            if (indexSpecific > _TotalIterationCount)
+            if (indexSpecific > TotalIterationCount)
             {
-                throw new ArgumentException(
-                    string.Format("The requested index ({0}) is beyond the maximum of {1}",
-                    indexSpecific,
-                    _TotalIterationCount - 1));
+                throw new ArgumentException($"The requested index ({indexSpecific}) is beyond the maximum of {TotalIterationCount - 1}");
             }
 
             long index = indexSpecific;
             Dictionary<string, string> result = new Dictionary<string, string>();
-            for (int ItemInSetIndex = _IterationItems.Count - 1; ItemInSetIndex >= 0; ItemInSetIndex--)
-            {
-                Int64 whole = index / (Int64)_IterationItems[ItemInSetIndex].IterationValues.Count;
-                int remainder = (int)(index % (Int64)_IterationItems[ItemInSetIndex].IterationValues.Count);
-                result.Add(_IterationItems[ItemInSetIndex].Name, _IterationItems[ItemInSetIndex].IterationValues[remainder]);
+            for (int ItemInSetIndex = IterationItems.Count - 1; ItemInSetIndex >= 0; ItemInSetIndex--)
+           {
+                Int64 whole = 0;
+                int remainder = 0;
+                switch (IterationItems[ItemInSetIndex].HandleAs)
+                {
+                    case IterationItem.Handling.Literal:
+                        whole = index / (Int64)IterationItems[ItemInSetIndex].LiteralValues.Count;
+                        remainder = (int)(index % whole);
+                        result.Add(IterationItems[ItemInSetIndex].Name, IterationItems[ItemInSetIndex].LiteralValues[remainder]);
+                        break;
+                    case IterationItem.Handling.OrdinalNumber:
+                        whole = index / (Int64)IterationItems[ItemInSetIndex].NumericValueCount;
+                        remainder = (int)(index % whole);
+                        result.Add(
+                            IterationItems[ItemInSetIndex].Name, 
+                            (IterationItems[ItemInSetIndex].NumericStartValue +
+                            (IterationItems[ItemInSetIndex].NumericStepValue * (decimal)remainder)).ToString() 
+                        );
+                        break;
+                }
                 index = whole;
             }
 
             return result;
         }
+        #endregion
     }
 }
