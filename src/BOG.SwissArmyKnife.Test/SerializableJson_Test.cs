@@ -1,6 +1,7 @@
 ﻿using BOG.SwissArmyKnife.Test.Support;
 using NUnit.Framework;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 
 namespace BOG.SwissArmyKnife.Test
@@ -17,10 +18,8 @@ namespace BOG.SwissArmyKnife.Test
             string salt = "JustAsEasy";
 
             string rawContent = ObjectJsonSerializer<MyDataSet>.CreateDocumentFormat(original);
-            //int rawContentLength = rawContent.Length;
 
             string transitContent = ObjectJsonSerializer<MyDataSet>.CreateTransitContainerForObject(original, password, salt);
-            //int transitContentLength = transitContent.Length;
 
             MyDataSet result = ObjectJsonSerializer<MyDataSet>.CreateObjectFromTransitContainer(transitContent, password, salt);
 
@@ -68,11 +67,18 @@ namespace BOG.SwissArmyKnife.Test
         {
             var result = new MyDataSet();
             result.s1 = "A large set of strings in the list";
-            using (var sr = new StreamReader(@"UrlTestItems.json"))
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "BOG.SwissArmyKnife.Test.BulkTestData.UrlTestItems.json";
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
-                while (!sr.EndOfStream)
+                using (StreamReader reader = new StreamReader(stream))
                 {
-                    result.coll.Add(sr.ReadLine());
+                    while (!reader.EndOfStream)
+                    {
+                        result.coll.Add(reader.ReadLine());
+                    }
                 }
             }
             return result;

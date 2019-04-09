@@ -1,260 +1,296 @@
-﻿using NUnit.Framework;
+﻿using BOG.SwissArmyKnife.Test.Support;
+using Newtonsoft.Json;
+using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
 namespace BOG.SwissArmyKnife.Test
 {
+    public class IterationTestData : IEnumerable
+    {
+        private readonly Newtonsoft.Json.JsonSerializerSettings _JsonSetting =
+            new JsonSerializerSettings
+            {
+                Formatting = Newtonsoft.Json.Formatting.Indented,
+                DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+                DateParseHandling = DateParseHandling.None,
+                NullValueHandling = NullValueHandling.Include
+            };
+
+        public IterationTestData()
+        {
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            List<IterationTestItem> iterationTestItemList = null;
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "BOG.SwissArmyKnife.Test.BulkTestData.IterationTestItems.json";
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    iterationTestItemList = new List<IterationTestItem>(
+                        JsonConvert.DeserializeObject<List<IterationTestItem>>(
+                            reader.ReadToEnd(),
+                            _JsonSetting));
+                }
+            }
+
+            foreach (var testItem in iterationTestItemList)
+            {
+                yield return testItem;
+            }
+        }
+    }
+
     [TestFixture]
     public class IterationTest
     {
-        [Test, Description("IterationItem (List) count is accurate")]
-        public void Iteration_List_areIterationItemsAndCountsOK()
+        [TestCaseSource(typeof(IterationTestData)), Description("Iterative: iteration class tests")]
+        public void IterationTests_BulkTests(IterationTestItem testItem)
         {
-            Iteration iter = new Iteration();
-            Assert.True(
-                iter.IterationItems.Count == 0,
-                "Count: expected {0}, got {1}",
-                new object[] { 0, iter.IterationItems.Count });
-            Assert.True(
-                iter.TotalIterationCount == 0,
-                "Count: expected {0}, got {1}",
-                new object[] { 0, iter.TotalIterationCount });
+            BOG.SwissArmyKnife.Iteration testObj = null;
 
-            iter.AddListItems("ListItem", new List<string>(new string[] { "A", "B", "C" }));
-            Assert.True(
-                iter.IterationItems.Count == 1,
-                "GetIterationItems.Count: expected {0}, got {1}",
-                new object[] { 1, iter.IterationItems.Count });
-            Assert.True(
-                iter.TotalIterationCount == 3,
-                "Count: expected {0}, got {1}",
-                new object[] { 3, iter.TotalIterationCount });
-            Assert.True(
-                iter.IterationItemNameExists("ListItem"),
-                "iter.IterationItemNameExists(\"ListItem\")",
-                new object[] { "true", "false" });
-
-            Dictionary<string, string> argSet = iter.GetIterationValueSet(0);
-            Assert.True(
-                argSet.ContainsKey("ListItem"),
-                "argSet.ContainsKey(\"ListItem\"): expected {0}, got {1}",
-                new object[] { "true", "false" });
-            Assert.True(
-                argSet.Count == 1,
-                "argSet.Count: expected {0}, got {1}",
-                new object[] { 1, argSet.Count == 1 });
-            Assert.AreEqual(
-                argSet["ListItem"],
-                "A",
-                "argSet[\"listitem\"]: expected {0}, got {1}",
-                new object[] { "A", argSet["ListItem"] });
-        }
-
-        [Test, Description("IterationItem (NumberRange:Exclusive, positive) is accurate")]
-        public void Iteration_NumberRange_areIterationItemsAndExclusiveCountsPositiveOK()
-        {
-            Iteration iter = new Iteration();
-            Assert.True(
-                iter.IterationItems.Count == 0,
-                "Count: expected {0}, got {1}",
-                new object[] { 0, iter.IterationItems.Count });
-            iter.AddNumberRange("NumberRange-01", 0, 1, 10, Iteration.EndValueEval.Exclusive);
-            Assert.True(
-                iter.IterationItems.Count == 1,
-                "Count: expected {0}, got {1}",
-                new object[] { 1, iter.IterationItems.Count });
-            Assert.True(iter.TotalIterationCount == 10,
-                "Count: expected {0}, got {1}",
-                new object[] { 10, iter.TotalIterationCount });
-        }
-
-        [Test, Description("IterationItem (NumberRange:Exclusive, positive, decimal) is accurate")]
-        public void Iteration_NumberRange_areIterationItemsAndExclusiveCountsDecimalPositiveOK()
-        {
-            Iteration iter = new Iteration();
-            Assert.True(
-                iter.IterationItems.Count == 0,
-                "Count: expected {0}, got {1}",
-                new object[] { 0, iter.IterationItems.Count });
-
-            iter.AddListItems("List-01", new List<string>(new string[] { "A", "B", "D", "C" }));
-            Assert.True(
-                iter.IterationItems.Count == 1,
-                "Count: expected {0}, got {1}",
-                new object[] { 1, iter.IterationItems.Count });
-            Assert.True(iter.TotalIterationCount == 4,
-                "Count: expected {0}, got {1}",
-                new object[] { 4, iter.TotalIterationCount });
-
-            iter.AddNumberRange("NumberRange-01", 0.01m, 0.01m, 0.50m, Iteration.EndValueEval.Exclusive);
-            Assert.True(
-                iter.IterationItems.Count == 2,
-                "Count: expected {0}, got {1}",
-                new object[] { 2, iter.IterationItems.Count });
-            Assert.True(iter.TotalIterationCount == 4 * 49,
-                "Count: expected {0}, got {1}",
-                new object[] { 4 * 49, iter.TotalIterationCount });
-
-            iter.AddNumberRange("NumberRange-02", 0.01m, 0.01m, 0.50m, Iteration.EndValueEval.Inclusive);
-            Assert.True(
-                iter.IterationItems.Count == 3,
-                "Count: expected {0}, got {1}",
-                new object[] { 3, iter.IterationItems.Count });
-            Assert.True(iter.TotalIterationCount == 4 * 49 * 50,
-                "Count: expected {0}, got {1}",
-                new object[] { 4 * 49 * 50, iter.TotalIterationCount });
-        }
-
-        [Test, Description("IterationItem (NumberRange:Inclusive, positive) is accurate")]
-        public void Iteration_NumberRange_areIterationItemsAndInclusivePositiveCountsOK()
-        {
-            Iteration iter = new Iteration();
-            Assert.True(
-                iter.IterationItems.Count == 0,
-                "Count: expected {0}, got {1}",
-                new object[] { 0, iter.IterationItems.Count });
-            iter.AddNumberRange("NumberRange-01", 0, 1, 10, Iteration.EndValueEval.Inclusive);
-            Assert.True(
-                iter.IterationItems.Count == 1,
-                "Count: expected {0}, got {1}",
-                new object[] { 1, iter.IterationItems.Count });
-            Assert.True(iter.TotalIterationCount == 11,
-                "Count: expected {0}, got {1}",
-                new object[] { 11, iter.TotalIterationCount });
-        }
-
-        [Test, Description("IterationItem (NumberRange:Exclusive, Negative) is accurate")]
-        public void Iteration_NumberRange_areIterationItemsAndExclusiveCountsNegativeOK()
-        {
-            Iteration iter = new Iteration();
-            Assert.True(
-                iter.IterationItems.Count == 0,
-                "Count: expected {0}, got {1}",
-                new object[] { 0, iter.IterationItems.Count });
-            iter.AddNumberRange("NumberRange-01", 10, -1, 0, Iteration.EndValueEval.Exclusive);
-            Assert.True(
-                iter.IterationItems.Count == 1,
-                "Count: expected {0}, got {1}",
-                new object[] { 1, iter.IterationItems.Count });
-            Assert.True(iter.TotalIterationCount == 10,
-                "Count: expected {0}, got {1}",
-                new object[] { 10, iter.TotalIterationCount });
-        }
-
-        [Test, Description("IterationItem (NumberRange:Inclusive, Negative) is accurate")]
-        public void Iteration_NumberRange_areIterationItemsAndInclusiveNegativeCountsOK()
-        {
-            Iteration iter = new Iteration();
-            Assert.True(
-                iter.IterationItems.Count == 0,
-                "Count: expected {0}, got {1}",
-                new object[] { 0, iter.IterationItems.Count });
-            iter.AddNumberRange("NumberRange-01", 10, -1, 0, Iteration.EndValueEval.Inclusive);
-            Assert.True(
-                iter.IterationItems.Count == 1,
-                "Count: expected {0}, got {1}",
-                new object[] { 1, iter.IterationItems.Count });
-            Assert.True(iter.TotalIterationCount == 11,
-                "Count: expected {0}, got {1}",
-                new object[] { 10, iter.TotalIterationCount });
-        }
-
-        [Test, Description("IterationItem (NumberRange:Inclusive, Negative) is accurate")]
-        public void Iteration_MultiEntry_areCountsOK()
-        {
-            var IterationSets = new Dictionary<string, string[]>
+            if (testItem.DataRow == "13")
             {
-                { "List", new string[] { "A", "B", "C" } },
-                { "Numbers01", new string[] { "10", "9", "8", "7", "6", "5", "4", "3", "2", "1", "0" } },
-                { "Numbers02", new string[] { "250", "255", "260", "265", "270", "275", "280" } }
-            };
+                // Set a breakpoint on Console.WriteLine to debug the particular test from the set.
+                Console.WriteLine("break point here");
+            }
 
-            Iteration iter = new Iteration();
-
-            iter.AddListItems("List", new List<string>(IterationSets["List"]));
-            Assert.AreEqual(iter.IterationItems.Count, 1);
-            Assert.AreEqual(iter.TotalIterationCount, IterationSets["List"].LongLength);
-
-            iter.AddNumberRange("Numbers01", 10, -1, 0, Iteration.EndValueEval.Inclusive);
-            Assert.AreEqual(iter.IterationItems.Count, 2);
-            Assert.AreEqual(
-                iter.TotalIterationCount,
-                IterationSets["List"].LongLength * IterationSets["Numbers01"].LongLength
-                );
-
-            iter.AddNumberSequence("Numbers02", 250, 5, 7);
-            Assert.AreEqual(iter.IterationItems.Count, 3);
-            Assert.AreEqual(
-                iter.TotalIterationCount,
-                IterationSets["List"].LongLength * IterationSets["Numbers01"].LongLength * IterationSets["Numbers02"].LongLength
-                );
-
-            Int64 masterIndex = 0;
-            int lengthList = IterationSets["List"].Length;
-            int lengthNumbers01 = IterationSets["Numbers01"].Length;
-            int lengthNumbers02 = IterationSets["Numbers02"].Length;
-            // loop order: outermost is first added, to innermost is last item added.
-            for (int indexList = 0; indexList < lengthList; indexList++) //
+            long actualCount = 0;
+            try
             {
-                for (int indexNumbers01 = 0; indexNumbers01 < lengthNumbers01; indexNumbers01++)
+                testObj = new Iteration();
+                switch (testItem.HandleAs)
                 {
-                    for (int indexNumbers02 = 0; indexNumbers02 < lengthNumbers02; indexNumbers02++)
-                    {
-                        Dictionary<string, string> thisIndexIteration = iter.GetIterationValueSet(masterIndex);
-                        foreach (string listKey in IterationSets.Keys)
-                        {
-                            int listPosition = listKey == "List" ? indexList : (listKey == "Numbers01" ? indexNumbers01 : indexNumbers02);
-                            Assert.AreEqual(
-                                thisIndexIteration[listKey],
-                                IterationSets[listKey][listPosition],
-                                "Failure for masterIndex @ {0} for {1}: expected: \"{2}\"; got \"{3}\"",
-                                new object[] {
-                                    masterIndex,
-                                    listKey,
-                                    IterationSets[listKey][listPosition],
-                                    thisIndexIteration[listKey]
-                                }
-                            );
-                        }
-                        masterIndex++;
-                    }
+                    case IterationItem.Handling.Literal:
+                        actualCount = testObj.AddListItems("iteration1", testItem.LiteralValues);
+                        break;
+
+                    case IterationItem.Handling.OrdinalNumber:
+                        if (testItem.Method == IterationTestItem.OrdinalNumberMethod.Range)
+                            actualCount = testObj.AddNumberRange("iteration1", testItem.StartValue, testItem.StepValue, testItem.EndValue, testItem.EndEval);
+                        if (testItem.Method == IterationTestItem.OrdinalNumberMethod.Count)
+                            actualCount = testObj.AddNumberSequence("iteration1", testItem.StartValue, testItem.StepValue, testItem.CountValue);
+                        break;
                 }
             }
-            Assert.AreEqual(masterIndex, iter.TotalIterationCount);
+            catch (Exception err1)
+            {
+                if (string.IsNullOrWhiteSpace(testItem.ThrowsException))
+                {
+                    Assert.Fail($"Unexpected Exception (Row {testItem.DataRow}): {DetailedException.WithUserContent(ref err1)}");
+                }
+                //string[] err = err1.GetType().ToString().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(testItem.ThrowsException, err1.GetType().ToString(), $"Exception expected, but caught a different exception (Row {testItem.DataRow}).");
+                    if (!string.IsNullOrWhiteSpace(testItem.ExceptionContains))
+                    {
+                        Assert.IsTrue(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception thrown, but message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
+                    }
+                });
+                return;
+            }
+            if (!string.IsNullOrWhiteSpace(testItem.ThrowsException))
+            {
+                Assert.Fail("Expected Exception " + testItem.ThrowsException + ", but no exception was thrown. (Row {0}).", testItem.DataRow);
+            }
+            Assert.IsTrue(testItem.CountTestValue == actualCount, $"Invalid count, expected {testItem.CountTestValue} but got {actualCount}  (Row {testItem.DataRow}).");
         }
 
-        [Test, Description("IterationItem (NumberRange:Inclusive, Negative) is accurate")]
-        public void Iteration_GetSet_OK()
+        [Test, Description("IterationTests_TotalItemCount1: Instantiate only")]
+        public void IterationTests_TotalItemCount1()
         {
-            Dictionary<string, string[]> IterationSets = new Dictionary<string, string[]>
-            {
-                { "List", new string[] { "A", "B", "C" } },
-                { "Numbers01", new string[] { "10", "9", "8", "7", "6", "5", "4", "3", "2", "1", "0" } },
-                { "Numbers02", new string[] { "250", "255", "260", "265", "270", "275", "280" } }
-            };
+            Iteration i = new Iteration();
+            Assert.AreEqual(i.TotalIterationCount, 0, "Count is not zero after instantiation");
+        }
 
-            Iteration iter = new Iteration();
+        [Test, Description("IterationTests_TotalItemCount2(): Single entry number set by count")]
+        public void IterationTests_TotalItemCount2()
+        {
+            Iteration i = new Iteration();
+            i.AddNumberSequence("numbers1", -1, -1, -100);
+            Assert.AreEqual(i.TotalIterationCount, 100);
+        }
 
-            iter.AddListItems("List", new List<string>(IterationSets["List"]));
-            iter.AddNumberRange("Numbers01", 10, -1, 0, Iteration.EndValueEval.Inclusive);
-            iter.AddNumberSequence("Numbers02", 250, 5, 7);
+        [Test, Description("IterationTests_TotalItemCount3(): Single entry number set by range (exclusive)")]
+        public void IterationTests_TotalItemCount3()
+        {
+            Iteration i = new Iteration();
+            i.AddNumberRange("numbers1", -1, -1, -100, Iteration.EndValueEval.Exclusive);
+            Assert.AreEqual(i.TotalIterationCount, 99);
+        }
 
-            string serialized = ObjectXMLSerializer<Iteration>.CreateDocumentFormat(iter);
-            Iteration iterCloned = ObjectXMLSerializer<Iteration>.CreateObjectFormat(serialized);
+        [Test, Description("IterationTests_TotalItemCount4(): Single entry number set by range (inclusive)")]
+        public void IterationTests_TotalItemCount4()
+        {
+            Iteration i = new Iteration();
+            i.AddNumberRange("numbers1", -1, -1, -100, Iteration.EndValueEval.Inclusive);
+            Assert.AreEqual(i.TotalIterationCount, 100);
+        }
 
-            Assert.AreEqual(iter.IterationItems.Count, iterCloned.IterationItems.Count, "Iteration item count mismatch");
-            foreach (int key in iter.IterationItems.Keys)
-            {
-                Assert.AreEqual(
-                    iter.IterationItems[key].Name,
-                    iterCloned.IterationItems[key].Name,
-                    "Iteration item name mismatch for key " + key.ToString());
-                Assert.AreEqual(
-                    iter.IterationItems[key].IterationValues.Count,
-                    iterCloned.IterationItems[key].IterationValues.Count,
-                    "Iteration item count mismatch for key " + key.ToString());
-            }
-            Assert.AreEqual(iter.TotalIterationCount, iterCloned.TotalIterationCount, "Total count mismatch");
+        [Test, Description("IterationTests_TotalItemCount5(): one number set and one list with one item")]
+        public void IterationTests_TotalItemCount5()
+        {
+            Iteration i = new Iteration();
+            i.AddNumberSequence("numbers1", 1, 1, 100);
+            i.AddListItems("list1", new List<string>(new string[] { "item1" }));
+            Assert.AreEqual(i.TotalIterationCount, 100);
+        }
+
+        [Test, Description("IterationTests_TotalItemCount6(): one number set and one list with two items")]
+        public void IterationTests_TotalItemCount6()
+        {
+            Iteration i = new Iteration();
+            i.AddNumberSequence("numbers1", 1, 1, 100);
+            i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
+            Assert.AreEqual(i.TotalIterationCount, 200);
+        }
+
+        [Test, Description("IterationTests_GetIterationValueSet_NegativeIndex(): negative index throws exception")]
+        public void IterationTests_GetIterationValueSet_NegativeIndex()
+        {
+            Iteration i = new Iteration();
+            i.AddNumberSequence("numbers1", 1, 1, 2);
+            i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
+
+            object testDelegate() => i.GetIterationValueSet(-1);
+            Assert.That(testDelegate, Throws.TypeOf<ArgumentException>());
+        }
+
+        [Test, Description("IterationTests_GetIterationValueSet_IndexOverMax(): index over max range throws exception")]
+        public void IterationTests_GetIterationValueSet_IndexOverMax()
+        {
+            Iteration i = new Iteration();
+            i.AddNumberSequence("numbers1", 1, 1, 2);
+            i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
+
+            object testDelegate() => i.GetIterationValueSet(5);
+            Assert.That(testDelegate, Throws.TypeOf<ArgumentException>());
+        }
+
+        [Test, Description("IterationTests_ValueByIndex(): one number set with two items and one list with two items")]
+        public void IterationTests_ValueByIndex()
+        {
+            Iteration i = new Iteration();
+            i.AddNumberSequence("numbers1", 1, 1, 2);
+            i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
+            Assert.AreEqual(i.TotalIterationCount, 4, "Total is not 4");
+
+            var valueSet = i.GetIterationValueSet(0);
+            Assert.AreEqual(valueSet["numbers1"], "1", "(index 0): numbers1 is not 1");
+            Assert.AreEqual(valueSet["list1"], "item1", "(index 0): list1 is not item1");
+
+            valueSet = i.GetIterationValueSet(1);
+            Assert.AreEqual(valueSet["numbers1"], "1", "(index 1): numbers1 is not 1");
+            Assert.AreEqual(valueSet["list1"], "item2", "(index 1): list1 is not item2");
+
+            valueSet = i.GetIterationValueSet(2);
+            Assert.AreEqual(valueSet["numbers1"], "2", "(index 0): numbers1 is not 2");
+            Assert.AreEqual(valueSet["list1"], "item1", "(index 0): list1 is not item1");
+
+            valueSet = i.GetIterationValueSet(3);
+            Assert.AreEqual(valueSet["numbers1"], "2", "(index 1): numbers1 is not 2");
+            Assert.AreEqual(valueSet["list1"], "item2", "(index 1): list1 is not item2");
+        }
+
+        [Test, Description("IterationTests_ValueByIndex(): one number set with two items and one list with two items")]
+        public void IterationTests_ComplexSets_ValidStartAndEndValuesPerValueSet()
+        {
+            Iteration i = new Iteration();
+            i.AddNumberSequence("numbers1", 1, 1, 3);
+            i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
+            i.AddNumberSequence("numbers2", 1, 7, 7);
+            Assert.AreEqual(i.TotalIterationCount, 42, "Total is not 42");
+
+            var valueSet = i.GetIterationValueSet(0);
+            Assert.AreEqual(valueSet["numbers1"], "1", "(index 0): numbers1 is not 1");
+            Assert.AreEqual(valueSet["list1"], "item1", "(index 0): list1 is not item1");
+            Assert.AreEqual(valueSet["numbers2"], "1", "(index 0): numbers2 is not 1");
+
+            valueSet = i.GetIterationValueSet(6);
+            Assert.AreEqual(valueSet["numbers1"], "1", "(index 6): numbers1 is not 1");
+            Assert.AreEqual(valueSet["list1"], "item1", "(index 6): list1 is not item1");
+            Assert.AreEqual(valueSet["numbers2"], "43", "(index 6): numbers2 is not 43");
+
+            valueSet = i.GetIterationValueSet(7);
+            Assert.AreEqual(valueSet["numbers1"], "1", "(index 7): numbers1 is not 1");
+            Assert.AreEqual(valueSet["list1"], "item2", "(index 7): list1 is not item2");
+            Assert.AreEqual(valueSet["numbers2"], "1", "(index 7): numbers2 is not 1");
+
+            valueSet = i.GetIterationValueSet(13);
+            Assert.AreEqual(valueSet["numbers1"], "1", "(index 13): numbers1 is not 1");
+            Assert.AreEqual(valueSet["list1"], "item2", "(index 13): list1 is not item2");
+            Assert.AreEqual(valueSet["numbers2"], "43", "(index 13): numbers2 is not 43");
+
+            valueSet = i.GetIterationValueSet(14);
+            Assert.AreEqual(valueSet["numbers1"], "2", "(index 14): numbers1 is not 2");
+            Assert.AreEqual(valueSet["list1"], "item1", "(index 14): list1 is not item1");
+            Assert.AreEqual(valueSet["numbers2"], "1", "(index 14): numbers2 is not 1");
+
+            valueSet = i.GetIterationValueSet(20);
+            Assert.AreEqual(valueSet["numbers1"], "2", "(index 20): numbers1 is not 2");
+            Assert.AreEqual(valueSet["list1"], "item1", "(index 20): list1 is not item1");
+            Assert.AreEqual(valueSet["numbers2"], "43", "(index 20): numbers2 is not 43");
+
+            valueSet = i.GetIterationValueSet(21);
+            Assert.AreEqual(valueSet["numbers1"], "2", "(index 21): numbers1 is not 2");
+            Assert.AreEqual(valueSet["list1"], "item2", "(index 21): list1 is not item2");
+            Assert.AreEqual(valueSet["numbers2"], "1", "(index 21): numbers2 is not 1");
+
+            valueSet = i.GetIterationValueSet(27);
+            Assert.AreEqual(valueSet["numbers1"], "2", "(index 27): numbers1 is not 2");
+            Assert.AreEqual(valueSet["list1"], "item2", "(index 27): list1 is not item2");
+            Assert.AreEqual(valueSet["numbers2"], "43", "(index 27): numbers2 is not 43");
+
+            valueSet = i.GetIterationValueSet(28);
+            Assert.AreEqual(valueSet["numbers1"], "3", "(index 33): numbers1 is not 3");
+            Assert.AreEqual(valueSet["list1"], "item1", "(index 33): list1 is not item1");
+            Assert.AreEqual(valueSet["numbers2"], "1", "(index 33): numbers2 is not 1");
+
+            valueSet = i.GetIterationValueSet(34);
+            Assert.AreEqual(valueSet["numbers1"], "3", "(index 34): numbers1 is not 3");
+            Assert.AreEqual(valueSet["list1"], "item1", "(index 34): list1 is not item1");
+            Assert.AreEqual(valueSet["numbers2"], "43", "(index 34): numbers2 is not 43");
+
+            valueSet = i.GetIterationValueSet(35);
+            Assert.AreEqual(valueSet["numbers1"], "3", "(index 35): numbers1 is not 3");
+            Assert.AreEqual(valueSet["list1"], "item2", "(index 35): list1 is not item2");
+            Assert.AreEqual(valueSet["numbers2"], "1", "(index 35): numbers2 is not 1");
+
+            valueSet = i.GetIterationValueSet(41);
+            Assert.AreEqual(valueSet["numbers1"], "3", "(index 0): numbers1 is not 3");
+            Assert.AreEqual(valueSet["list1"], "item2", "(index 13): list1 is not item2");
+            Assert.AreEqual(valueSet["numbers2"], "43", "(index 13): numbers2 is not 43");
+
+            object testDelegate() => i.GetIterationValueSet(42);
+            Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "i.GetIterationValueSet(42) did not throw expected ArgumentException");
+        }
+
+        [Test, Description("IterationTests_GetIterationItemsForNameByName()")]
+        public void IterationTests_GetIterationItemsForNameByName()
+        {
+            Iteration i = new Iteration();
+            i.AddNumberSequence("numbers1", 1, 1, 3);
+            i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
+            i.AddNumberSequence("numbers2", 1, 7, 7);
+
+            object testDelegate() => i.GetIterationItemsForName("test1");
+            Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "i.GetIterationItemsForName(\"test1\") did not throw expected ArgumentException");
+
+            var x = i.GetIterationItemsForName("numbers1");
+            Assert.AreEqual(x.Keys.Count, 3, $"numbers1 should contain 3 items, but has {x.Keys.Count}");
+            x = i.GetIterationItemsForName("list1");
+            Assert.AreEqual(x.Keys.Count, 2, $"list1 should contain 3 items, but has {x.Keys.Count}");
+            x = i.GetIterationItemsForName("numbers2");
+            Assert.AreEqual(x.Keys.Count, 7, $"numbers2 should contain 7 items, but has {x.Keys.Count}");
         }
     }
 }

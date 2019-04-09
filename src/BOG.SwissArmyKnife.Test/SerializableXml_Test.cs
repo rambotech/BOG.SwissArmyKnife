@@ -1,5 +1,7 @@
-﻿using NUnit.Framework;
+﻿using BOG.SwissArmyKnife.Test.Support;
+using NUnit.Framework;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 
 namespace BOG.SwissArmyKnife.Test
@@ -10,18 +12,18 @@ namespace BOG.SwissArmyKnife.Test
         [Test]
         public void SerializableJson_ObjectToContainerToObject_ImplicitAlgorithm()
         {
-            Support.MyDataSet original = MakeMyDataSet();
+            MyDataSet original = MakeMyDataSet();
             int setCount = original.coll.Count;
             string password = "Uncomplicated";
             string salt = "JustAsEasy";
 
-            string rawContent = ObjectXMLSerializer<Support.MyDataSet>.CreateDocumentFormat(original);
+            string rawContent = ObjectXMLSerializer<MyDataSet>.CreateDocumentFormat(original);
             //int rawContentLength = rawContent.Length;
 
-            string transitContent = ObjectXMLSerializer<Support.MyDataSet>.CreateTransitContainerForObject(original, password, salt);
+            string transitContent = ObjectXMLSerializer<MyDataSet>.CreateTransitContainerForObject(original, password, salt);
             //int transitContentLength = transitContent.Length;
 
-            Support.MyDataSet result = ObjectXMLSerializer<Support.MyDataSet>.CreateObjectFromTransitContainer(transitContent, password, salt);
+            MyDataSet result = ObjectXMLSerializer<MyDataSet>.CreateObjectFromTransitContainer(transitContent, password, salt);
 
             Assert.AreEqual(result.s1, original.s1, "s1 not same");
             Assert.AreEqual(result.i16, original.i16, "i16 not same");
@@ -39,16 +41,16 @@ namespace BOG.SwissArmyKnife.Test
         [Test]
         public void SerializableJson_ObjectToContainerToObject_ExplicitAlgorithm()
         {
-            Support.MyDataSet original = MakeMyDataSet();
+            MyDataSet original = MakeMyDataSet();
             int setCount = original.coll.Count;
             string password = "Uncomplicated";
             string salt = "JustAsEasy";
 
             SymmetricAlgorithm algorithm = new DESCryptoServiceProvider();
 
-            string transitContent = ObjectXMLSerializer<Support.MyDataSet>.CreateTransitContainerForObject(original, password, salt, algorithm);
+            string transitContent = ObjectXMLSerializer<MyDataSet>.CreateTransitContainerForObject(original, password, salt, algorithm);
 
-            Support.MyDataSet result = ObjectXMLSerializer<Support.MyDataSet>.CreateObjectFromTransitContainer(transitContent, password, salt, algorithm);
+            MyDataSet result = ObjectXMLSerializer<MyDataSet>.CreateObjectFromTransitContainer(transitContent, password, salt, algorithm);
 
             Assert.AreEqual(result.s1, original.s1, "s1 not same");
             Assert.AreEqual(result.i16, original.i16, "i16 not same");
@@ -63,15 +65,22 @@ namespace BOG.SwissArmyKnife.Test
             }
         }
 
-        private Support.MyDataSet MakeMyDataSet()
+        private MyDataSet MakeMyDataSet()
         {
-            var result = new Support.MyDataSet();
+            var result = new MyDataSet();
             result.s1 = "A large set of strings in the list";
-            using (var sr = new StreamReader(@"UrlTestItems.json"))
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "BOG.SwissArmyKnife.Test.BulkTestData.UrlTestItems.json";
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
-                while (!sr.EndOfStream)
+                using (StreamReader reader = new StreamReader(stream))
                 {
-                    result.coll.Add(sr.ReadLine());
+                    while (!reader.EndOfStream)
+                    {
+                        result.coll.Add(reader.ReadLine());
+                    }
                 }
             }
             return result;
