@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace BOG.SwissArmyKnife.Test
 {
@@ -26,12 +27,19 @@ namespace BOG.SwissArmyKnife.Test
         public IEnumerator GetEnumerator()
         {
             List<UrlTestItem> urlTestItemList = null;
-            using (var sr = new StreamReader(@"UrlTestItems.json"))
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "BOG.SwissArmyKnife.Test.BulkTestData.UrlTestItems.json";
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
-                urlTestItemList = new List<UrlTestItem>(
-                    JsonConvert.DeserializeObject<List<UrlTestItem>>(
-                        sr.ReadToEnd(),
-                        _JsonSetting));
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    urlTestItemList = new List<UrlTestItem>(
+                        JsonConvert.DeserializeObject<List<UrlTestItem>>(
+                            reader.ReadToEnd(),
+                            _JsonSetting));
+                }
             }
 
             foreach (var testItem in urlTestItemList)

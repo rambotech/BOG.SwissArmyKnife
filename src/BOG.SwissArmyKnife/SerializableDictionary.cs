@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace BOG.SwissArmyKnife
 {
-	/// <summary>
-	/// A serializable dictionary which allows serialization to XML files. Use this as a replacement
-	/// for Dictionary&lt;K,V&gt;.  Credit: http://weblogs.asp.net/pwelter34/444961
-	/// </summary>
-	/// <typeparam name="TKey">The type of the key</typeparam>
-	/// <typeparam name="TValue">The type of the value</typeparam>
-	[XmlRoot("dictionary")]
+    /// <summary>
+    /// A serializable dictionary which allows serialization to XML files. Use this as a replacement
+    /// for Dictionary&lt;K,V&gt;.  Credit: http://weblogs.asp.net/pwelter34/444961
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key</typeparam>
+    /// <typeparam name="TValue">The type of the value</typeparam>
+    [XmlRoot("dictionary")]
 	public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IXmlSerializable, IDictionary<TKey, TValue>
 	{
 		#region IXmlSerializable Members

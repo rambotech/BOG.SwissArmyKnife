@@ -51,7 +51,10 @@ namespace BOG.SwissArmyKnife
         /// </summary>
         /// <param name="name"></param>
         /// <returns>false if not found</returns>
-        public bool IterationItemNameExists(string name) => IterationItems.Values.Where(o => string.Compare(o.Name, name, false) == 0).FirstOrDefault() != null;
+        private bool CheckIterationItemNameExists(string name)
+        {
+            return IterationItems.Values.Where(o => string.Compare(o.Name, name, false) == 0).Count() > 0;
+        }
 
         /// <summary>
         /// Gets a list of the items associated with an iteration name.
@@ -61,34 +64,36 @@ namespace BOG.SwissArmyKnife
         public Dictionary<int, string> GetIterationItemsForName(string name)
         {
             var result = new Dictionary<int, string>();
-            if (IterationItemNameExists(name))
+            if (! CheckIterationItemNameExists(name))
             {
-                foreach (int key in IterationItems.Keys)
-                {
-                    if (IterationItems[key].Name != name)
-                    {
-                        continue;
-                    }
-                    switch (IterationItems[key].HandleAs)
-                    {
-                        case IterationItem.Handling.Literal:
-                            foreach (var i in IterationItems.Keys)
-                            {
-                                result.Add(i, IterationItems[key].LiteralValues[i]);
-                            }
-                            break;
+                throw new ArgumentException($"{name} does not exist in the list of iteration items defined.");
+            }
 
-                        case IterationItem.Handling.OrdinalNumber:
-                            var value = IterationItems[key].NumericStartValue;
-                            while (result.Values.Count < IterationItems[key].NumericValueCount)
-                            {
-                                result.Add(result.Count, value.ToString());
-                                value += IterationItems[key].NumericStepValue;
-                            }
-                            break;
-                    }
-                    break;
+            foreach (int key in IterationItems.Keys)
+            {
+                if (IterationItems[key].Name != name)
+                {
+                    continue;
                 }
+                switch (IterationItems[key].HandleAs)
+                {
+                    case IterationItem.Handling.Literal:
+                        foreach (var i in IterationItems[key].LiteralValues.Keys)
+                        {
+                            result.Add(i, IterationItems[key].LiteralValues[i]);
+                        }
+                        break;
+
+                    case IterationItem.Handling.OrdinalNumber:
+                        var value = IterationItems[key].NumericStartValue;
+                        while (result.Values.Count < IterationItems[key].NumericValueCount)
+                        {
+                            result.Add(result.Count, value.ToString());
+                            value += IterationItems[key].NumericStepValue;
+                        }
+                        break;
+                }
+                break;
             }
             return result;
         }
@@ -106,9 +111,9 @@ namespace BOG.SwissArmyKnife
         /// <returns>The number of items created for the iteration item.</returns>
         public int AddNumberRange(string name, decimal initialValue, decimal incrementValue, decimal limitValue, EndValueEval endValueEval)
         {
-            if (IterationItemNameExists(name))
+            if (CheckIterationItemNameExists(name))
             {
-                throw new ArgumentException($"The name \"{name}\" is already used by another itermation item.");
+                throw new ArgumentException($"{name} already exists in the list of iteration items defined.");
             }
 
             if (Math.Sign(incrementValue) == 0)
@@ -118,18 +123,18 @@ namespace BOG.SwissArmyKnife
 
             if (Math.Sign(incrementValue) == 1 && initialValue > limitValue)
             {
-                throw new ArgumentException($"The increment value for \"{name}\" is invalid: it should be negative, but is postive.");
+                throw new ArgumentException($"The increment value for \"{name}\" is invalid: it should be negative, but is positive.");
             }
 
             if (Math.Sign(incrementValue) == -1 && initialValue < limitValue)
             {
-                throw new ArgumentException($"The increment value for \"{name}\" is invalid: it should be postive, but is negative.");
+                throw new ArgumentException($"The increment value for \"{name}\" is invalid: it should be positive, but is negative.");
             }
 
             // decimal initialValue, decimal incrementValue, decimal limitValue, EndValueEval endValueEval
-            var count = (int)(Math.Abs(limitValue - initialValue) / Math.Abs(incrementValue));
+            var count = Math.Max(1, (int)(Math.Abs(limitValue - initialValue) / Math.Abs(incrementValue)));
             var modulo = Math.Abs(limitValue - initialValue) - ((decimal)count * Math.Abs(incrementValue));
-            if (endValueEval == Iteration.EndValueEval.Inclusive && modulo == 0.0M) count++;
+            if (endValueEval == Iteration.EndValueEval.Inclusive && (limitValue != initialValue) && modulo == 0.0M) count++;
 
             int result = count;
             IterationItem item = new IterationItem
@@ -138,17 +143,17 @@ namespace BOG.SwissArmyKnife
                 HandleAs = IterationItem.Handling.OrdinalNumber,
                 NumericStartValue = initialValue,
                 NumericStepValue = incrementValue,
-                NumericValueCount = (long) count,
+                NumericValueCount = (long)count,
                 LiteralValues = null
             };
             IterationItems.Add(IterationItems.Count, item);
             if (TotalIterationCount == 0L)
             {
-                TotalIterationCount = count;
+                TotalIterationCount = (long)count;
             }
             else
             {
-                TotalIterationCount *= count;
+                TotalIterationCount *= (long)count;
             }
             return result;
         }
@@ -163,9 +168,9 @@ namespace BOG.SwissArmyKnife
         /// <returns>The number of items created for the iteration item.</returns>
         public int AddNumberSequence(string name, decimal initialValue, decimal incrementValue, int iterationCount)
         {
-            if (IterationItemNameExists(name))
+            if (CheckIterationItemNameExists(name))
             {
-                throw new ArgumentException($"The name \"{name}\" is already used by another itermation item.");
+                throw new ArgumentException($"{name} already exists in the list of iteration items defined.");
             }
 
             if (iterationCount == 0)
@@ -183,19 +188,19 @@ namespace BOG.SwissArmyKnife
             {
                 Name = name,
                 HandleAs = IterationItem.Handling.OrdinalNumber,
-                NumericStartValue=initialValue,
-                NumericStepValue=incrementValue,
+                NumericStartValue = initialValue,
+                NumericStepValue = incrementValue,
                 NumericValueCount = iterationCount,
                 LiteralValues = null
             };
             IterationItems.Add(IterationItems.Count, item);
             if (TotalIterationCount == 0L)
             {
-                TotalIterationCount = iterationCount;
+                TotalIterationCount = (long)Math.Abs(iterationCount);
             }
             else
             {
-                TotalIterationCount *= iterationCount;
+                TotalIterationCount *= (long)Math.Abs(iterationCount);
             }
             return result;
         }
@@ -211,9 +216,9 @@ namespace BOG.SwissArmyKnife
         /// <returns></returns>
         public int AddListItems(string name, List<string> itemValues)
         {
-            if (IterationItemNameExists(name))
+            if (CheckIterationItemNameExists(name))
             {
-                throw new ArgumentException(string.Format("The name \"{0}\" is already used by another itermation item.", name));
+                throw new ArgumentException($"{name} already exists in the list of iteration items defined.");
             }
 
             if (itemValues == null || itemValues.Count == 0)
@@ -256,7 +261,7 @@ namespace BOG.SwissArmyKnife
             {
                 throw new ArgumentException("The requested index can not be negative.");
             }
-            if (indexSpecific > TotalIterationCount)
+            if (indexSpecific >= TotalIterationCount)
             {
                 throw new ArgumentException($"The requested index ({indexSpecific}) is beyond the maximum of {TotalIterationCount - 1}");
             }
@@ -264,23 +269,23 @@ namespace BOG.SwissArmyKnife
             long index = indexSpecific;
             Dictionary<string, string> result = new Dictionary<string, string>();
             for (int ItemInSetIndex = IterationItems.Count - 1; ItemInSetIndex >= 0; ItemInSetIndex--)
-           {
+            {
                 Int64 whole = 0;
                 int remainder = 0;
                 switch (IterationItems[ItemInSetIndex].HandleAs)
                 {
                     case IterationItem.Handling.Literal:
                         whole = index / (Int64)IterationItems[ItemInSetIndex].LiteralValues.Count;
-                        remainder = (int)(index % whole);
+                        remainder = (int)(index % (Int64)IterationItems[ItemInSetIndex].LiteralValues.Count);
                         result.Add(IterationItems[ItemInSetIndex].Name, IterationItems[ItemInSetIndex].LiteralValues[remainder]);
                         break;
                     case IterationItem.Handling.OrdinalNumber:
                         whole = index / (Int64)IterationItems[ItemInSetIndex].NumericValueCount;
-                        remainder = (int)(index % whole);
+                        remainder = (int)(index % (Int64)IterationItems[ItemInSetIndex].NumericValueCount);
                         result.Add(
-                            IterationItems[ItemInSetIndex].Name, 
+                            IterationItems[ItemInSetIndex].Name,
                             (IterationItems[ItemInSetIndex].NumericStartValue +
-                            (IterationItems[ItemInSetIndex].NumericStepValue * (decimal)remainder)).ToString() 
+                            (IterationItems[ItemInSetIndex].NumericStepValue * (decimal)remainder)).ToString()
                         );
                         break;
                 }

@@ -13,6 +13,9 @@ namespace BOG.SwissArmyKnife.Test.Support
         public string DataRow { get; set; }
 
         [JsonRequired]
+        public string Summary { get; set; } = "(no description)";
+
+        [JsonRequired]
         [JsonConverter(typeof(StringEnumConverter))]
         public IterationItem.Handling HandleAs { get; set; } = IterationItem.Handling.OrdinalNumber;
 
