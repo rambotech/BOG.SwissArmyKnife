@@ -5,9 +5,6 @@ This is a .NET Standard port of BOG.Framework, which is deprecated.
 
 The classes are:
 
-### AssemblyInfo
-  Provides the Binary file executing (in .NET core it's always the .DLL not the .EXE'), version and build date.
-
 ### BabbleOn
   Allows real-time monitoring of a service or other headless operation from any Telnet client.
   

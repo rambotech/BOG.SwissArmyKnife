@@ -3,6 +3,9 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.5.1 -- 05/09/2019
+- Add class AssemblyVersion for supporting binary signatures in output/logging.
+
 1.5.0 -- 04/09/2019
 - Reduce JSON serialization fingerprint
   - Refactor the Iteration/ItemIteration classes to not enumerate numeric values in string lists; instead, calculate the value from the index.
