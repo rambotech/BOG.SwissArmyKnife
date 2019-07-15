@@ -5,9 +5,10 @@
     <Description>Collection of utility classes migrated to NET Standard 2.0 from BOG.Framework</Description>
     <Authors>John J Schultz</Authors>
     <Company>Bits of Genius</Company>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/rambotech/BOG.SwissArmyKnife</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/rambotech/BOG.SwissArmyKnife/master/src/Assets/multitool.ico</PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>GIT</RepositoryType>
     <RepositoryUrl>https://github.com/rambotech/BOG.SwissArmyKnife</RepositoryUrl>
     <PackageTags>C# netstandardc20 utility harvest monitor strings exception format formatting directory file scripting fuse logging password hash serialize serializing</PackageTags>
