@@ -39,10 +39,21 @@ namespace BOG.SwissArmyKnife
         /// Creates a JSON document from an object of type T
         /// </summary>
         /// <param name="serializableObject">The object to be serialized into JSON</param>
+        /// <param name="indented">true to use indenting (i.e. human-friendly)</param>
+        /// <returns>a string containing the JSON</returns>
+        public static string CreateDocumentFormat(T serializableObject, bool indented)
+        {
+            return JsonConvert.SerializeObject(serializableObject, indented ? Newtonsoft.Json.Formatting.Indented : Newtonsoft.Json.Formatting.None);
+        }
+
+        /// <summary>
+        /// Creates a JSON document from an object of type T
+        /// </summary>
+        /// <param name="serializableObject">The object to be serialized into JSON</param>
         /// <returns>a string containing the JSON</returns>
         public static string CreateDocumentFormat(T serializableObject)
         {
-            return JsonConvert.SerializeObject(serializableObject);
+            return CreateDocumentFormat(serializableObject, false);
         }
 
         /// <summary>
@@ -53,6 +64,22 @@ namespace BOG.SwissArmyKnife
         public static T CreateObjectFormat(string json)
         {
             return JsonConvert.DeserializeObject<T>(json);
+        }
+
+        /// <summary>
+        /// Persists JSON serialized from the object into a file.  This uses memory streams, so the serialized object
+        /// can not exceeed 2Gb.
+        /// </summary>
+        /// <param name="serializableObject">The object to serialize</param>
+        /// <param name="filename">The file in which to store the serialized content.</param>
+        /// <param name="indented">true to use indenting (i.e. human-friendly)</param>
+        public static void SaveDocumentFormat(T serializableObject, string filename, bool indented)
+        {
+            using (StreamWriter sw = File.CreateText(filename))
+            {
+                sw.Write(CreateDocumentFormat(serializableObject, indented));
+                sw.Close();
+            }
         }
 
         /// <summary>
@@ -72,7 +99,7 @@ namespace BOG.SwissArmyKnife
 
         /// <summary>
         /// Persists JSON serialized from the object into a gzip file.  This uses memory streams, so the serialized object
-        /// can not exceeed 2Gb.
+        /// can not exceeed 2Gb.  Also, the output is binary.
         /// </summary>
         /// <param name="serializableObject">The object to serialize</param>
         /// <param name="compressedFilename">The file in which to store the serialized content.</param>

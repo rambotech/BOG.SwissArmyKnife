@@ -546,7 +546,7 @@ namespace BOG.SwissArmyKnife.Extensions
         /// <summary>
         /// Takes a string with placeholders, and replaces the placeholders with lookup content from a dictionary.
         /// E.g.: @"Take this job and \/explicative\/ !".ResolvePlaceHolders({Dictionary}, @"\/", @"\/") might return...
-        /// Take this job and shove it !
+        /// Take this job and toss it !
         /// </summary>
         /// <param name="original"></param>
         /// <param name="lookup"></param>
