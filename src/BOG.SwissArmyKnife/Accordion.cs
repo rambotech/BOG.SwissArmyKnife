@@ -72,17 +72,15 @@ namespace BOG.SwissArmyKnife
         /// Standard instantiator for a new instance
         /// </summary>
         /// <param name="indexStart">the low value to begin processing.</param>
-        /// <param name="indexEnd">the high value representing the final number to process.</param>
+        /// <param name="count">the number of items to process.</param>
         /// <param name="maxInProgress">the maximum number of items which can actively tracked.</param>
-        public Accordion(Int64 indexStart, Int64 indexEnd, Int64 maxInProgress)
+        public Accordion(Int64 indexStart, int count, Int64 maxInProgress)
         {
             if (indexStart < 0) throw new ArgumentException("indexStart must be >= 0");
-            if (indexEnd < 0) throw new ArgumentException("indexEnd must be >= 0");
-            if (indexEnd < indexStart) throw new ArgumentException("indexStart must be <= indexEnd");
+            if (count < 0) throw new ArgumentException("count must be >= 0");
             if (maxInProgress > 20000) throw new ArgumentException("maxInProgress must be <= 20,000");
-            if (maxInProgress < (indexEnd - indexStart + 1)) throw new ArgumentException("maxInProgress must be lower than the total number of items to process");
             IndexStart = indexStart;
-            IndexEnd = indexEnd;
+            IndexEnd = indexStart + (Int64) count;
             MaxInProgress = maxInProgress;
         }
 
@@ -98,21 +96,15 @@ namespace BOG.SwissArmyKnife
             item = null;
             lock (lockItemList)
             {
-                // add items to mazimize buffer availability.
-                while (IndexStart + IndexOffset <= IndexEnd && ItemsInProgress.Count < MaxInProgress)
+                Hydrate();
+                var itemSelect = ItemsInProgress.Values.Where(o => o.DeadLine < DateTime.Now).FirstOrDefault();
+                result = itemSelect != null;
+                if (result)
                 {
-                    ItemsInProgress.Add(IndexStart + IndexOffset, new AccordionItem
-                    {
-                        Index = IndexStart + IndexOffset
-                    });
-                    IndexOffset++;
-                }
-                var itemSelect = ItemsInProgress.Where(o => o.DeadLine < DateTime.Now).FirstOrDefault();
-                if (itemSelect != null)
-                {
-                    itemSelect.Attempts++;
-                    itemSelect.DeadLine = DateTime.Now.AddSeconds(secondsTimeout);
+                    ItemsInProgress[itemSelect.Index].Attempts++;
+                    ItemsInProgress[itemSelect.Index].DeadLine = DateTime.Now.AddSeconds(secondsTimeout);
 
+                    // create a new object for the return value
                     item = new AccordionItem
                     {
                         Index = itemSelect.Index,
@@ -124,31 +116,67 @@ namespace BOG.SwissArmyKnife
             return result;
         }
 
+        /// <summary>
+        /// Marks an item for retry (usually an item whose processing has failed).
+        /// </summary>
+        /// <param name="item">The Accordion Item object to be processed.</param>
+        /// <returns>true if the item was found; false if no item was found to update.</returns>
         public bool RetryItem(AccordionItem item)
         {
             var result = false;
             lock(lockItemList)
             {
-                var itemSelect = ItemsInProgress.Where(o => o.Index == item.Index).FirstOrDefault();
-                result = itemSelect != null;
+                result = ItemsInProgress.Keys.Contains(item.Index);
                 if (result)
                 {
-                    itemSelect.Attempts++;
-                    itemSelect.DeadLine = DateTime.MinValue;
+                    ItemsInProgress[item.Index].Attempts++;
+                    ItemsInProgress[item.Index].DeadLine = DateTime.MinValue;
                 }
             }
             return result;
         }
 
-        public void CompleteItem(AccordionItem item)
+        /// <summary>
+        /// Removes an item from the in-progress list (for an item whose processing is complete, or is being expired).
+        /// </summary>
+        /// <param name="item">The Accordion Item object to be processed.</param>
+        /// <returns>true if the item was found; false if no item was found to update.</returns>
+        public bool CompleteItem(AccordionItem item)
         {
             lock (lockItemList)
             {
-                var selectedItem = ItemsInProgress.Where(o => o.Index == item.Index).FirstOrDefault() ;
-                if (selectedItem != null)
+                var result = ItemsInProgress.Keys.Contains(item.Index);
+                if (result)
                 {
-                    ItemsInProgress.Remove(selectedItem);
+                    ItemsInProgress.Remove(item.Index);
                 }
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Return the number of items remaining in the in-progress list.  If 0, then all items are completed.
+        /// </summary>
+        /// <returns>int: the number of items still in progress.</returns>
+        public int GetInProgressCount()
+        {
+            lock (lockItemList)
+            {
+                Hydrate();
+                return ItemsInProgress.Keys.Count;
+            }
+        }
+
+        private void Hydrate()
+        {
+            // add items to mazimize buffer availability.
+            while (IndexStart + IndexOffset <= IndexEnd && ItemsInProgress.Count < MaxInProgress)
+            {
+                ItemsInProgress.Add(IndexStart + IndexOffset, new AccordionItem
+                {
+                    Index = IndexStart + IndexOffset
+                });
+                IndexOffset++;
             }
         }
     }
