@@ -33,13 +33,13 @@ namespace BOG.SwissArmyKnife
         /// The list of items currently available for work.
         /// </summary>
         [JsonProperty(Required = Required.Always, PropertyName = "Items")]
-        public Dictionary<Int64,AccordionItem> ItemsInProgress { get; set; } = new Dictionary<long, AccordionItem>();
+        public Dictionary<Int64, AccordionItem> ItemsInProgress { get; set; } = new Dictionary<long, AccordionItem>();
 
         /// <summary>
         /// The first item number to be worked
         /// </summary>
         [JsonProperty(Required = Required.Always, PropertyName = "IndexStart")]
-        public Int64 IndexStart { get; set; }  = 0;
+        public Int64 IndexStart { get; set; } = 0;
 
         /// <summary>
         /// The final item number to be worked
@@ -77,10 +77,11 @@ namespace BOG.SwissArmyKnife
         public Accordion(Int64 indexStart, int count, Int64 maxInProgress)
         {
             if (indexStart < 0) throw new ArgumentException("indexStart must be >= 0");
-            if (count < 0) throw new ArgumentException("count must be >= 0");
+            if (count <= 0) throw new ArgumentException("count must be >= 0");
+            if (maxInProgress < 10) throw new ArgumentException("maxInProgress must be >= 10");
             if (maxInProgress > 20000) throw new ArgumentException("maxInProgress must be <= 20,000");
             IndexStart = indexStart;
-            IndexEnd = indexStart + (Int64) count;
+            IndexEnd = indexStart + (Int64)count;
             MaxInProgress = maxInProgress;
         }
 
@@ -108,8 +109,8 @@ namespace BOG.SwissArmyKnife
                     item = new AccordionItem
                     {
                         Index = itemSelect.Index,
-                        Attempts= itemSelect.Attempts,
-                        DeadLine= itemSelect.DeadLine
+                        Attempts = itemSelect.Attempts,
+                        DeadLine = itemSelect.DeadLine
                     };
                 }
             }
@@ -124,7 +125,7 @@ namespace BOG.SwissArmyKnife
         public bool RetryItem(AccordionItem item)
         {
             var result = false;
-            lock(lockItemList)
+            lock (lockItemList)
             {
                 result = ItemsInProgress.Keys.Contains(item.Index);
                 if (result)
@@ -134,6 +135,24 @@ namespace BOG.SwissArmyKnife
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Marks all or a set of items for retry. (usually done when resetting all items in progress to allow immediate reissue for processing).
+        /// </summary>
+        /// <param name="item">The Accordion Item object to be processed.</param>
+        /// <returns>true if the item was found; false if no item was found to update.</returns>
+        public void RetryItems()
+        {
+            var result = false;
+            lock (lockItemList)
+            {
+                foreach (var key in ItemsInProgress.Keys)
+                { 
+                    ItemsInProgress[key].Attempts++;
+                    ItemsInProgress[key].DeadLine = DateTime.MinValue;
+                }
+            }
         }
 
         /// <summary>
@@ -164,6 +183,19 @@ namespace BOG.SwissArmyKnife
             {
                 Hydrate();
                 return ItemsInProgress.Keys.Count;
+            }
+        }
+
+        /// <summary>
+        /// Return the number of items remaining in the in-progress list.  If 0, then all items are completed.
+        /// </summary>
+        /// <returns>int: the number of items still in progress.</returns>
+        public bool IsFinished()
+        {
+            lock (lockItemList)
+            {
+                Hydrate();
+                return (IndexStart + IndexOffset == IndexEnd) && ItemsInProgress.Keys.Count == 0;
             }
         }
 
