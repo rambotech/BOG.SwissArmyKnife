@@ -99,35 +99,74 @@ namespace BOG.SwissArmyKnife.Test
         }
 
         [Test]
-        public void Accordion_Add3000_Max500_Full()
+        public void Accordion_Add3000_Max500_1Pass()
         {
-            var tracked = new Dictionary<Int64, int>();
-            Accordion acc = new Accordion(900, 3900, 500);
+            var tracked = new List<Int64>();
+            Accordion acc = new Accordion(900, 3000, 500);
             AccordionItem item;
-            int totalAttempts = 0;
+
             while (!acc.IsFinished())
             {
                 var result = acc.GetItem(3, out item);
-                if (item != null )
+                if (result)
                 {
-                    if (item.Attempts == 3)
+                    tracked.Add(item.Index);
+                    Assert.That(acc.CompleteItem(item) , $"Can't remove {item.Index}: not found");
+                    result = acc.CompleteItem(item);
+                }
+            }
+            Assert.That(tracked.Count == 3000, $"tracked.Count: expected 3000, but got ${tracked.Count}");
+        }
+
+        [Test]
+        public void Accordion_Add3000_Max500_2Pass()
+        {
+            int passes = 0;
+            var tracked = new List<Int64>();
+            Accordion acc = new Accordion(900, 3000, 500);
+            AccordionItem item;
+
+            while (!acc.IsFinished())
+            {
+                var result = acc.GetItem(1, out item);
+                if (result)
+                {
+                    passes++;
+                    if (item.Attempts == 1)
                     {
-                        acc.CompleteItem(item);
-                    }
-                    else  if (tracked.ContainsKey(item.Index))
-                    {
-                        tracked[item.Index]++;
-                        totalAttempts++;
+                        tracked.Add(item.Index);
                     }
                     else
                     {
-                        tracked.Add(item.Index, 0);
+                        Assert.That(acc.CompleteItem(item), $"Can't remove {item.Index}: not found");
                     }
                 }
             }
+            Assert.That(tracked.Count == 3000, $"tracked.Count: expected 3000, but got ${tracked.Count}");
+            Assert.That(passes == 6000, $"passes: expected 6000, but got ${tracked.Count}");
+        }
 
-            Assert.That(tracked.Keys.Count == 3000, $"tracked.Keys.Count: expected 3000, but got ${tracked.Keys.Count}");
-            Assert.That(totalAttempts == 6000, $"totalAttempts: expected 6000, but got ${totalAttempts}");
+        [Test]
+        public void Accordion_Add3000_Max500()
+        {
+            Accordion acc = new Accordion(3500007, 3000, 500);
+            AccordionItem item;
+
+            while (!acc.IsFinished())
+            {
+                var result = acc.GetItem(1, out item);
+                if (result)
+                {
+                    if (item.Attempts < 3)
+                    {
+                        //acc.RetryItem(item);
+                    }
+                    else
+                    {
+                        Assert.That(acc.CompleteItem(item), $"Can't remove {item.Index}: not found");
+                    }
+                }
+            }
         }
     }
 }

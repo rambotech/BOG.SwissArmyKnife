@@ -3,6 +3,13 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.5.3 -- 10/22/2019
+- Debut of Accordion class for tracking a large sequence of ordinals.
+
+1.5.2 -- 07/15/2019
+- Nuget package updates
+- Update to PackageLicenseUrl to PackageLicenseExpression
+
 1.5.1 -- 05/09/2019
 - Add class AssemblyVersion for supporting binary signatures in output/logging.
 

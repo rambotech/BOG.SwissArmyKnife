@@ -51,7 +51,7 @@ namespace BOG.SwissArmyKnife
         /// The maximum number of items which can be actively tracked at any given time.
         /// </summary>
         [JsonProperty(Required = Required.Always, PropertyName = "MaxInProgress")]
-        public Int64 MaxInProgress { get; set; } = 0;
+        public int MaxInProgress { get; set; } = 0;
 
         // Instance variables 
         [JsonProperty(Required = Required.Always, PropertyName = "IndexOffset")]
@@ -74,7 +74,7 @@ namespace BOG.SwissArmyKnife
         /// <param name="indexStart">the low value to begin processing.</param>
         /// <param name="count">the number of items to process.</param>
         /// <param name="maxInProgress">the maximum number of items which can actively tracked.</param>
-        public Accordion(Int64 indexStart, int count, Int64 maxInProgress)
+        public Accordion(Int64 indexStart, Int64 count, int maxInProgress)
         {
             if (indexStart < 0) throw new ArgumentException("indexStart must be >= 0");
             if (count <= 0) throw new ArgumentException("count must be >= 0");
@@ -142,14 +142,16 @@ namespace BOG.SwissArmyKnife
         /// </summary>
         /// <param name="item">The Accordion Item object to be processed.</param>
         /// <returns>true if the item was found; false if no item was found to update.</returns>
-        public void RetryItems()
+        public void RetryItems(bool resetAttempts)
         {
-            var result = false;
             lock (lockItemList)
             {
                 foreach (var key in ItemsInProgress.Keys)
-                { 
-                    ItemsInProgress[key].Attempts++;
+                {
+                    if (resetAttempts)
+                    {
+                        ItemsInProgress[key].Attempts++;
+                    }
                     ItemsInProgress[key].DeadLine = DateTime.MinValue;
                 }
             }
@@ -201,14 +203,17 @@ namespace BOG.SwissArmyKnife
 
         private void Hydrate()
         {
-            // add items to mazimize buffer availability.
-            while (IndexStart + IndexOffset <= IndexEnd && ItemsInProgress.Count < MaxInProgress)
+            if (ItemsInProgress.Count < MaxInProgress / 2)
             {
-                ItemsInProgress.Add(IndexStart + IndexOffset, new AccordionItem
+                // add items to mazimize buffer availability.
+                while (IndexStart + IndexOffset < IndexEnd && ItemsInProgress.Count < MaxInProgress)
                 {
-                    Index = IndexStart + IndexOffset
-                });
-                IndexOffset++;
+                    ItemsInProgress.Add(IndexStart + IndexOffset, new AccordionItem
+                    {
+                        Index = IndexStart + IndexOffset
+                    });
+                    IndexOffset++;
+                }
             }
         }
     }
