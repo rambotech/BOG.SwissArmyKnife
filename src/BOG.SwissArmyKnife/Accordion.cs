@@ -89,7 +89,7 @@ namespace BOG.SwissArmyKnife
         ///  Retrieves an AccordionItem requiring processing.
         /// </summary>
         /// <param name="secondsTimeout">The number of seconds to allow for completion before the item can be reissued.</param>
-        /// <param name="item">The Accordion Item object to be processed.</param>
+        /// <param name="item">The Accordion Item object to be returned.</param>
         /// <returns>true if an item for processing exists; false if no items are not available for processing.</returns>
         public bool GetItem(int secondsTimeout, out AccordionItem item)
         {
@@ -98,7 +98,10 @@ namespace BOG.SwissArmyKnife
             lock (lockItemList)
             {
                 Hydrate();
-                var itemSelect = ItemsInProgress.Values.Where(o => o.DeadLine < DateTime.Now).FirstOrDefault();
+                var itemSelect = ItemsInProgress.Values
+                    .Where(o => o.DeadLine < DateTime.Now)
+                    .OrderBy(s => s.DeadLine)
+                    .FirstOrDefault();
                 result = itemSelect != null;
                 if (result)
                 {
@@ -112,6 +115,45 @@ namespace BOG.SwissArmyKnife
                         Attempts = itemSelect.Attempts,
                         DeadLine = itemSelect.DeadLine
                     };
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        ///  Retrieves a set of AccordionItems requiring processing.
+        /// </summary>
+        /// <param name="secondsTimeout">The number of seconds to allow for completion before the item can be reissued.</param>
+        /// <param name="maxItems">The maximum number of items to retrieve.</param>
+        /// <param name="items">The list of Accordion Item objects to be returned.</param>
+        /// <returns>true if an item for processing exists; false if no items are not available for processing.</returns>
+        public bool GetItem(int secondsTimeout, int maxItems, out List<AccordionItem> items)
+        {
+            var result = false;
+            items = new List<AccordionItem>();
+            lock (lockItemList)
+            {
+                Hydrate();
+                var itemsSelect = ItemsInProgress.Values
+                    .Where(o => o.DeadLine < DateTime.Now)
+                    .OrderBy(s => s.DeadLine)
+                    .Take(maxItems < 1 ? 1 : maxItems);
+                result = itemsSelect != null;
+                if (result)
+                {
+                    foreach (var item in itemsSelect)
+                    {
+                        ItemsInProgress[item.Index].Attempts++;
+                        ItemsInProgress[item.Index].DeadLine = DateTime.Now.AddSeconds(secondsTimeout);
+
+                        // create a new object for the return value
+                        items.Add(new AccordionItem
+                        {
+                            Index = item.Index,
+                            Attempts = item.Attempts,
+                            DeadLine = item.DeadLine
+                        });
+                    }
                 }
             }
             return result;
@@ -132,6 +174,46 @@ namespace BOG.SwissArmyKnife
                 {
                     ItemsInProgress[item.Index].Attempts++;
                     ItemsInProgress[item.Index].DeadLine = DateTime.MinValue;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Resets the timeout period for an item.  Does not change the number of attempts.
+        /// </summary>
+        /// <param name="item">The Accordion Item object to be processed.</param>
+        /// <param name="deadline">The new time when the item again becomes available via GetItem().  Note: the time
+        /// can be set to the past, to force an item to become immediately available.</param>
+        /// <returns>true if the item was found; false if no item was found to update.</returns>
+        public bool ChangeItemTimeout(AccordionItem item, DateTime deadline)
+        {
+            var result = false;
+            lock (lockItemList)
+            {
+                result = ItemsInProgress.Keys.Contains(item.Index);
+                if (result)
+                {
+                    ItemsInProgress[item.Index].DeadLine = deadline;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Resets the timeout period for all items.  Does not change the number of attempts.
+        /// </summary>
+        /// <param name="deadline">The new time when the item again becomes available via GetItem().  Note: the time
+        /// can be set to the past, to force all items to become immediately available.</param>
+        /// <returns>true if the item was found; false if no item was found to update.</returns>
+        public bool ChangeAllItemTimeouts(DateTime deadline)
+        {
+            var result = false;
+            lock (lockItemList)
+            {
+                foreach (var key in ItemsInProgress.Keys)
+                {
+                    ItemsInProgress[key].DeadLine = deadline;
                 }
             }
             return result;

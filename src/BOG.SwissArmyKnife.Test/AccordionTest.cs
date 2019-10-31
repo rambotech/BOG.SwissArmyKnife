@@ -10,6 +10,9 @@ namespace BOG.SwissArmyKnife.Test
     [TestFixture]
     public class AccordionTest
     {
+        /// <summary>
+        /// Validate that default values are correct
+        /// </summary>
         [Test]
         public void Accordion_Init_Default()
         {
@@ -22,6 +25,9 @@ namespace BOG.SwissArmyKnife.Test
             Assert.That(acc.ItemsInProgress.Count == 0, $"acc.ItemsInProgress.Count: expected 0, but got ${acc.ItemsInProgress.Count}");
         }
 
+        /// <summary>
+        /// Validate that specific init values are correct
+        /// </summary>
         [Test]
         public void Accordion_Init_Specific()
         {
@@ -34,6 +40,9 @@ namespace BOG.SwissArmyKnife.Test
             Assert.That(acc.ItemsInProgress.Count == 0, $"acc.ItemsInProgress.Count: expected 0, but got ${acc.ItemsInProgress.Count}");
         }
 
+        /// <summary>
+        /// Check for a starting value under 0
+        /// </summary>
         [Test]
         public void Accordion_Init_BadIndexStart()
         {
@@ -41,13 +50,69 @@ namespace BOG.SwissArmyKnife.Test
             Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "indexStart must be >= 0");
         }
 
+        /// <summary>
+        /// Check for a count value over 0
+        /// </summary>
         [Test]
-        public void Accordion_Init_BadCount()
+        public void Accordion_Init_Bad_CountTooLow()
         {
             ActualValueDelegate<object> testDelegate = () => new Accordion(1, 0, 1);
             Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "count must be >= 0");
         }
 
+        /// <summary>
+        /// Check for a max value over 0
+        /// </summary>
+        [Test]
+        public void Accordion_Init_MaxBad()
+        {
+            ActualValueDelegate<object> testDelegate = () => new Accordion(1, 1, 0);
+            Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "max must be >= 0");
+        }
+
+        /// <summary>
+        /// Check that a max value under 10 is invalid
+        /// </summary>
+        [Test]
+        public void Accordion_Init_Max_Bad_Under_MinValue()
+        {
+            TestDelegate testDelegate = () => new Accordion(2, 2, 9);
+            Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "maxInProgress must be >= 10");
+        }
+
+        /// <summary>
+        /// Check that a max value of 10 (lowest) is OK
+        /// </summary>
+        [Test]
+        public void Accordion_Init_Max_Good_MinValue()
+        {
+            TestDelegate testDelegate = () => new Accordion(2, 2, 10);
+            Assert.DoesNotThrow(testDelegate, "max should allow min value of 10, but does not.");
+        }
+
+        /// <summary>
+        /// Check that a max value of 20,000 (highest) is OK
+        /// </summary>
+        [Test]
+        public void Accordion_Init_Max_Good_MaxValue()
+        {
+            TestDelegate testDelegate = () => new Accordion(2, 2, 20000);
+            Assert.DoesNotThrow(testDelegate, "max should allow max value of 20,000, but does not.");
+        }
+
+        /// <summary>
+        /// Check that a max value over 20,000 is invalid
+        /// </summary>
+        [Test]
+        public void Accordion_Init_Max_Bad_OverMaxValue()
+        {
+            TestDelegate testDelegate = () => new Accordion(2, 2, 20001);
+            Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "maxInProgress must be >= 10");
+        }
+
+        /// <summary>
+        /// Check for a starting value under 0
+        /// </summary>
         [Test]
         public void Accordion_Init_BadMaxInProgress_Lt_10()
         {
@@ -63,7 +128,7 @@ namespace BOG.SwissArmyKnife.Test
         }
 
         [Test]
-        public void Accordion_Add300_Max200_Get200_Wait()
+        public void Accordion_Add300_Max200_Get200_Wait_Get100()
         {
             Accordion acc = new Accordion(0, 300, 200);
             var result = false;
@@ -95,7 +160,6 @@ namespace BOG.SwissArmyKnife.Test
             result = acc.GetItem(5, out item);
             Assert.That(!result, $"GetItem iteration #2 #200 should be false but was true");
             Assert.That(item == null, $"GetItem iteration #2 #200 should return null object.");
-
         }
 
         [Test]
