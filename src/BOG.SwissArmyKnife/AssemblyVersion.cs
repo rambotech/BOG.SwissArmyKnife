@@ -8,12 +8,10 @@ namespace BOG.SwissArmyKnife
 {
     public class AssemblyVersion
     {
-        AssemblyVersion _singleton = null;
-
         public string Filename { get; private set; }
         public string Version { get; private set; }
         public DateTime BuildDate { get; private set; }
-        
+
         public AssemblyVersion()
         {
             var av = Assembly.GetEntryAssembly().GetName();

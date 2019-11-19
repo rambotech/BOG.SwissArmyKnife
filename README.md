@@ -5,6 +5,10 @@ This is a .NET Standard port of BOG.Framework, which is deprecated.
 
 The classes are:
 
+### Accordion / AccordionItem
+  Provides tracking of a number (ordinal) sequence by an in-progress list, from which items are retrieved and later marked as retry or complete.  Includes time-out to
+  reissue work after a period of time.  Allows large sequences of numbers (even billions and higher) to be processed, with the accordion class providing the tracking.
+
 ### AssemblyInfo
   Provides the Binary file executing (in .NET core it's always the .DLL not the .EXE'), version and build date.
 
