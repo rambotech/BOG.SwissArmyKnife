@@ -155,11 +155,13 @@ namespace BOG.SwissArmyKnife.Test
 
             Thread.Sleep(5000);
 
-            // Since timeout has expired on 50 items, 50 items should be returned--all with an attempt value of 2.
+            // Since timeout has expired on 50 items, 50 items should be returned--all with an attempt value of 1 and a timeout count of 1.
             var itemsD = acc.GetItems(60, 200, false);
             Assert.That(itemsD.Count == 50, $"(D) GetItems() expected to return 50 items, but returned {itemsC.Count} item(s).");
-            var attemptCount = itemsD.Count(o => o.Attempts == 2);
-            Assert.That(attemptCount == 50, $"(D) expected to return 50 items with an Attempt count of 2, but returned {itemsC.Count} item(s).");
+            var attemptCount = itemsD.Count(o => o.Attempts == 1);
+            Assert.That(attemptCount == 50, $"(D) expected to return 50 items with an Attempt count of 1, but returned {attemptCount} item(s).");
+            var timeoutCount = itemsD.Count(o => o.Timeouts == 1);
+            Assert.That(timeoutCount == 50, $"(D) expected to return 50 items with an Timeout count of 1, but returned {timeoutCount} item(s).");
 
             // The next call should return no items, since their timeouts have not expired.
             var itemsE = acc.GetItems(60, 1, false);
@@ -293,6 +295,88 @@ namespace BOG.SwissArmyKnife.Test
                 }
             }
             Assert.That(standardItems2.Count == 0, "The 15 items returned are not the same");
+        }
+
+        [Test]
+        public void Accordion_Basics_Timeout1()
+        {
+            Accordion acc = new Accordion(0, 5, 10);
+
+            var items1 = acc.GetItems(2, 10, true);
+            foreach (var item in items1)
+            {
+                Assert.That(item.Attempts == 1, $"Item {item.Index}: Expected 1 attempt but has {item.Attempts}");
+                Assert.That(item.Timeouts== 0, $"Item {item.Index}: Expected 0 timeouts but has {item.Timeouts}");
+            }
+
+            Thread.Sleep(2200);
+
+            var items2 = acc.GetItems(2, 10, true);
+            foreach (var item in items2)
+            {
+                Assert.That(item.Attempts == 1, $"Item {item.Index}: Expected 1 attempt but has {item.Attempts}");
+                Assert.That(item.Timeouts == 1, $"Item {item.Index}: Expected 1 timeouts but has {item.Timeouts}");
+                acc.RetryItem(item.Index);
+            }
+
+            var items3 = acc.GetItems(2, 10, true);
+            foreach (var item in items3)
+            {
+                Assert.That(item.Attempts == 2, $"Item {item.Index}: Expected 2 attempt but has {item.Attempts}");
+                Assert.That(item.Timeouts == 0, $"Item {item.Index}: Expected 0 timeouts but has {item.Timeouts}");
+            }
+        }
+
+        [Test]
+        public void Accordion_Basics_Timeout2()
+        {
+            Accordion acc = new Accordion(0, 5, 10);
+
+            var items1 = acc.GetItems(2, 10, true);
+            foreach (var item in items1)
+            {
+                Assert.That(item.Attempts == 1, $"Item {item.Index}: Expected 1 attempt but has {item.Attempts}");
+                Assert.That(item.Timeouts == 0, $"Item {item.Index}: Expected 0 timeouts but has {item.Timeouts}");
+            }
+            var summary1 = acc.GetTimeoutCountSummary();
+            Assert.That(summary1.Count == 1, $"Expected summary1 to have one entry, but it has {summary1.Count} entries.");
+            Assert.That(summary1.ContainsKey(0), $"Expected summary1 to have a key value of 0, but it has a different value.");
+            Assert.That(summary1.ContainsKey(0) && summary1[0] == 5, $"Expected summary to have a value of 5, but it has a different value.");
+
+            Thread.Sleep(2200);
+
+            var items2 = acc.GetItems(2, 10, true);
+            foreach (var item in items2)
+            {
+                Assert.That(item.Attempts == 1, $"Item {item.Index} in items2: Expected 1 attempt but has {item.Attempts}");
+                Assert.That(item.Timeouts == 1, $"Item {item.Index} in items2: Expected 1 timeouts but has {item.Timeouts}");
+                acc.RetryItem(item.Index);
+            }
+
+            var summary2 = acc.GetTimeoutCountSummary();
+            Assert.That(summary2.Count == 1, $"Expected summary2 to have one entry, but it has {summary2.Count} entries.");
+            Assert.That(summary2.ContainsKey(1), $"Expected summary2 to have a key value of 1, but it has a different value.");
+            Assert.That(summary1.ContainsKey(1) && summary2[1] == 5, $"Expected summary2 to have a value of 5, but it has a different value.");
+
+            var items3 = acc.GetItems(2, 10, true);
+            foreach (var item in items3)
+            {
+                Assert.That(item.Attempts == 2, $"Item {item.Index} in items3: Expected 1 attempt but has {item.Attempts}");
+                Assert.That(item.Timeouts == 0, $"Item {item.Index} in items3: Expected 1 timeouts but has {item.Timeouts}");
+                acc.RetryItem(item.Index);
+            }
+
+            var summary3 = acc.GetTimeoutCountSummary();
+            Assert.That(summary3.Count == 1, $"Expected summary3 to have one entry, but it has {summary3.Count} entries.");
+            Assert.That(summary3.ContainsKey(0), $"Expected summary3 to have a key value of 1, but it has a different value.");
+            Assert.That(summary3.ContainsKey(0) && summary3[0] == 5, $"Expected summary3 to have a value of 5, but it has a different value.");
+
+            var items4 = acc.GetItems(2, 10, true);
+            foreach (var item in items4)
+            {
+                Assert.That(item.Attempts == 2, $"Item {item.Index} in items4: Expected 2 attempt but has {item.Attempts}");
+                Assert.That(item.Timeouts == 0, $"Item {item.Index} in items4: Expected 0 timeouts but has {item.Timeouts}");
+            }
         }
     }
 }

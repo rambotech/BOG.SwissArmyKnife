@@ -29,6 +29,14 @@ namespace BOG.SwissArmyKnife
         /// </summary>
         [JsonProperty(Required = Required.Always, PropertyName = "Deadline")]
         public DateTime DeadLine { get; set; } = DateTime.MinValue;
+
+        /// <summary>
+        /// The number of timeouts which have occurred since this item was provided for processing.
+        /// A timeout is defined as not receiving a RetryItem() or CompleteItem() method call since the 
+        /// item was issued via a GetItem() or GetItems() method call.
+        /// </summary>
+        [JsonProperty(Required = Required.Always, PropertyName = "Timeouts")]
+        public int Timeouts { get; set; } = 0;
     }
 
     /// <summary>
@@ -125,7 +133,14 @@ namespace BOG.SwissArmyKnife
                 {
                     foreach (var item in itemsSelect)
                     {
-                        item.Attempts++;
+                        if (item.DeadLine != DateTime.MinValue)
+                        {
+                            item.Timeouts++;
+                        }
+                        else
+                        {
+                            item.Attempts++;
+                        }
                         item.DeadLine = DateTime.Now.AddSeconds(secondsTimeout);
 
                         // create a new object for the return value
@@ -133,6 +148,7 @@ namespace BOG.SwissArmyKnife
                         {
                             Index = item.Index,
                             Attempts = item.Attempts,
+                            Timeouts = item.Timeouts,
                             DeadLine = item.DeadLine
                         });
                     }
@@ -164,7 +180,7 @@ namespace BOG.SwissArmyKnife
         }
 
         /// <summary>
-        /// Marks an item for retry (usually an item whose processing has failed).  Increments the attempts and resets the item as available.
+        /// Marks an item for retry (usually an item whose processing has failed).
         /// </summary>
         /// <param name="itemIndex">The index property value of the Accordion item to be processed.</param>
         public void RetryItem(Int64 itemIndex)
@@ -175,6 +191,7 @@ namespace BOG.SwissArmyKnife
                 if (thisItem != null)
                 {
                     thisItem.DeadLine = DateTime.MinValue;
+                    thisItem.Timeouts = 0;
                 }
             }
         }
@@ -243,6 +260,30 @@ namespace BOG.SwissArmyKnife
                 Hydrate();
                 return (int) ((Int64) 100 * (IndexEnd - (IndexStart + IndexOffset - ItemsInProgress.Count)) / (IndexStart + IndexEnd));
             }
+        }
+
+        /// <summary>
+        /// Returns a dictionary where the key is the number of timeouts, and the value is the count of items with that number of timeouts.
+        /// This answer can help the caller determine if a processing bottleneck is occurring.
+        /// </summary>
+        /// <returns>Dictionary&lt;int,int&gt;: key == timeout occurrences, value == count of items with it.</returns>
+        public Dictionary<int,int> GetTimeoutCountSummary()
+        {
+            var result = new Dictionary<int, int>();
+            var query = ItemsInProgress.GroupBy(
+                o => (int) Math.Floor((float) o.Timeouts),
+                o => o.Index,
+                (baseTimeout, indexes) => new
+                {
+                    key = baseTimeout,
+                    count = indexes.Count()
+                });
+
+            foreach (var timeoutCount in query)
+            {
+                result.Add(timeoutCount.key, timeoutCount.count);
+            }
+            return result;
         }
 
         /// <summary>
