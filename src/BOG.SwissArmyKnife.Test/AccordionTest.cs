@@ -350,21 +350,24 @@ namespace BOG.SwissArmyKnife.Test
             {
                 Assert.That(item.Attempts == 1, $"Item {item.Index} in items2: Expected 1 attempt but has {item.Attempts}");
                 Assert.That(item.Timeouts == 1, $"Item {item.Index} in items2: Expected 1 timeouts but has {item.Timeouts}");
-                acc.RetryItem(item.Index);
             }
+
+            Thread.Sleep(2200);
 
             var summary2 = acc.GetTimeoutCountSummary();
             Assert.That(summary2.Count == 1, $"Expected summary2 to have one entry, but it has {summary2.Count} entries.");
             Assert.That(summary2.ContainsKey(1), $"Expected summary2 to have a key value of 1, but it has a different value.");
-            Assert.That(summary1.ContainsKey(1) && summary2[1] == 5, $"Expected summary2 to have a value of 5, but it has a different value.");
+            Assert.That(summary2.ContainsKey(1) && summary2[1] == 5, $"Expected summary2 to have a value of 5, but it has a different value.");
 
             var items3 = acc.GetItems(2, 10, true);
             foreach (var item in items3)
             {
-                Assert.That(item.Attempts == 2, $"Item {item.Index} in items3: Expected 1 attempt but has {item.Attempts}");
-                Assert.That(item.Timeouts == 0, $"Item {item.Index} in items3: Expected 1 timeouts but has {item.Timeouts}");
+                Assert.That(item.Attempts == 1, $"Item {item.Index} in items3: Expected 1 attempt but has {item.Attempts}");
+                Assert.That(item.Timeouts == 2, $"Item {item.Index} in items3: Expected 2 timeouts but has {item.Timeouts}");
                 acc.RetryItem(item.Index);
             }
+
+            Thread.Sleep(2200);
 
             var summary3 = acc.GetTimeoutCountSummary();
             Assert.That(summary3.Count == 1, $"Expected summary3 to have one entry, but it has {summary3.Count} entries.");

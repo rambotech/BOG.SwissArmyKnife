@@ -3,6 +3,9 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.5.5 -- 11/22/2019
+- AccordionItem add timeoutCount property and tests.
+
 1.5.4 -- 11/18/2019
 - Accordion/AccordionItem classes finalized and tested.
 
