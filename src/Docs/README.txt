@@ -3,6 +3,10 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.5.6 -- 01/03/2020 -- Maintenance Update
+- Update frameworks to .NET Standard 2.1 and .NET Core 3.1
+- Update Nuget packages
+
 1.5.5 -- 11/22/2019
 - AccordionItem add timeoutCount property and tests.
 

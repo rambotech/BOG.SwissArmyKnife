@@ -1,4 +1,4 @@
-![alt text](https://github.com/rambotech/BOG.SwissArmyKnife/blob/master/src/Assets/multitool.png "The most useful collection of miscellaneous tools for .NET Standard 2.0!")
+![alt text](https://github.com/rambotech/BOG.SwissArmyKnife/blob/master/src/Assets/multitool.png "The most useful collection of miscellaneous tools for .NET Standard 2.1!")
 
 # BOG.SwissArmyKnife
 This is a .NET Standard port of BOG.Framework, which is deprecated.
