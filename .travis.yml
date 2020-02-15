@@ -6,5 +6,5 @@ install:
   - nuget install NUnit.Console -Version 3.9.0 -OutputDirectory testrunner
 script:
 - dotnet build -c release ./src/BOG.SwissArmyKnife.sln
-- mono ./testrunner/NUnit.ConsoleRunner.3.9.0/tools/nunit3-console.exe ./src/BOG.SwissArmyKnife.Test/bin/Release/netcoreapp3.1/BOG.SwissArmyKnife.Test.dll
-- dotnet nuget push -k $NUGET_API_KEY -s $NUGET_SOURCE ./src/BOG.SwissArmyKnife/bin/Release/BOG.SwissArmyKnife.*.nupkg
+- dotnet test src/BOG.SwissArmyKnife.Test/BOG.SwissArmyKnife.Test.csproj --no-build -v normal
+- dotnet nuget ./src/BOG.SwissArmyKnife/bin/Release/BOG.SwissArmyKnife.*.nupkg --api-key $NUGET_API_KEY --source $NUGET_SOURCE --skip-duplicate

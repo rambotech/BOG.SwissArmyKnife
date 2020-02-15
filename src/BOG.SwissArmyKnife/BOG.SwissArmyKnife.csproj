@@ -6,7 +6,7 @@
     <Authors>John J Schultz</Authors>
     <Company>Bits of Genius</Company>
     <PackageProjectUrl>https://github.com/rambotech/BOG.SwissArmyKnife</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/rambotech/BOG.SwissArmyKnife/master/src/Assets/multitool.ico</PackageIconUrl>
+    <PackageIconUrl></PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>GIT</RepositoryType>
@@ -14,10 +14,11 @@
     <PackageTags>C# netstandardc20 utility harvest monitor strings exception format formatting directory file scripting fuse logging password hash serialize serializing</PackageTags>
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.5.6.0</AssemblyVersion>
-    <FileVersion>1.5.6.0</FileVersion>
-    <Version>1.5.6</Version>
+    <AssemblyVersion>1.5.7.0</AssemblyVersion>
+    <FileVersion>1.5.7.0</FileVersion>
+    <Version>1.5.7</Version>
     <Copyright>(c) 2017-2019, John J Schultz</Copyright>
+    <PackageIcon>multitool.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +30,13 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Assets\multitool.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
