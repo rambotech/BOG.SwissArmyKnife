@@ -1,8 +1,10 @@
-[![Build status](https://api.travis-ci.org/rambotech/BOG.SwissArmyKnife.svg?branch=master)](https://travis-ci.org/rambotech/BOG.SwissArmyKnife) BOG.SwissArmyKnife
-[![Nuget](https://img.shields.io/nuget/v/BOG.SwissArmyKnife)](https://www.nuget.org/packages/BOG.SwissArmyKnife/) BOG.SwissArmyKnife
-
 ![alt text](https://github.com/rambotech/BOG.SwissArmyKnife/blob/master/src/Assets/multitool.png "The most useful collection of miscellaneous tools for .NET Standard 2.1!")
+
 # BOG.SwissArmyKnife
+
+[![Build status](https://api.travis-ci.org/rambotech/BOG.SwissArmyKnife.svg?branch=master)](https://travis-ci.org/rambotech/BOG.SwissArmyKnife)
+[![Nuget](https://img.shields.io/nuget/v/BOG.SwissArmyKnife)](https://www.nuget.org/packages/BOG.SwissArmyKnife/)
+
 This is a .NET Standard port of BOG.Framework, which is deprecated.
 
 The classes are:
