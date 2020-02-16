@@ -19,7 +19,7 @@ if [ $? -eq 0 ]
 then
 		if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; 
 		then
-				dotnet nuget push ./src/BOG.SwissArmyKnife/bin/$BUILD_CONFIG/BOG.SwissArmyKnife.*.nupkg --api-key $NUGET_API_KEY --source $NUGET_SOURCE --skip-duplicate
+				dotnet nuget push ./src/BOG.SwissArmyKnife/BOG.SwissArmyKnife/bin/$BUILD_CONFIG/BOG.SwissArmyKnife.*.nupkg --api-key $NUGET_API_KEY --source $NUGET_SOURCE --skip-duplicate
 		else
 				echo Skip nuget for non-master build
 		fi
