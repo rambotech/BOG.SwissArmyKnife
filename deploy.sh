@@ -3,11 +3,15 @@ set -ev
 
 pwd
 
+echo $NUGET_API_KEY == (hidden)
+echo $NUGET_SOURCE == ${NUGET_SOURCE} 
+echo $TRAVIS_PULL_REQUEST == ${$TRAVIS_PULL_REQUEST}
+
 dotnet build -c $BUILD_CONFIG ./src/BOG.SwissArmyKnife.sln
 
 if [ $? -eq 0 ]
 then
-		if [ "$BUILD_CONFIG" = "debug" ]; 
+		if [ "$BUILD_CONFIG" = "not_happening" ]; 
 		then
 				dotnet test ./src/BOG.SwissArmyKnife.Test/BOG.SwissArmyKnife.Test.csproj -v normal --no-build
 		else
