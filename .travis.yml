@@ -1,5 +1,5 @@
 language: csharp
-solution: ./BOG.SwissArmyKnife.sln
+solution: ./src/BOG.SwissArmyKnife.sln
 mono: none
 dotnet: 3.1
 script: chmod +x ./deploy.sh && ./deploy.sh $NUGET_API_KEY $NUGET_SOURCE $TRAVIS_PULL_REQUEST
