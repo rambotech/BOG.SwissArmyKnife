@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ev
 
+pwd
+
 dotnet build -c $BUILD_CONFIG ./src/BOG.SwissArmyKnife.sln
 
 if [ $? -eq 0 ]
