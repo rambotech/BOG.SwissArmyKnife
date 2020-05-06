@@ -55,7 +55,7 @@ namespace BOG.SwissArmyKnife
         public long NumericValueCount { get; set; } = 0;
 
         /// <summary>
-        /// 
+        /// The literal values which result from this item.
         /// </summary>
         [JsonProperty]
         public Dictionary<int, string> LiteralValues { get; set; } = new Dictionary<int, string>();

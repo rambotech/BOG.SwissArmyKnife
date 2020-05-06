@@ -148,6 +148,22 @@ namespace BOG.SwissArmyKnife
 		}
 
 		/// <summary>
+		/// Sets the state for an item.
+		/// </summary>
+		/// <param name="itemIndex">The index property value of the Accordion item to be processed.</param>
+		public void SetItemState(Int64 itemIndex, AccordionItemState state)
+		{
+			lock (lockItemList)
+			{
+				var thisItem = ItemsInProgress.Where(o => o.Index == itemIndex).FirstOrDefault();
+				if (thisItem != null)
+				{
+					thisItem.State = state;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Marks an item for retry (usually an item whose processing has failed).
 		/// </summary>
 		/// <param name="itemIndex">The index property value of the Accordion item to be processed.</param>
