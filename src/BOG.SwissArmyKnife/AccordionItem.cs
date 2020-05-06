@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 
 namespace BOG.SwissArmyKnife
 {
+	public enum AccordionItemState : int { Failed = 0, Succeeded = 1, InProgress = 2, Pending = 3}
+
 	/// <summary>
 	/// Defines a single item in the accordion.
 	/// </summary>
@@ -17,6 +19,12 @@ namespace BOG.SwissArmyKnife
 		/// </summary>
 		[JsonProperty(Required = Required.Always, PropertyName = "Index")]
 		public Int64 Index { get; set; }
+
+		/// <summary>
+		/// The current processing result of the item
+		/// </summary>
+		[JsonProperty(Required = Required.Always, PropertyName = "State")]
+		public AccordionItemState State { get; set; } = AccordionItemState.InProgress;
 
 		/// <summary>
 		/// The number of attempts made thus far (i.e. the number of issuances and re-issuances).

@@ -176,8 +176,7 @@ namespace BOG.SwissArmyKnife.Test
 
             while (!acc.IsFinished() && itemsRetrieved < 100000)
             {
-                var items = acc.GetItems(1, 1000, false);
-                foreach (var item in items)
+                foreach (var item in acc.GetItems(1, 1000, false))
                 {
                     itemsRetrieved++;
                     if (item.Attempts < 5)
@@ -186,6 +185,10 @@ namespace BOG.SwissArmyKnife.Test
                     }
                     else
                     {
+                        Assert.That(item.State == AccordionItemState.InProgress, $"Expected InProgress but was {item.State.ToString()}");
+                        acc.SetItemState(item.Index, AccordionItemState.Failed);
+                        item.State = AccordionItemState.Failed;
+                        Assert.That(item.State == AccordionItemState.Failed, $"Expected Failed but was {item.State.ToString()}");
                         acc.CompleteItem(item.Index);
                     }
                 }
