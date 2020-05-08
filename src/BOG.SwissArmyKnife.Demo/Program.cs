@@ -28,13 +28,11 @@ namespace BOG.SwissArmyKnife.Demo
 
         static void Main(string[] args)
         {
-            var demoThis = DemoItem.BabbleOn;
-
             if (args.Length != 1)
             {
                 Help();
             }
-            if (!Enum.TryParse<DemoItem>(args[0], out demoThis))
+            if (!Enum.TryParse<DemoItem>(args[0], out DemoItem demoThis))
             {
                 Help();
             }

@@ -10,7 +10,7 @@ namespace BOG.SwissArmyKnife
 	/// Defines the Accordion for tracking the collection of AccordionItems, and the associated methods.
 	/// </summary>
 	[JsonObject]
-	public class Accordion
+	public class Accordion<T>
 	{
 		/// <summary>
 		/// Deserialization instantiator
@@ -40,7 +40,7 @@ namespace BOG.SwissArmyKnife
 		/// The list of items currently available for work.
 		/// </summary>
 		[JsonProperty(Required = Required.Always, PropertyName = "Items")]
-		public List<AccordionItem> ItemsInProgress { get; set; } = new List<AccordionItem>();
+		public List<AccordionItem<T>> ItemsInProgress { get; set; } = new List<AccordionItem<T>>();
 
 		/// <summary>
 		/// The first item number to be worked
@@ -73,16 +73,15 @@ namespace BOG.SwissArmyKnife
 		/// </summary>
 		/// <param name="secondsTimeout">The number of seconds to allow for completion before the item can be reissued.</param>
 		/// <param name="maxItems">The maximum number of items to retrieve (at least 1, and capped by the value of maximum in progress)</param>
-		/// <param name="items">The list of Accordion Item objects to be returned.</param>
 		/// <param name="favorNewItems">When true, higher attempts </param>
 		/// <returns>true if an item for processing exists; false if no items are not available for processing.</returns>
-		public List<AccordionItem> GetItems(int secondsTimeout, int maxItems, bool favorNewItems)
+		public List<AccordionItem<T>> GetItems(int secondsTimeout, int maxItems, bool favorNewItems)
 		{
-			var result = new List<AccordionItem>();
+			var result = new List<AccordionItem<T>>();
 			lock (lockItemList)
 			{
 				Hydrate();
-				IEnumerable<AccordionItem> itemsSelect;
+				IEnumerable<AccordionItem<T>> itemsSelect;
 				if (favorNewItems)
 				{
 					itemsSelect = ItemsInProgress
@@ -110,14 +109,15 @@ namespace BOG.SwissArmyKnife
 							item.Attempts++;
 						}
 						item.DeadLine = DateTime.Now.AddSeconds(secondsTimeout);
-
 						// create a new object for the return value
-						result.Add(new AccordionItem
+						result.Add(new AccordionItem<T>
 						{
 							Index = item.Index,
 							Attempts = item.Attempts,
 							Timeouts = item.Timeouts,
-							DeadLine = item.DeadLine
+							DeadLine = item.DeadLine,
+							State = item.State,
+							Payload = item.Payload
 						});
 					}
 				}
@@ -129,16 +129,14 @@ namespace BOG.SwissArmyKnife
 		///  Retrieves a single AccordionItem requiring processing.  Content is null if none are available.
 		/// </summary>
 		/// <param name="secondsTimeout">The number of seconds to allow for completion before the item can be reissued.</param>
-		/// <param name="maxItems">The maximum number of items to retrieve (at least 1, and capped by the value of maximum in progress)</param>
-		/// <param name="items">The list of Accordion Item objects to be returned.</param>
 		/// <param name="favorNewItems">When true, higher attempts </param>
 		/// <returns>The AccordionItem found for processing; false if no items are not available for processing.</returns>
-		public AccordionItem GetItem(int secondsTimeout, bool favorNewItem)
+		public AccordionItem<T> GetItem(int secondsTimeout, bool favorNewItems)
 		{
-			AccordionItem result = null;
+			AccordionItem<T> result = null;
 			lock (lockItemList)
 			{
-				var items = GetItems(secondsTimeout, 1, favorNewItem);
+				var items = GetItems(secondsTimeout, 1, favorNewItems);
 				if (items.Count > 0)
 				{
 					result = items[0];
@@ -150,15 +148,29 @@ namespace BOG.SwissArmyKnife
 		/// <summary>
 		/// Sets the state for an item.
 		/// </summary>
-		/// <param name="itemIndex">The index property value of the Accordion item to be processed.</param>
+		/// <param name="itemIndex">The index property value of the Accordion itemd.</param>
+		/// <param name="state">The AccordionItemState enum value to assign to the Accordion item.</param>
+		/// <remarks>The item reference by itemIdex must be in the in-processing list, or an exception is thrown.</remarks>
 		public void SetItemState(Int64 itemIndex, AccordionItemState state)
+		{
+			lock (lockItemList)
+			{
+				ItemsInProgress.Where(o => o.Index == itemIndex).FirstOrDefault().State = state;
+			}
+		}
+
+		/// <summary>
+		/// Sets the state for an item.
+		/// </summary>
+		/// <param name="itemIndex">The index property value of the Accordion item to be processed.</param>
+		public void SetItemPayload(Int64 itemIndex, T payload)
 		{
 			lock (lockItemList)
 			{
 				var thisItem = ItemsInProgress.Where(o => o.Index == itemIndex).FirstOrDefault();
 				if (thisItem != null)
 				{
-					thisItem.State = state;
+					thisItem.Payload = payload;
 				}
 			}
 		}
@@ -201,6 +213,7 @@ namespace BOG.SwissArmyKnife
 
 		/// <summary>
 		/// Removes an item from the in-progress list (for an item whose need for processing is no longer required).
+		/// This is regardless of the items processing result.
 		/// </summary>
 		/// <param name="itemIndex">The index property value of the Accordion item to be processed.</param>
 		public void CompleteItem(Int64 itemIndex)
@@ -271,12 +284,24 @@ namespace BOG.SwissArmyKnife
 		}
 
 		/// <summary>
-		/// Return the number of items remaining in the in-progress list.  If 0, then all items are completed.
+		/// Are all items have been processed?
 		/// </summary>
-		/// <returns>int: the number of items still in progress.</returns>
+		/// <returns>Return true if so.</returns>
 		public bool IsFinished()
 		{
 			return (GetInProgressCount() == 0);
+		}
+
+		/// <summary>
+		/// Are all items in progress beyond their allowed retry count?
+		/// Deadlock can be a fatal condition, or just be used to generate warnings.  This is just to detect state.
+		/// </summary>
+		/// <returns>Return true if so.</returns>
+		public bool IsDeadlocked(int maxAttemptsAllowed)
+		{
+			return ItemsInProgress
+				.Where(o => o.Attempts >= maxAttemptsAllowed)
+				.Count() == ItemsInProgress.Count;
 		}
 
 		private void Hydrate()
@@ -284,7 +309,7 @@ namespace BOG.SwissArmyKnife
 			// add items to maximize buffer availability.
 			while (IndexStart + IndexOffset < IndexEnd && ItemsInProgress.Count < MaxInProgress)
 			{
-				ItemsInProgress.Add(new AccordionItem
+				ItemsInProgress.Add(new AccordionItem<T>
 				{
 					Index = IndexStart + IndexOffset
 				});

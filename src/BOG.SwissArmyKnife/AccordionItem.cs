@@ -12,7 +12,7 @@ namespace BOG.SwissArmyKnife
 	/// Defines a single item in the accordion.
 	/// </summary>
 	[JsonObject]
-	public class AccordionItem
+	public class AccordionItem<T>
 	{
 		/// <summary>
 		/// The unique index value of this item in the accordion.
@@ -45,5 +45,11 @@ namespace BOG.SwissArmyKnife
 		/// </summary>
 		[JsonProperty(Required = Required.Always, PropertyName = "Timeouts")]
 		public int Timeouts { get; set; } = 0;
+
+		/// <summary>
+		/// The payload for the object.  No payload is required
+		/// </summary>
+		[JsonProperty(Required = Required.AllowNull, PropertyName = "Payload")]
+		public T Payload { get; set; } = default;
 	}
 }
