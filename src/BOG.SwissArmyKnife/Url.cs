@@ -66,6 +66,9 @@ namespace BOG.SwissArmyKnife
         private Dictionary<string, int> _defaultPorts = new Dictionary<string, int>()
         {
             { "ftp", 21 },
+            { "ftps", 990 },
+            { "ftpes", 21 },
+            { "sftp", 22 },
             { "ssh", 22 },
             { "telnet", 23 },
             { "smtp", 25 },
