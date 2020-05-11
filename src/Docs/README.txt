@@ -3,6 +3,9 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.5.10 -- 05/10/2020
+- URI parsing: Adds default ports for ftp, sftp, ftps and ftpes, and related tests.
+
 1.5.9 -- 05/07/2020
 - Adds a (generic) Payload to an accordion item, and switched to AccordionItem<T> for casting payload.
 
