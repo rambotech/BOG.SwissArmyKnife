@@ -150,7 +150,7 @@ namespace BOG.SwissArmyKnife.Test
             Assert.IsTrue(string.Compare(TextBlob, Result) == 0);
         }
 
-        [Ignore("Windows passes; Linux fails")]
+        [Ignore("Skipped: Windows passes; Linux fails")]
         [Test, Description("HeadTailSummary(): default, squashed, small")]
         public void StringEx_HeadTailSummary_Default_Squashed_Small()
         {
@@ -160,7 +160,7 @@ namespace BOG.SwissArmyKnife.Test
             Assert.IsTrue(string.Compare(Result, Expected) == 0);
         }
 
-        [Ignore("Windows passes; Linux fails")]
+        [Ignore("Skipped: Windows passes; Linux fails")]
         [Test, Description("HeadTailSummary(): default, squashed, large")]
         public void StringEx_HeadTailSummary_Default_Squashed_Large()
         {
@@ -208,7 +208,7 @@ namespace BOG.SwissArmyKnife.Test
             Assert.IsTrue(string.Compare(TextBlob, Result) == 0);
         }
 
-        [Ignore("Windows passes; Linux fails")]
+        [Ignore("Skipped: Windows passes; Linux fails")]
         [Test, Description("HeadTailSummary(): non-default, squashed, large")]
         public void StringEx_HeadTailSummary_NonDefault_Squashed_Large()
         {
