@@ -2,7 +2,7 @@
   "profiles": {
     "BOG.SwissArmyKnife.Demo": {
       "commandName": "Project",
-      "commandLineArgs": "CipherUtility"
+      "commandLineArgs": "BabbleOn"
     }
   }
 }

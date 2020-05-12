@@ -790,5 +790,29 @@
     "UrlDecodedFragment": "",
     "AsString": "sftp://myserver",
     "Note": "Default port test"
+  },
+  {
+    "DataRow": "33",
+    "OriginalUrl": "sftp://user:passw%30rd@ftp.somehost.com/info.json#C%3a%5cUsers%5cme%5c.keys%5caccess.ssh.ppk",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Scheme": "sftp",
+    "User": "user",
+    "Password": "passw%30rd",
+    "Host": "ftp.somehost.com",
+    "Port": "22",
+    "Path": "/info.json",
+    "Query": "",
+    "Fragment": "C%3a%5cUsers%5cme%5c.keys%5caccess.ssh.ppk",
+    "UrlDecodedScheme": "sftp",
+    "UrlDecodedUser": "user",
+    "UrlDecodedPassword": "passw0rd",
+    "UrlDecodedHost": "ftp.somehost.com",
+    "UrlDecodedPort": "",
+    "UrlDecodedPath": "/info.json",
+    "UrlDecodedQuery": "",
+    "UrlDecodedFragment": "C:\\Users\\me\\.keys\\access.ssh.ppk",
+    "AsString": "sftp://user:passw0rd@ftp.somehost.com/info.json#C%3a%5cUsers%5cme%5c.keys%5caccess.ssh.ppk",
+    "Note": "Default port test"
   }
 ]
