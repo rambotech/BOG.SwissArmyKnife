@@ -3,6 +3,9 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.6.0 -- 05/14/2020
+- Simplify the AccordionItem: consumer tracks fails and attempts.
+
 1.5.11 -- 05/11/2020
 - Reduce target framework to .NET Standard 2.0 for better compatibility.
 

@@ -40,7 +40,7 @@ namespace BOG.SwissArmyKnife
 		/// The list of items currently available for work.
 		/// </summary>
 		[JsonProperty(Required = Required.Always, PropertyName = "Items")]
-		public List<AccordionItem<T>> ItemsInProgress { get; set; } = new List<AccordionItem<T>>();
+		public Dictionary<Int64, AccordionItem<T>> ItemsInProgress { get; set; } = new Dictionary<long, AccordionItem<T>>();
 
 		/// <summary>
 		/// The first item number to be worked
@@ -73,50 +73,41 @@ namespace BOG.SwissArmyKnife
 		/// </summary>
 		/// <param name="secondsTimeout">The number of seconds to allow for completion before the item can be reissued.</param>
 		/// <param name="maxItems">The maximum number of items to retrieve (at least 1, and capped by the value of maximum in progress)</param>
-		/// <param name="favorNewItems">When true, higher attempts </param>
+		/// <param name="favorNew">True to return any new items, ahead of retry items.</param>
 		/// <returns>true if an item for processing exists; false if no items are not available for processing.</returns>
-		public List<AccordionItem<T>> GetItems(int secondsTimeout, int maxItems, bool favorNewItems)
+		public List<AccordionItem<T>> GetItems(int secondsTimeout, int maxItems, bool favorNew)
 		{
 			var result = new List<AccordionItem<T>>();
 			lock (lockItemList)
 			{
 				Hydrate();
 				IEnumerable<AccordionItem<T>> itemsSelect;
-				if (favorNewItems)
+				if (favorNew)
 				{
-					itemsSelect = ItemsInProgress
-							.Where(o => o.DeadLine < DateTime.Now)
-							.OrderBy(s => s.Attempts)
+					itemsSelect = ItemsInProgress.Values
+							.Where(o => o.AvailableOn <= DateTime.Now)
+							.OrderBy(s => s.IssueHistory.Count)
 							.Take(maxItems < 1 ? 1 : maxItems);
 				}
 				else
 				{
-					itemsSelect = ItemsInProgress
-							.Where(o => o.DeadLine < DateTime.Now)
-							.OrderByDescending(s => s.Attempts)
+					itemsSelect = ItemsInProgress.Values
+							.Where(o => o.AvailableOn <= DateTime.Now)
+							.OrderByDescending(s => s.IssueHistory.Count)
 							.Take(maxItems < 1 ? 1 : maxItems);
 				}
 				if (itemsSelect != null)
 				{
 					foreach (var item in itemsSelect)
 					{
-						if (item.DeadLine != DateTime.MinValue)
-						{
-							item.Timeouts++;
-						}
-						else
-						{
-							item.Attempts++;
-						}
-						item.DeadLine = DateTime.Now.AddSeconds(secondsTimeout);
+						item.AvailableOn = DateTime.Now.AddSeconds(secondsTimeout);
+						item.IssueHistory.Add(DateTime.Now);
 						// create a new object for the return value
 						result.Add(new AccordionItem<T>
 						{
 							Index = item.Index,
-							Attempts = item.Attempts,
-							Timeouts = item.Timeouts,
-							DeadLine = item.DeadLine,
-							State = item.State,
+							AvailableOn = item.AvailableOn,
+							IssueHistory = new List<DateTime>(item.IssueHistory),
 							Payload = item.Payload
 						});
 					}
@@ -129,14 +120,14 @@ namespace BOG.SwissArmyKnife
 		///  Retrieves a single AccordionItem requiring processing.  Content is null if none are available.
 		/// </summary>
 		/// <param name="secondsTimeout">The number of seconds to allow for completion before the item can be reissued.</param>
-		/// <param name="favorNewItems">When true, higher attempts </param>
+		/// <param name="favorNew">True to return any new items, ahead of retry items.</param>
 		/// <returns>The AccordionItem found for processing; false if no items are not available for processing.</returns>
-		public AccordionItem<T> GetItem(int secondsTimeout, bool favorNewItems)
+		public AccordionItem<T> GetItem(int secondsTimeout, bool favorNew)
 		{
 			AccordionItem<T> result = null;
 			lock (lockItemList)
 			{
-				var items = GetItems(secondsTimeout, 1, favorNewItems);
+				var items = GetItems(secondsTimeout, 1, favorNew);
 				if (items.Count > 0)
 				{
 					result = items[0];
@@ -146,31 +137,16 @@ namespace BOG.SwissArmyKnife
 		}
 
 		/// <summary>
-		/// Sets the state for an item.
-		/// </summary>
-		/// <param name="itemIndex">The index property value of the Accordion itemd.</param>
-		/// <param name="state">The AccordionItemState enum value to assign to the Accordion item.</param>
-		/// <remarks>The item reference by itemIdex must be in the in-processing list, or an exception is thrown.</remarks>
-		public void SetItemState(Int64 itemIndex, AccordionItemState state)
-		{
-			lock (lockItemList)
-			{
-				ItemsInProgress.Where(o => o.Index == itemIndex).FirstOrDefault().State = state;
-			}
-		}
-
-		/// <summary>
-		/// Sets the state for an item.
+		/// Sets the payload for an item.
 		/// </summary>
 		/// <param name="itemIndex">The index property value of the Accordion item to be processed.</param>
 		public void SetItemPayload(Int64 itemIndex, T payload)
 		{
 			lock (lockItemList)
 			{
-				var thisItem = ItemsInProgress.Where(o => o.Index == itemIndex).FirstOrDefault();
-				if (thisItem != null)
+				if (ItemsInProgress.Keys.Contains(itemIndex))
 				{
-					thisItem.Payload = payload;
+					ItemsInProgress[itemIndex].Payload = payload;
 				}
 			}
 		}
@@ -183,11 +159,9 @@ namespace BOG.SwissArmyKnife
 		{
 			lock (lockItemList)
 			{
-				var thisItem = ItemsInProgress.Where(o => o.Index == itemIndex).FirstOrDefault();
-				if (thisItem != null)
+				if (ItemsInProgress.Keys.Contains(itemIndex))
 				{
-					thisItem.DeadLine = DateTime.MinValue;
-					thisItem.Timeouts = 0;
+					ItemsInProgress[itemIndex].AvailableOn = DateTime.MinValue;
 				}
 			}
 		}
@@ -196,17 +170,16 @@ namespace BOG.SwissArmyKnife
 		/// Resets the deadlne for an item.  Does not change the number of attempts.
 		/// </summary>
 		/// <param name="itemIndex">The index property value of the Accordion item to be processed.</param>
-		/// <param name="deadline">The new time when the item again becomes available via GetItem().  Note: the time
+		/// <param name="availableOn">The new time when the item again becomes available via GetItem().  Note: the time
 		/// must be in the future, or no action is taken.</param>
-		public void ExtendItemTimeout(Int64 itemIndex, DateTime deadline)
+		public void ExtendItemTimeout(Int64 itemIndex, DateTime availableOn)
 		{
-			if (deadline <= DateTime.Now) return;
+			if (availableOn <= DateTime.Now) return;
 			lock (lockItemList)
 			{
-				var thisItem = ItemsInProgress.Where(o => o.Index == itemIndex).FirstOrDefault();
-				if (thisItem != null)
+				if (ItemsInProgress.Keys.Contains(itemIndex))
 				{
-					thisItem.DeadLine = deadline;
+					ItemsInProgress[itemIndex].AvailableOn = availableOn;
 				}
 			}
 		}
@@ -220,19 +193,17 @@ namespace BOG.SwissArmyKnife
 		{
 			lock (lockItemList)
 			{
-				var thisItem = ItemsInProgress.Where(o => o.Index == itemIndex).FirstOrDefault();
-				if (thisItem != null)
+				if (ItemsInProgress.Keys.Contains(itemIndex))
 				{
-					ItemsInProgress.Remove(thisItem);
+					ItemsInProgress.Remove(itemIndex);
 				}
-				Hydrate();
 			}
 		}
 
 		/// <summary>
 		/// Return the number of items remaining in the in-progress list.
 		/// If 0, then all items are completed.
-		/// If less than the max in progress, no new items are left to add to the in-progresss list.
+		/// If less than the max in progress, no new items are left to add to the in-progresss list (i.e. Sunsetting).
 		/// Otherwise, the value will match MaxInProgress.
 		/// </summary>
 		/// <returns>int: the number of items still in progress.</returns>
@@ -241,7 +212,7 @@ namespace BOG.SwissArmyKnife
 			lock (lockItemList)
 			{
 				Hydrate();
-				return ItemsInProgress.Count;
+				return ItemsInProgress.Keys.Count;
 			}
 		}
 
@@ -249,13 +220,13 @@ namespace BOG.SwissArmyKnife
 		/// Returns the percentage of items which have completed processing.  The value is %###.##, represented as in integer.
 		/// E.g. 5001 represents 50.01%
 		/// </summary>
-		/// <returns>int: the percentage of total items no longer in progress.</returns>
-		public int GetPercentageComplete()
+		/// <returns>decimal: the percentage of total items no longer in progress.  Divide by 100 for a percentage</returns>
+		public decimal GetPercentageComplete()
 		{
 			lock (lockItemList)
 			{
 				Hydrate();
-				return (int)((Int64)100 * (IndexEnd - (IndexStart + IndexOffset - ItemsInProgress.Count)) / (IndexStart + IndexEnd));
+				return (decimal)((int)((Int64)100 * (IndexEnd - (IndexStart + IndexOffset - ItemsInProgress.Keys.Count)) / (IndexStart + IndexEnd)) / 100.0);
 			}
 		}
 
@@ -267,12 +238,12 @@ namespace BOG.SwissArmyKnife
 		public Dictionary<int, int> GetTimeoutCountSummary()
 		{
 			var result = new Dictionary<int, int>();
-			var query = ItemsInProgress.GroupBy(
-					o => (int)Math.Floor((float)o.Timeouts),
+			var query = ItemsInProgress.Values.GroupBy(
+					o => (int)Math.Floor((float)o.IssueHistory.Count),
 					o => o.Index,
-					(baseTimeout, indexes) => new
+					(timeoutCount, indexes) => new
 					{
-						key = baseTimeout,
+						key = timeoutCount,
 						count = indexes.Count()
 					});
 
@@ -292,31 +263,20 @@ namespace BOG.SwissArmyKnife
 			return (GetInProgressCount() == 0);
 		}
 
-		/// <summary>
-		/// Are all items in progress beyond their allowed retry count?
-		/// Deadlock can be a fatal condition, or just be used to generate warnings.  This is just to detect state.
-		/// </summary>
-		/// <returns>Return true if so.</returns>
-		public bool IsDeadlocked(int maxAttemptsAllowed)
-		{
-			return ItemsInProgress
-				.Where(o => o.Attempts >= maxAttemptsAllowed)
-				.Count() == ItemsInProgress.Count;
-		}
-
 		private void Hydrate()
 		{
 			// add items to maximize buffer availability.
 			while (IndexStart + IndexOffset < IndexEnd && ItemsInProgress.Count < MaxInProgress)
 			{
-				ItemsInProgress.Add(new AccordionItem<T>
-				{
-					Index = IndexStart + IndexOffset
-				});
+				ItemsInProgress.Add(
+					IndexStart + IndexOffset,
+					new AccordionItem<T>
+					{
+						Index = IndexStart + IndexOffset
+					});
 				IndexOffset++;
 			}
 		}
-
 		#endregion
 	}
 }

@@ -166,21 +166,19 @@ namespace BOG.SwissArmyKnife.Test
 
 			// Since timeout has not expired, no item is returned.
 			var itemsC = acc.GetItems(60, 0, true);
-			Assert.That(itemsC.Count == 0, $"(C) GetItems() expected to return 0 items, but returned {itemsB.Count} item(s).");
+			Assert.That(itemsC.Count == 0, $"(C) GetItems() expected to return 0 items, but returned {itemsC.Count} item(s).");
 
 			Thread.Sleep(5000);
 
 			// Since timeout has expired on 50 items, 50 items should be returned--all with an attempt value of 1 and a timeout count of 1.
-			var itemsD = acc.GetItems(60, 200, false);
-			Assert.That(itemsD.Count == 50, $"(D) GetItems() expected to return 50 items, but returned {itemsC.Count} item(s).");
-			var attemptCount = itemsD.Count(o => o.Attempts == 1);
-			Assert.That(attemptCount == 50, $"(D) expected to return 50 items with an Attempt count of 1, but returned {attemptCount} item(s).");
-			var timeoutCount = itemsD.Count(o => o.Timeouts == 1);
-			Assert.That(timeoutCount == 50, $"(D) expected to return 50 items with an Timeout count of 1, but returned {timeoutCount} item(s).");
+			var itemsD = acc.GetItems(60, 200, true);
+			Assert.That(itemsD.Count == 50, $"(D) GetItems() expected to return 50 items, but returned {itemsD.Count} item(s).");
+			var attemptCount = itemsD.Count(o => o.IssueHistory.Count == 2);
+			Assert.That(attemptCount == 50, $"(D) expected to return 50 items with an issue count of 2, but returned {attemptCount} item(s).");
 
 			// The next call should return no items, since their timeouts have not expired.
-			var itemsE = acc.GetItems(60, 1, false);
-			Assert.That(itemsE.Count == 0, $"(E) GetItems() expected to return 0 items, but returned {itemsC.Count} item(s).");
+			var itemsE = acc.GetItems(60, 1, true);
+			Assert.That(itemsE.Count == 0, $"(E) GetItems() expected to return 0 items, but returned {itemsD.Count} item(s).");
 		}
 
 		[Test]
@@ -191,19 +189,16 @@ namespace BOG.SwissArmyKnife.Test
 
 			while (!acc.IsFinished() && itemsRetrieved < 100000)
 			{
-				foreach (var item in acc.GetItems(1, 1000, false))
+				foreach (var item in acc.GetItems(1, 1000, true))
 				{
 					itemsRetrieved++;
-					if (item.Attempts < 5)
+					if (item.IssueHistory.Count < 5)
 					{
 						acc.RetryItem(item.Index);
 					}
 					else
 					{
-						Assert.That(item.State == AccordionItemState.InProgress, $"Expected InProgress but was {item.State}");
-						acc.SetItemState(item.Index, AccordionItemState.Failed);
-						item.State = AccordionItemState.Failed;
-						Assert.That(item.State == AccordionItemState.Failed, $"Expected Failed but was {item.State}");
+						Assert.That(item.AvailableOn > DateTime.Now, $"Expected Unavailable, but is available.");
 						acc.CompleteItem(item.Index);
 					}
 				}
@@ -220,8 +215,8 @@ namespace BOG.SwissArmyKnife.Test
 			var acc = new Accordion<MyObject>(0, 20, 20);
 
 			var items = acc.GetItems(60, 5, true);
-			var attempts = items.Count(o => o.Attempts == 1);
-			Assert.That(items.Count(o => o.Attempts == 1) == 5, $"Item count expected to be 5 items with 1 Attempt, but had {items.Count} with {attempts} items marked as 1 Attempts");
+			var issues = items.Count(o => o.IssueHistory.Count == 1);
+			Assert.That(items.Count(o => o.IssueHistory.Count == 1) == 5, $"Item count expected to be 5 items with 1 issuance, but had {items.Count} with {issues} items marked as 1 issuance");
 
 			// mark the items for retry
 
@@ -230,11 +225,11 @@ namespace BOG.SwissArmyKnife.Test
 				acc.RetryItem(item.Index);
 			}
 
-			var retryItems = acc.GetItems(60, 5, false);  // true == new items (Attempts == 0) to the top of the list.
-			var retryAttempts = retryItems.Count(o => o.Attempts == 2);
+			var retryItems = acc.GetItems(60, 5, false);  // true == new items (IssueHistory.Count == 0) to the top of the list.
+			var retryAttempts = retryItems.Count(o => o.IssueHistory.Count == 2);
 
 			var newItems = acc.GetItems(60, 15, true);
-			var newAttempts = newItems.Count(o => o.Attempts == 1);
+			var newAttempts = newItems.Count(o => o.IssueHistory.Count == 1);
 
 			Assert.That(retryAttempts == 5, $"Expected 5 retry items with 2 Attempts, but had {retryItems.Count} with {retryAttempts} items marked as 2 Attempts");
 			Assert.That(newAttempts == 15, $"Expected 15 new items with 1 Attempts, but had {newItems.Count} with {newAttempts} items marked as 1 Attempts");
@@ -246,8 +241,8 @@ namespace BOG.SwissArmyKnife.Test
 			var acc = new Accordion<MyObject>(0, 20, 20);
 
 			var items = acc.GetItems(60, 5, true);
-			var attempts = items.Count(o => o.Attempts == 1);
-			Assert.That(items.Count(o => o.Attempts == 1) == 5, $"Item count expected to be 5 items with 1 Attempt, but had {items.Count} with {attempts} items marked as 1 Attempts");
+			var attempts = items.Count(o => o.IssueHistory.Count == 1);
+			Assert.That(items.Count(o => o.IssueHistory.Count == 1) == 5, $"Item count expected to be 5 items with 1 Attempt, but had {items.Count} with {attempts} items marked as 1 Attempts");
 
 			// mark the items for retry
 
@@ -257,28 +252,28 @@ namespace BOG.SwissArmyKnife.Test
 			}
 
 			var newItems = acc.GetItems(60, 15, true);
-			var newAttempts = newItems.Count(o => o.Attempts == 1);
+			var newAttempts = newItems.Count(o => o.IssueHistory.Count == 1);
 
 			var retryItems = acc.GetItems(60, 5, false);  // false == retry items to the top of the list.
-			var retryAttempts = retryItems.Count(o => o.Attempts == 2);
+			var retryAttempts = retryItems.Count(o => o.IssueHistory.Count == 2);
 
 			Assert.That(retryAttempts == 5, $"Expected 5 retry items with 2 Attempts, but had {retryItems.Count} with {retryAttempts} items marked as 2 Attempts");
 			Assert.That(newAttempts == 15, $"Expected 15 new items with 1 Attempts, but had {newItems.Count} with {newAttempts} items marked as 1 Attempts");
 		}
 
 		[Test]
-		public void Accordion_Basics_ExtendDeadline()
+		public void Accordion_Basics_ExtendTime()
 		{
 			var acc = new Accordion<MyObject>(0, 20, 20);
 
 			var items1 = acc.GetItems(2, 5, true);
 			var items2 = acc.GetItems(2, 15, true);
 
-			// extend the deadline for these 15 items for items for an extra 10 sec.
-			var newDeadline = DateTime.Now.AddSeconds(5);
+			// extend AvailableOn for these 15 items for items for an extra 10 sec.
+			var newAvailableOn = DateTime.Now.AddSeconds(5);
 			foreach (var item in items2)
 			{
-				acc.ExtendItemTimeout(item.Index, newDeadline);
+				acc.ExtendItemTimeout(item.Index, newAvailableOn);
 			}
 
 			Thread.Sleep(3000);
@@ -323,8 +318,7 @@ namespace BOG.SwissArmyKnife.Test
 			var items1 = acc.GetItems(2, 10, true);
 			foreach (var item in items1)
 			{
-				Assert.That(item.Attempts == 1, $"Item {item.Index}: Expected 1 attempt but has {item.Attempts}");
-				Assert.That(item.Timeouts == 0, $"Item {item.Index}: Expected 0 timeouts but has {item.Timeouts}");
+				Assert.That(item.IssueHistory.Count == 1, $"(A) Item {item.Index}: Expected 1 attempt but has {item.IssueHistory.Count}");
 			}
 
 			Thread.Sleep(2200);
@@ -332,101 +326,55 @@ namespace BOG.SwissArmyKnife.Test
 			var items2 = acc.GetItems(2, 10, true);
 			foreach (var item in items2)
 			{
-				Assert.That(item.Attempts == 1, $"Item {item.Index}: Expected 1 attempt but has {item.Attempts}");
-				Assert.That(item.Timeouts == 1, $"Item {item.Index}: Expected 1 timeouts but has {item.Timeouts}");
+				Assert.That(item.IssueHistory.Count == 2, $"(B) Item {item.Index}: Expected 2 attempt but has {item.IssueHistory.Count}");
 				acc.RetryItem(item.Index);
 			}
 
 			var items3 = acc.GetItems(2, 10, true);
 			foreach (var item in items3)
 			{
-				Assert.That(item.Attempts == 2, $"Item {item.Index}: Expected 2 attempt but has {item.Attempts}");
-				Assert.That(item.Timeouts == 0, $"Item {item.Index}: Expected 0 timeouts but has {item.Timeouts}");
+				Assert.That(item.IssueHistory.Count == 3, $"(C) Item {item.Index}: Expected 3 attempt but has {item.IssueHistory.Count}");
 			}
 		}
 
 		[Test]
 		public void Accordion_Basics_Timeout2()
 		{
-			var acc = new Accordion<MyObject>(0, 5, 10);
+			var acc = new Accordion<MyObject>(0, 20, 20);
 
-			var items1 = acc.GetItems(2, 10, true);
+			var summary1 = acc.GetTimeoutCountSummary();
+			Assert.That(summary1.Count == 0, $"Expected summary1 to have zero entries, but it has {summary1.Count} entries.");
+
+			var items1 = acc.GetItems(1, 10, true);
 			foreach (var item in items1)
 			{
-				Assert.That(item.Attempts == 1, $"Item {item.Index}: Expected 1 attempt but has {item.Attempts}");
-				Assert.That(item.Timeouts == 0, $"Item {item.Index}: Expected 0 timeouts but has {item.Timeouts}");
+				Assert.That(item.IssueHistory.Count == 1, $"Item {item.Index}: Expected 1 attempt but has {item.IssueHistory.Count}");
 			}
-			var summary1 = acc.GetTimeoutCountSummary();
-			Assert.That(summary1.Count == 1, $"Expected summary1 to have one entry, but it has {summary1.Count} entries.");
-			Assert.That(summary1.ContainsKey(0), $"Expected summary1 to have a key value of 0, but it has a different value.");
-			Assert.That(summary1.ContainsKey(0) && summary1[0] == 5, $"Expected summary to have a value of 5, but it has a different value.");
+			summary1 = acc.GetTimeoutCountSummary();
+			Assert.That(summary1.Count == 2, $"Expected summary1 to have 2 entries, but it has {summary1.Count} entries.");
+			Assert.That(summary1.ContainsKey(0), $"Expected summary1 to have a key value of 2, but it has a different value.");
+			Assert.That(summary1.ContainsKey(0) && summary1[0] == 10, $"Expected summary1 (1 issuance) to have a value of 10, but it has a different value.");
+			Assert.That(summary1.ContainsKey(1), $"Expected summary1 to have a key value of 2, but it has a different value.");
+			Assert.That(summary1.ContainsKey(1) && summary1[1] == 10, $"Expected summary1 (2 issuances) to have a value of 10, but it has a different value.");
 
-			Thread.Sleep(2200);
+			Thread.Sleep(1200);
 
-			var items2 = acc.GetItems(2, 10, true);
+			var items2 = acc.GetItems(1, 10, false);
+			var items3 = acc.GetItems(1, 10, false);
+			var summary2 = acc.GetTimeoutCountSummary();
 			foreach (var item in items2)
 			{
-				Assert.That(item.Attempts == 1, $"Item {item.Index} in items2: Expected 1 attempt but has {item.Attempts}");
-				Assert.That(item.Timeouts == 1, $"Item {item.Index} in items2: Expected 1 timeouts but has {item.Timeouts}");
+				Assert.That(item.IssueHistory.Count == 2, $"Item {item.Index} in items2: Expected 2 attempt but has {item.IssueHistory.Count}");
 			}
-
-			Thread.Sleep(2200);
-
-			var summary2 = acc.GetTimeoutCountSummary();
-			Assert.That(summary2.Count == 1, $"Expected summary2 to have one entry, but it has {summary2.Count} entries.");
-			Assert.That(summary2.ContainsKey(1), $"Expected summary2 to have a key value of 1, but it has a different value.");
-			Assert.That(summary2.ContainsKey(1) && summary2[1] == 5, $"Expected summary2 to have a value of 5, but it has a different value.");
-
-			var items3 = acc.GetItems(2, 10, true);
 			foreach (var item in items3)
 			{
-				Assert.That(item.Attempts == 1, $"Item {item.Index} in items3: Expected 1 attempt but has {item.Attempts}");
-				Assert.That(item.Timeouts == 2, $"Item {item.Index} in items3: Expected 2 timeouts but has {item.Timeouts}");
-				acc.RetryItem(item.Index);
+				Assert.That(item.IssueHistory.Count == 1, $"Item {item.Index} in items3: Expected 1 attempt but has {item.IssueHistory.Count}");
 			}
-
-			Thread.Sleep(2200);
-
-			var summary3 = acc.GetTimeoutCountSummary();
-			Assert.That(summary3.Count == 1, $"Expected summary3 to have one entry, but it has {summary3.Count} entries.");
-			Assert.That(summary3.ContainsKey(0), $"Expected summary3 to have a key value of 1, but it has a different value.");
-			Assert.That(summary3.ContainsKey(0) && summary3[0] == 5, $"Expected summary3 to have a value of 5, but it has a different value.");
-
-			var items4 = acc.GetItems(2, 10, true);
-			foreach (var item in items4)
-			{
-				Assert.That(item.Attempts == 2, $"Item {item.Index} in items4: Expected 2 attempt but has {item.Attempts}");
-				Assert.That(item.Timeouts == 0, $"Item {item.Index} in items4: Expected 0 timeouts but has {item.Timeouts}");
-			}
-		}
-
-		[Test]
-		public void Accordion_Basics_State()
-		{
-			var acc = new Accordion<MyObject>(0, 5, 10);
-
-			var items1 = acc.GetItems(2, 10, true);
-			foreach (var item in items1)
-			{
-				Assert.That(item.State == AccordionItemState.InProgress, $"Item {item.Index}: Expected state InProgress but has {item.State}");
-				acc.SetItemState(item.Index, AccordionItemState.Succeeded);
-				// item is a local copy, and state should be unchanged by the above method,.
-				Assert.That(item.State == AccordionItemState.InProgress, $"Item {item.Index}: Expected state InProgress but has {item.State}");
-			}
-			var summary1 = acc.GetTimeoutCountSummary();
-			Assert.That(summary1.Count == 1, $"Expected summary1 to have one entry, but it has {summary1.Count} entries.");
-			Assert.That(summary1.ContainsKey(0), $"Expected summary1 to have a key value of 0, but it has a different value.");
-			Assert.That(summary1.ContainsKey(0) && summary1[0] == 5, $"Expected summary to have a value of 5, but it has a different value.");
-
-			Thread.Sleep(2200);
-
-			var items2 = acc.GetItems(2, 10, true);
-			foreach (var item in items2)
-			{
-				Assert.That(item.Attempts == 1, $"Item {item.Index} in items2: Expected 1 attempt but has {item.Attempts}");
-				Assert.That(item.Timeouts == 1, $"Item {item.Index} in items2: Expected 1 timeouts but has {item.Timeouts}");
-				Assert.That(item.State == AccordionItemState.Succeeded, $"Item {item.Index}: Expected state InProgress but has {item.State}");
-			}
+			Assert.That(summary2.Count == 2, $"Expected summary2 to have 2 entries, but it has {summary2.Count} entries.");
+			Assert.That(summary2.ContainsKey(1), $"Expected summary2 to have a key value of 2, but it has a different value.");
+			Assert.That(summary2.ContainsKey(1) && summary2[1] == 10, $"Expected summary2 (1 issuance) to have a value of 10, but it has a different value.");
+			Assert.That(summary2.ContainsKey(2), $"Expected summary2 to have a key value of 2, but it has a different value.");
+			Assert.That(summary2.ContainsKey(2) && summary2[2] == 10, $"Expected summary2 (2 issuances) to have a value of 10, but it has a different value.");
 		}
 
 		[Test]
@@ -434,32 +382,20 @@ namespace BOG.SwissArmyKnife.Test
 		{
 			var acc = new Accordion<MyObject>(0, 5, 10);
 
-			var items1 = acc.GetItems(2, 10, true);
-			foreach (var item in items1)
+			var item = acc.GetItem(1, true);
+			Assert.That(item.Payload == default, $"Payload not in default state");
+			acc.SetItemPayload(item.Index, new MyObject
 			{
-				Assert.That(item.State == AccordionItemState.InProgress, $"Item {item.Index}: Expected state InProgress but has {item.State}");
-				acc.SetItemPayload(item.Index, new MyObject
-				{
-					Index = item.Index,
-					Succeeded = (item.Index % 2 == 1),
-					Message = "Hello"
-				});
-				// item is a local copy, and state should be unchanged by the above method,.
-				Assert.That(item.Payload == default, $"Item {item.Index}: Expected state InProgress but has {item.State}");
-			}
+				Index = item.Index,
+				Succeeded = (item.Index % 2 == 1),
+				Message = "Hello"
+			});
+			Thread.Sleep(1200);
+			// item is a local copy, and state should be unchanged by the above method,.
+			Assert.That(item.Payload == default, $"Payload did not remain in default state");
 
-			Thread.Sleep(2200);
-
-			var items2 = acc.GetItems(2, 10, true);
-			foreach (var item in items2)
-			{
-				Assert.That(item.Attempts == 1, $"Item {item.Index} in items2: Expected 1 attempt but has {item.Attempts}");
-				Assert.That(item.Timeouts == 1, $"Item {item.Index} in items2: Expected 1 timeouts but has {item.Timeouts}");
-				Assert.That(item.Payload != default, $"Item {item.Index}: Expected payload but stayed at default value");
-				Assert.That(item.Payload.Index == item.Index, $"Item {item.Index}: Expected payload.index with {item.Index}, but had {item.Payload.Index}");
-				Assert.That(item.Payload.Succeeded == (item.Index % 2 == 1), $"Item {item.Index}: Expected payload.Success of {(item.Index % 2 == 1)}, but had {item.Payload.Succeeded}");
-				Assert.That(item.Payload.Message == "Hello", $"Item {item.Index}: Expected payload.Message of Hello, but had {item.Payload.Message}");
-			}
+			item = acc.GetItem(1, false);
+			Assert.That(item.Payload != default && item.Payload.Message == "Hello", $"Payload not in new state");
 		}
 	}
 }
