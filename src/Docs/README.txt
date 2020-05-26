@@ -3,6 +3,10 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.6.1 -- 05/25/2020
+- Add GetItemPayload method.
+- Correct IssuePayload property name in JSON.
+
 1.6.0 -- 05/14/2020
 - Simplify the AccordionItem: consumer tracks fails and attempts.
 

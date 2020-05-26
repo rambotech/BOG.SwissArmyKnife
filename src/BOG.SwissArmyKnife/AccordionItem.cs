@@ -25,9 +25,9 @@ namespace BOG.SwissArmyKnife
 		public DateTime AvailableOn { get; set; } = DateTime.MinValue;
 
 		/// <summary>
-		/// The time after which the item can be issued for work.
+		/// The times when the item was issued / re-issued for work.
 		/// </summary>
-		[JsonProperty(Required = Required.Always, PropertyName = "AvailableOn")]
+		[JsonProperty(Required = Required.Always, PropertyName = "IssueHistory")]
 		public List<DateTime> IssueHistory { get; set; } = new List<DateTime>();
 
 		/// <summary>

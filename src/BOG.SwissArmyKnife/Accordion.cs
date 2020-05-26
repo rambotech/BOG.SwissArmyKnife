@@ -137,6 +137,21 @@ namespace BOG.SwissArmyKnife
 		}
 
 		/// <summary>
+		/// Gets the payload for an item.
+		/// </summary>
+		/// <param name="itemIndex">The index property value of the Accordion item to be processed.</param>
+		public void GetItemPayload(Int64 itemIndex, T payload)
+		{
+			lock (lockItemList)
+			{
+				if (ItemsInProgress.Keys.Contains(itemIndex))
+				{
+					ItemsInProgress[itemIndex].Payload = payload;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Sets the payload for an item.
 		/// </summary>
 		/// <param name="itemIndex">The index property value of the Accordion item to be processed.</param>
