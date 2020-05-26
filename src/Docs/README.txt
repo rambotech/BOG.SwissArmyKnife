@@ -3,6 +3,10 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.6.2 -- 05/26/2020
+- TotalIterationItems removed as a property.
+- TotalIterationItems calculated at first get action.
+
 1.6.1 -- 05/25/2020
 - Add GetItemPayload method.
 - Correct IssuePayload property name in JSON.
