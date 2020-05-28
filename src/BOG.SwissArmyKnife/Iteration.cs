@@ -29,11 +29,12 @@ namespace BOG.SwissArmyKnife
 		}
 
 		/// <summary>
-		/// 
+		/// The collection of iteration items: dictionary key enforces ordinal position.
 		/// </summary>
 		[JsonProperty]
 		public Dictionary<int, IterationItem> IterationItems { get; set; } = new Dictionary<int, IterationItem>();
 
+		[JsonIgnore]
 		public Int64 TotalIterationCount
 		{
 			get
@@ -178,7 +179,7 @@ namespace BOG.SwissArmyKnife
 				LiteralValues = null
 			};
 			IterationItems.Add(IterationItems.Count, item);
-			RecalculateTotalItems();
+			_TotalIterationCount = -1L;  // force property recalculation
 			return result;
 		}
 
@@ -218,7 +219,7 @@ namespace BOG.SwissArmyKnife
 				LiteralValues = null
 			};
 			IterationItems.Add(IterationItems.Count, item);
-			RecalculateTotalItems();
+			_TotalIterationCount = -1L;  // force property recalculation
 			return result;
 		}
 
@@ -254,7 +255,7 @@ namespace BOG.SwissArmyKnife
 			}
 			int result = item.LiteralValues.Count;
 			IterationItems.Add(IterationItems.Count, item);
-			RecalculateTotalItems();
+			_TotalIterationCount = -1L;  // force property recalculation
 			return result;
 		}
 

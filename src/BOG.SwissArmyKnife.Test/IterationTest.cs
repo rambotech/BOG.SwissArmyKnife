@@ -152,7 +152,7 @@ namespace BOG.SwissArmyKnife.Test
 			Assert.AreEqual(i.TotalIterationCount, 200);
 		}
 
-		[Test, Description("IterationTests_TotalItemAutoCount(): validate correct total after de-serialization")]
+		[Test, Description("IterationTests_TotalItemAutoCount(): validate correct total after new item added")]
 		public void IterationTests_TotalItemAutoCount()
 		{
 			Iteration i = new Iteration
@@ -187,6 +187,33 @@ namespace BOG.SwissArmyKnife.Test
 			Assert.AreEqual(i.TotalIterationCount, 720000L);  // 2400 * 3 * 100
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
 			Assert.AreEqual(i.TotalIterationCount, 1440000L);  // 2400 * 3 * 100 * 2
+			i.AddNumberRange("numbers2", 1.0m, .1m, 2.0m, Iteration.EndValueEval.Exclusive);
+			Assert.AreEqual(i.TotalIterationCount, 14400000L);  // 2400 * 3 * 100 * 2 * 10
+		}
+
+		[Test, Description("IterationTests_Serialization(): validate serialize/deserialize")]
+		public void IterationTests_Serialization()
+		{
+			var settings = new JsonSerializerSettings()
+			{
+				MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+				DateParseHandling = DateParseHandling.DateTime,
+				Formatting = Newtonsoft.Json.Formatting.Indented,
+				NullValueHandling = NullValueHandling.Ignore
+			};
+
+			Iteration o = new Iteration();
+			o.AddNumberSequence("numbers1", 1, 1, 100);
+			o.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
+			o.AddNumberRange("numbers2", 1.0m, .1m, 2.0m, Iteration.EndValueEval.Exclusive);
+
+			var s =JsonConvert.SerializeObject(o, settings);
+
+			var d = JsonConvert.DeserializeObject<Iteration>(s, settings);
+
+			Assert.AreEqual(o.TotalIterationCount, 2000L, $"Serialization: Expected 2,000 iterations, but got {o.TotalIterationCount}");  // 100 * 2 * 10
+			Assert.AreEqual(d.TotalIterationCount, 2000L, $"Desrialization: Expected 2,000 iterations, but got {d.TotalIterationCount}");  // 100 * 2 * 10
+			Assert.AreEqual(o.IterationItems.Count, d.IterationItems.Count, $"Desrialization: Expected {o.IterationItems.Count} IterationItem, but has {d.IterationItems.Count}");
 		}
 
 		[Test, Description("IterationTests_GetIterationValueSet_NegativeIndex(): negative index throws exception")]

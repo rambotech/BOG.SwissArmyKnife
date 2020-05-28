@@ -3,6 +3,9 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.6.3 -- 05/27/2020
+- Fix serialization issue in IterationItems
+
 1.6.2 -- 05/26/2020
 - TotalIterationItems removed as a property.
 - TotalIterationItems calculated at first get action.
