@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BOG.SwissArmyKnife.Enum;
 
 namespace BOG.SwissArmyKnife.Entity
 {
@@ -16,19 +17,13 @@ namespace BOG.SwissArmyKnife.Entity
 	public class MegaAccordion<T>
 	{
 		/// <summary>
-		/// The signature for the work 
-		/// </summary>
-		[JsonProperty(Required = Required.Always, PropertyName = "Signature")]
-		public string Signature { get; set; } = string.Empty;
-
-		/// <summary>
 		/// The level for the work. And index to Levels: determines the size of the static and mutuable levels.
 		/// </summary>
 		[JsonProperty(Required = Required.Always, PropertyName = "Level")]
 		public int Level { get; set; } = 0;
 
 		[JsonProperty(Required = Required.Always, PropertyName = "State")]
-		public ProcessState State { get; set; } = ProcessState.Active;
+		public MegaAccordionState State { get; set; } = MegaAccordionState.Active;
 
 		/// <summary>
 		/// The levels for which the work is defined.  Entry, and entry before it (if any), define the number of static indexes, then the number of mutable indexes.
@@ -73,18 +68,6 @@ namespace BOG.SwissArmyKnife.Entity
 		public Dictionary<string, MegaAccordionItem<T>> ItemsInProgress { get; set; } = new Dictionary<string, MegaAccordionItem<T>>();
 
 		/// <summary>
-		/// The list of forecasts.
-		/// </summary>
-		[JsonProperty(Required = Required.Always, PropertyName = "Forecasts")]
-		public List<Forecast> Forecasts { get; set; } = new List<Forecast>();
-
-		/// <summary>
-		/// The list of forecasts.
-		/// </summary>
-		[JsonProperty(Required = Required.Always, PropertyName = "Forecasts")]
-		public List<ItemError> ItemErrors { get; set; } = new List<ItemError>();
-
-		/// <summary>
 		/// Deserialization instantiator
 		/// </summary>
 		public MegaAccordion()
@@ -107,7 +90,7 @@ namespace BOG.SwissArmyKnife.Entity
 		/// <returns></returns>
 		public void Validate()
 		{
-			if (State != ProcessState.Active)
+			if (State != MegaAccordionState.Active)
 			{
 				throw new InvalidOperationException($"The state must be set to Active or Sunsetting, but is set to {State}");
 			}
@@ -155,13 +138,12 @@ namespace BOG.SwissArmyKnife.Entity
 			{
 				if (!isValidated) Validate();
 				ItemsInProgress = new Dictionary<string, MegaAccordionItem<T>>();
-				Forecasts = new List<Forecast>();
 				Indexes = new long[ArgumentItems.Count];
 				for (var index = staticLength; index < mutableLength; index++)
 				{
 					Indexes[index] = 0L;
 				}
-				State = ProcessState.Active;
+				State = MegaAccordionState.Active;
 			}
 		}
 
@@ -306,61 +288,12 @@ namespace BOG.SwissArmyKnife.Entity
 				var result = true;
 				switch (State)
 				{
-					case ProcessState.Active:
-					case ProcessState.Sunsetting:
+					case MegaAccordionState.Active:
+					case MegaAccordionState.Sunsetting:
 						result = false;
 						break;
 				}
 				return result;
-			}
-		}
-
-		/// <summary>
-		/// Adds a new list of forecasts to the existing set of forecasts, and prunes the list for the TOP (prunedSize)
-		/// items when the maxSize is exceeded.
-		/// </summary>
-		/// <param name="forecasts"></param>
-		/// <param name="maxSize"></param>
-		/// <param name="prunedSize"></param>
-		public void AddForecasts(List<Forecast> forecasts, int maxSize, int prunedSize)
-		{
-			if (maxSize <= 0)
-			{
-				throw new ArgumentException($"The maxSize argument must be greater then zero.");
-			}
-			if (prunedSize <= 0)
-			{
-				throw new ArgumentException($"The prunedSize argument must be greater then zero.");
-			}
-			lock (lockItemList)
-			{
-				if (!isValidated) Validate();
-				foreach (var item in forecasts)
-				{
-					Forecasts.Add(item);
-				}
-			}
-			if (Forecasts.Count >= maxSize)
-			{
-				PruneForecasts(prunedSize);
-			}
-		}
-
-		/// <summary>
-		/// Adds a new list of forecasts to the existing set of forecasts, and prunes the list for the TOP (prunedSize)
-		/// items when the maxSize is exceeded.
-		/// </summary>
-		/// <param name="prunedSize"></param>
-		public void PruneForecasts(int prunedSize)
-		{
-			lock (lockItemList)
-			{
-				if (!isValidated) Validate();
-				Forecasts = Forecasts
-					.OrderByDescending(x => x.Ranking)
-					.Take(prunedSize)
-					.Select(y => y)
-					.ToList();
 			}
 		}
 
@@ -369,32 +302,7 @@ namespace BOG.SwissArmyKnife.Entity
 			lock (lockItemList)
 			{
 				if (!isValidated) Validate();
-				PruneForecasts(prunedSize);
-				BOG.ResearchRunner.Common.Helper.Converter<MegaAccordion<T>>.ToJsonFile(this, fileName);
-			}
-		}
-
-		/// <summary>
-		/// Adds a new list of errors to the existing set of ItemErrors, up to the maximum allowed.
-		/// If maximum allowed is exceeded, the state is set to MaxErrorsExceeded, and the remaining errors beyond the max are discarded.
-		/// </summary>
-		/// <param name="itemErrors"></param>
-		/// <param name="failErrorLimit"></param>
-		public void AddItemErrors(List<ItemError> itemErrors, int failErrorLimit)
-		{
-			lock (lockItemList)
-			{
-				if (!isValidated) Validate();
-				foreach (var item in itemErrors)
-				{
-					if (ItemErrors.Count >= failErrorLimit)
-						break;
-					ItemErrors.Add(item);
-				}
-				if (ItemErrors.Count >= failErrorLimit)
-				{
-					State = ProcessState.MaxErrorsExceeded;
-				}
+				ObjectJsonSerializer<MegaAccordion<T>>.SaveDocumentFormat(this, fileName, true);
 			}
 		}
 
@@ -404,7 +312,7 @@ namespace BOG.SwissArmyKnife.Entity
 			{
 				if (!isValidated) Validate();
 				// add items to maximize buffer availability.
-				while (ItemsInProgress.Count < MaxInProgress && State == ProcessState.Active)
+				while (ItemsInProgress.Count < MaxInProgress && State == MegaAccordionState.Active)
 				{
 					var thisKey = BuildKeyFromIndexes();
 					ItemsInProgress.Add(thisKey, new MegaAccordionItem<T>
@@ -423,13 +331,13 @@ namespace BOG.SwissArmyKnife.Entity
 			{
 				if (!isValidated) Validate();
 
-				for (var index = mutableStart + mutableLength - 1; State == ProcessState.Active && index >= mutableStart; index--)
+				for (var index = mutableStart + mutableLength - 1; State == MegaAccordionState.Active && index >= mutableStart; index--)
 				{
 					if (Indexes[index] == ArgumentItems.Count - 1)
 					{
 						Indexes[index] = 0;
 						if (index > mutableStart) continue;
-						State = ProcessState.Sunsetting;
+						State = MegaAccordionState.Sunsetting;
 						break;
 					}
 					Indexes[index]++;
@@ -490,7 +398,7 @@ namespace BOG.SwissArmyKnife.Entity
 				{
 					throw new InvalidOperationException($"Invalid key: requires {Indexes.Length} index values, but only has {parts.Length}");
 				}
-				for (var index = mutableStart + mutableLength - 1; State == ProcessState.Active && index >= mutableStart; index--)
+				for (var index = mutableStart + mutableLength - 1; State == MegaAccordionState.Active && index >= mutableStart; index--)
 				{
 					result[index] = long.Parse("0x" + parts[index]);
 				}
