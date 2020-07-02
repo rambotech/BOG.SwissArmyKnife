@@ -252,7 +252,7 @@ namespace BOG.SwissArmyKnife
                 r.ErrorMessage = string.Empty;
                 r.headers = WebResp.Headers;
                 r.ResponseURI = WebResp.ResponseUri.ToString();
-                r.StatusCode = ((int)Enum.Parse(typeof(HttpStatusCode), WebResp.StatusCode.ToString())).ToString();
+                r.StatusCode = ((int)System.Enum.Parse(typeof(HttpStatusCode), WebResp.StatusCode.ToString())).ToString();
                 r.StatusText = WebResp.StatusDescription;
             }
             catch (Exception ex)

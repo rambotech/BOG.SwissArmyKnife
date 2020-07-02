@@ -601,9 +601,9 @@ namespace BOG.SwissArmyKnife.Extensions
             }
 
             // Locate and replace special folder placeholders, e.g.  "[CommonApplicationData]"
-            foreach (string specialFolderName in Enum.GetNames(typeof(Environment.SpecialFolder)))
+            foreach (string specialFolderName in System.Enum.GetNames(typeof(Environment.SpecialFolder)))
             {
-                Environment.SpecialFolder f = (Environment.SpecialFolder)Enum.Parse(typeof(Environment.SpecialFolder), specialFolderName);
+                Environment.SpecialFolder f = (Environment.SpecialFolder)System.Enum.Parse(typeof(Environment.SpecialFolder), specialFolderName);
                 string searchFor = "[" + specialFolderName + "]";
                 string replaceWith = Environment.GetFolderPath(f);
                 result = ReplaceNoCase(result, searchFor, replaceWith, true);

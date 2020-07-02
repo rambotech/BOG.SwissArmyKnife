@@ -107,7 +107,7 @@ namespace BOG.SwissArmyKnife.Entity
 				throw new InvalidOperationException($"Level value of {Level} must be less than the number of levels: {Levels.Length}");
 			}
 			// Are the indexes within the boundries.
-			for (int index = 0; index <= Indexes.Length; index++)
+			for (int index = 0; index < Indexes.Length; index++)
 			{
 				if (Indexes[index] < 0)
 				{
@@ -132,7 +132,7 @@ namespace BOG.SwissArmyKnife.Entity
 		/// Resets the ItemsInProgress indexes for the mutuable indexes only.
 		/// </summary>
 		/// <param name="accordion"></param>
-		public void ResetMegaAccordion(MegaAccordion<T> accordion)
+		public void ResetMegaAccordion()
 		{
 			lock (lockItemList)
 			{

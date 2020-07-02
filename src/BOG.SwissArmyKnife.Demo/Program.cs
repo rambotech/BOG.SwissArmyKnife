@@ -15,7 +15,7 @@ namespace BOG.SwissArmyKnife.Demo
         {
             Console.WriteLine("Invalid or missing argument.");
             Console.WriteLine("A string argument is needed to specify the demo to run.  It is one of:");
-            foreach (var name in Enum.GetNames(typeof(DemoItem)))
+            foreach (var name in System.Enum.GetNames(typeof(DemoItem)))
             {
                 Console.WriteLine($"  {name}");
             }
@@ -32,7 +32,7 @@ namespace BOG.SwissArmyKnife.Demo
             {
                 Help();
             }
-            if (!Enum.TryParse<DemoItem>(args[0], out DemoItem demoThis))
+            if (!System.Enum.TryParse<DemoItem>(args[0], out DemoItem demoThis))
             {
                 Help();
             }
