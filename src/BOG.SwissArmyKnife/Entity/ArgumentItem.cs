@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using BOG.SwissArmyKnife.Enum;
+using BOG.SwissArmyKnife.Enums;
 
 namespace BOG.SwissArmyKnife.Entity
 {

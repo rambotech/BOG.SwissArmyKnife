@@ -41,7 +41,7 @@
 
   <ItemGroup>
     <Folder Include="Entity\" />
-    <Folder Include="Enum\" />
+    <Folder Include="Enums\" />
   </ItemGroup>
 
 </Project>

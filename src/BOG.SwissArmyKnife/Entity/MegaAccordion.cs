@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using BOG.SwissArmyKnife.Enum;
+using BOG.SwissArmyKnife.Enums;
 
 namespace BOG.SwissArmyKnife.Entity
 {
@@ -92,30 +92,38 @@ namespace BOG.SwissArmyKnife.Entity
 		{
 			if (State != MegaAccordionState.Active)
 			{
-				throw new InvalidOperationException($"The state must be set to Active or Sunsetting, but is set to {State}");
+				throw new ArgumentException($"The state must be set to Active or Sunsetting, but is set to {State}.");
+			}
+			if (ArgumentItems.Keys.Count == 0)
+			{
+				throw new ArgumentException($"ArgumentItems must have at least one item in the list.");
+			}
+			if (ArgumentItems.Values.GroupBy(o => o.Name).Where(g => g.Skip(1).Any()).SelectMany(c => c).Count() > 0)
+			{
+				throw new ArgumentException($"ArgumentItems has one or more items with duplicated names: each item must have a unique name.");
 			}
 			if (ItemsInProgress.Keys.Count > MaxInProgress)
 			{
-				throw new InvalidOperationException($"ItemsInProgress count {ItemsInProgress.Keys.Count} is greater than allowed MaxInProgress of {MaxInProgress}");
+				throw new ArgumentException($"ItemsInProgress count {ItemsInProgress.Keys.Count} is greater than allowed MaxInProgress of {MaxInProgress}.");
 			}
 			else if (Indexes.Length != ArgumentItems.Count)
 			{
-				throw new InvalidOperationException($"Offset count of {Indexes.Length} does not equal the ArgumentItems count of {ArgumentItems.Keys.Count}");
+				throw new ArgumentException($"Offset count of {Indexes.Length} does not equal the ArgumentItems count of {ArgumentItems.Keys.Count}.");
 			}
 			else if (Level < 0 || Level >= Levels.Length)
 			{
-				throw new InvalidOperationException($"Level value of {Level} must be less than the number of levels: {Levels.Length}");
+				throw new ArgumentException($"Level value of {Level} must be less than the number of levels: {Levels.Length}.");
 			}
 			// Are the indexes within the boundries.
 			for (int index = 0; index < Indexes.Length; index++)
 			{
 				if (Indexes[index] < 0)
 				{
-					throw new InvalidOperationException($"The value {Indexes[index]} in Indexes[{index}] can not be negative.");
+					throw new ArgumentException($"The value {Indexes[index]} in Indexes[{index}] can not be negative.");
 				}
 				if (Indexes[index] >= ArgumentItems[index].Items.Length)
 				{
-					throw new InvalidOperationException($"The value {Indexes[index]} in Indexes[{index}] is out of bounds for {ArgumentItems[index].Name} ({ArgumentItems[index].Items.Length} items)");
+					throw new ArgumentException($"The value {Indexes[index]} in Indexes[{index}] is out of bounds for {ArgumentItems[index].Name} ({ArgumentItems[index].Items.Length} items).");
 				}
 			}
 			for (var index = 0; index < Level; index++)
@@ -153,8 +161,9 @@ namespace BOG.SwissArmyKnife.Entity
 		/// <param name="secondsTimeout">The number of seconds to allow for completion before the item can be reissued.</param>
 		/// <param name="favorNew">True to return any new items, ahead of retry items.</param>
 		/// <param name="availableItem" >(OUT) The object found for the item, or null (default).  An item first issued is always default/null.</param>
-		/// <returns>The ordinal index (zero-based) of the item to be processed, or -1 if nothing is available.</returns>
-		/// <remarks>item will only reflect the last value when UpdateItem() was called.</remarks>
+		/// <returns>True if an item was available and is loaded into availableItem, or false if nothing is available for work.</returns>
+		/// <remarks>The caller should check the state for a value of *other than* Active or Sunsetting to determine if items 
+		/// are expected tob e available in the furute.</remarks>
 		public bool TryGetWorkItem(int secondsTimeout, bool favorNew, out MegaAccordionItem<T> availableItem)
 		{
 			lock (lockItemList)
@@ -188,18 +197,34 @@ namespace BOG.SwissArmyKnife.Entity
 		}
 
 		/// <summary>
+		/// returns the set of argument values for the specific index
+		/// </summary>
+		/// <param name="key">the string value of the index</param>
+		/// <returns></returns>
+		public Dictionary<string,string> GetArgumentValues(string key)
+		{
+			var indexValues = BuildIndexesFromKey(key);
+			var result = new Dictionary<string, string>();
+			for (var index = 0; index <= indexValues.Length; index++)
+			{
+				result.Add(ArgumentItems[index].Name, ArgumentItems[index].Items[indexValues[index]]);
+			}
+			return result;
+		}
+
+		/// <summary>
 		/// Sets the payload for an item.
 		/// </summary>
 		/// <param name="itemIndex">The index property value of the Metaset item to be processed.</param>
-		public void UpdateItem(string key, T payload)
+		public void UpdateItem(MegaAccordionItem<T> item)
 		{
 			lock (lockItemList)
 			{
 				if (!isValidated) Validate();
-				var thisItem = ItemsInProgress.Values.Where(o => o.Key == key).FirstOrDefault();
+				var thisItem = ItemsInProgress.Values.Where(o => o.Key == item.Key).FirstOrDefault();
 				if (thisItem != null)
 				{
-					ItemsInProgress[thisItem.Key].Value = payload;
+					ItemsInProgress[thisItem.Key].Value = item.Value;
 				}
 			}
 		}
@@ -297,15 +322,6 @@ namespace BOG.SwissArmyKnife.Entity
 			}
 		}
 
-		public void Save(string fileName, int prunedSize)
-		{
-			lock (lockItemList)
-			{
-				if (!isValidated) Validate();
-				ObjectJsonSerializer<MegaAccordion<T>>.SaveDocumentFormat(this, fileName, true);
-			}
-		}
-
 		private void Hydrate()
 		{
 			lock (lockItemList)
@@ -346,7 +362,7 @@ namespace BOG.SwissArmyKnife.Entity
 			}
 		}
 
-		private decimal GetPercentageComplete(bool mutableOnly)
+		public decimal GetPercentageComplete(bool mutableOnly)
 		{
 			string result;
 

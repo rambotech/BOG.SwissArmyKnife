@@ -1,4 +1,4 @@
-﻿namespace BOG.SwissArmyKnife.Enum
+﻿namespace BOG.SwissArmyKnife.Enums
 {
 	public enum MegaAccordionState : int
     {

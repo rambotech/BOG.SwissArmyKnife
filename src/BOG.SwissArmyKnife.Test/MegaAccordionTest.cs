@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using BOG.SwissArmyKnife;
 using BOG.SwissArmyKnife.Entity;
+using BOG.SwissArmyKnife.Enums;
 using NUnit.Framework.Constraints;
 using System.Threading;
 using System.Linq;
@@ -21,12 +22,57 @@ namespace BOG.SwissArmyKnife.Test
 	public class MegaAccordionTest
 	{
 		/// <summary>
+		/// Validate that no arguments are rejected.
+		/// </summary>
+		[Test]
+		public void Accordion_Init_NoArguments()
+		{
+			Assert.Throws<ArgumentException>(() =>
+			{
+				var acc = MakeMegaAccordionTest_NoArguments();
+				acc.ResetMegaAccordion();
+			});
+		}
+
+		/// <summary>
+		/// Validate that all states other than Active and Sunsetting are invalid.
+		/// </summary>
+		[Test]
+		public void Accordion_Init_InvalidState()
+		{
+			Assert.Throws<ArgumentException>(() =>
+			{
+				var acc = MakeMegaAccordionTest_NoArguments();
+				acc.State = MegaAccordionState.CompletedSuccessfully;
+				acc.ResetMegaAccordion();
+			});
+			Assert.Throws<ArgumentException>(() =>
+			{
+				var acc = MakeMegaAccordionTest_NoArguments();
+				acc.State = MegaAccordionState.Deadlocked;
+				acc.ResetMegaAccordion();
+			});
+			Assert.Throws<ArgumentException>(() =>
+			{
+				var acc = MakeMegaAccordionTest_NoArguments();
+				acc.State = MegaAccordionState.MaxErrorsExceeded;
+				acc.ResetMegaAccordion();
+			});
+			Assert.Throws<ArgumentException>(() =>
+			{
+				var acc = MakeMegaAccordionTest_NoArguments();
+				acc.State = MegaAccordionState.UnexpectedError;
+				acc.ResetMegaAccordion();
+			});
+		}
+
+		/// <summary>
 		/// Validate that default values are correct
 		/// </summary>
 		[Test]
 		public void Accordion_Init_Valid()
 		{
-			var acc = MakeMegaAccordionTestSimple01();
+			var acc = MakeMegaAccordionTest_Bad();
 
 			acc.ResetMegaAccordion();
 			Assert.That(acc.Level == 0, $"acc.Level: expected 0, but got {acc.Level}");
@@ -37,15 +83,28 @@ namespace BOG.SwissArmyKnife.Test
 		}
 
 		#region Private Helpers
-		private MegaAccordion<MyMegaObject> MakeMegaAccordionTestSimple01()
+		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_NoArguments()
 		{
 			return new MegaAccordion<MyMegaObject>
 			{
-				State = Enum.MegaAccordionState.Active,
+				State = Enums.MegaAccordionState.Active,
 				MaxInProgress = 100,
 				Level = 0,
-				Levels = new int[3] {0,1,2},
-				Indexes = new long[] {0,0,0},
+				Levels = new int[1] {0},
+				Indexes = new long[] {0},
+				ArgumentItems = new Dictionary<int, ArgumentItem>()
+			};
+		}
+
+		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_Bad()
+		{
+			return new MegaAccordion<MyMegaObject>
+			{
+				State = MegaAccordionState.Active,
+				MaxInProgress = 100,
+				Level = 0,
+				Levels = new int[3] { 0, 1, 2 },
+				Indexes = new long[] { 0, 0, 0 },
 				ArgumentItems = new Dictionary<int, ArgumentItem>
 				{
 					{0, new ArgumentItem
