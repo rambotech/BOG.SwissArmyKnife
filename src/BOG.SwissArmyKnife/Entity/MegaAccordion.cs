@@ -90,7 +90,7 @@ namespace BOG.SwissArmyKnife.Entity
 		/// <returns></returns>
 		public void Validate()
 		{
-			if (State != MegaAccordionState.Active)
+			if (!(State == MegaAccordionState.Active || State == MegaAccordionState.Sunsetting))
 			{
 				throw new ArgumentException($"The state must be set to Active or Sunsetting, but is set to {State}.");
 			}
@@ -126,6 +126,22 @@ namespace BOG.SwissArmyKnife.Entity
 					throw new ArgumentException($"The value {Indexes[index]} in Indexes[{index}] is out of bounds for {ArgumentItems[index].Name} ({ArgumentItems[index].Items.Length} items).");
 				}
 			}
+			// The Levels array values must be equal to the count of ArgItems
+			var totalLevelCount = 0;
+			for (int index = 0; index < Levels.Length; index++)
+			{
+				if (Levels[index] < 1)
+				{
+					throw new ArgumentException($"One or more values in Levels is less than the minumum of 1.");
+				}
+				totalLevelCount += Levels[index];
+			}
+			if (totalLevelCount != ArgumentItems.Count)
+			{
+				throw new ArgumentException($"There are {ArgumentItems.Count} arguments, but there are {totalLevelCount} arguments indicated in the Levels.");
+			}
+
+			// Build some basic index and length values for this level.
 			for (var index = 0; index < Level; index++)
 			{
 				staticLength += Levels[index];
@@ -201,7 +217,7 @@ namespace BOG.SwissArmyKnife.Entity
 		/// </summary>
 		/// <param name="key">the string value of the index</param>
 		/// <returns></returns>
-		public Dictionary<string,string> GetArgumentValues(string key)
+		public Dictionary<string, string> GetArgumentValues(string key)
 		{
 			var indexValues = BuildIndexesFromKey(key);
 			var result = new Dictionary<string, string>();
@@ -382,7 +398,7 @@ namespace BOG.SwissArmyKnife.Entity
 					if (digit > 9) digit = 9;
 					result += $"{digit}";
 				}
-				result = string.Format("{0:m}", (decimal)((long)(decimal.Parse(result) * 10000m)/100m));
+				result = string.Format("{0:m}", (decimal)((long)(decimal.Parse(result) * 10000m) / 100m));
 			}
 
 			return decimal.Parse(result);
