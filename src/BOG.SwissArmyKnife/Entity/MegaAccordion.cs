@@ -74,7 +74,7 @@ namespace BOG.SwissArmyKnife.Entity
 		{
 		}
 
-		#region Support Methods
+		#region Module Variable -- Private
 
 		private readonly object lockItemList = new object();
 
@@ -82,6 +82,10 @@ namespace BOG.SwissArmyKnife.Entity
 		private int staticLength = 0;
 		private int mutableStart = 0;
 		private int mutableLength = 0;
+
+		#endregion 
+
+		#region Support Methods -- Public
 
 		/// <summary>
 		/// Called at any time to ensure the object is valid: must call immediately after deserialization.
@@ -338,6 +342,70 @@ namespace BOG.SwissArmyKnife.Entity
 			}
 		}
 
+		public decimal GetPercentageComplete(bool mutableOnly)
+		{
+			string result;
+
+			int offset = mutableOnly ? mutableStart : 0;
+			int offsetEnd = mutableLength;
+
+			if (offsetEnd - offset == 1)
+			{
+				result = string.Format("{0:m}", 100.0m * (decimal)Indexes[offset] / (decimal)ArgumentItems[offset].Items.Length);
+			}
+			else
+			{
+				result = ".";
+				while (offset < offsetEnd)
+				{
+					var digit = (int)((Indexes[offset]) / (ArgumentItems[offset].Items.Length / 10));
+					if (digit > 9) digit = 9;
+					result += $"{digit}";
+				}
+				result = string.Format("{0:m}", (decimal)((long)(decimal.Parse(result) * 10000m) / 100m));
+			}
+
+			return decimal.Parse(result);
+		}
+
+		public long[] BuildIndexesFromKey(string key)
+		{
+			lock (lockItemList)
+			{
+				if (!isValidated) Validate();
+				var result = new long[Indexes.Length];
+				var parts = key.Split(new char[] { ':' });
+				if (parts.Length != Indexes.Length)
+				{
+					throw new InvalidOperationException($"Invalid key: requires {Indexes.Length} index values, but only has {parts.Length}");
+				}
+				for (var index = mutableStart + mutableLength - 1; State == MegaAccordionState.Active && index >= mutableStart; index--)
+				{
+					result[index] = long.Parse("0x" + parts[index]);
+				}
+				return result;
+			}
+		}
+
+		public string BuildKeyFromIndexes()
+		{
+			lock (lockItemList)
+			{
+				if (!isValidated) Validate();
+				var result = new StringBuilder();
+				for (var index = 0; index <= staticLength + mutableLength - 1; index++)
+				{
+					if (result.Length > 0) result.Append(":");
+					result.Append(string.Format("{0:x", Indexes[index]));
+				}
+				return result.ToString();
+			}
+		}
+
+		#endregion
+
+		#region Support Methods -- Private
+
 		private void Hydrate()
 		{
 			lock (lockItemList)
@@ -377,67 +445,6 @@ namespace BOG.SwissArmyKnife.Entity
 				}
 			}
 		}
-
-		public decimal GetPercentageComplete(bool mutableOnly)
-		{
-			string result;
-
-			int offset = mutableOnly ? mutableStart : 0;
-			int offsetEnd = mutableLength;
-
-			if (offsetEnd - offset == 1)
-			{
-				result = string.Format("{0:m}", 100.0m * (decimal)Indexes[offset] / (decimal)ArgumentItems[offset].Items.Length);
-			}
-			else
-			{
-				result = ".";
-				while (offset < offsetEnd)
-				{
-					var digit = (int)((Indexes[offset]) / (ArgumentItems[offset].Items.Length / 10));
-					if (digit > 9) digit = 9;
-					result += $"{digit}";
-				}
-				result = string.Format("{0:m}", (decimal)((long)(decimal.Parse(result) * 10000m) / 100m));
-			}
-
-			return decimal.Parse(result);
-		}
-
-		private string BuildKeyFromIndexes()
-		{
-			lock (lockItemList)
-			{
-				if (!isValidated) Validate();
-				var result = new StringBuilder();
-				for (var index = 0; index <= staticLength + mutableLength - 1; index++)
-				{
-					if (result.Length > 0) result.Append(":");
-					result.Append(string.Format("{0:x", Indexes[index]));
-				}
-				return result.ToString();
-			}
-		}
-
-		public long[] BuildIndexesFromKey(string key)
-		{
-			lock (lockItemList)
-			{
-				if (!isValidated) Validate();
-				var result = new long[Indexes.Length];
-				var parts = key.Split(new char[] { ':' });
-				if (parts.Length != Indexes.Length)
-				{
-					throw new InvalidOperationException($"Invalid key: requires {Indexes.Length} index values, but only has {parts.Length}");
-				}
-				for (var index = mutableStart + mutableLength - 1; State == MegaAccordionState.Active && index >= mutableStart; index--)
-				{
-					result[index] = long.Parse("0x" + parts[index]);
-				}
-				return result;
-			}
-		}
-
 		#endregion
 	}
 }
