@@ -157,7 +157,7 @@ namespace BOG.SwissArmyKnife.Entity
 		}
 
 		/// <summary>
-		/// Resets the ItemsInProgress indexes for the mutuable indexes only.
+		/// Resets the ItemsInProgress indexes for the mutuable indexes only, and any beyond the mutable indexes.
 		/// </summary>
 		/// <param name="accordion"></param>
 		public void ResetMegaAccordion()
@@ -167,7 +167,7 @@ namespace BOG.SwissArmyKnife.Entity
 				if (!isValidated) Validate();
 				ItemsInProgress = new Dictionary<string, MegaAccordionItem<T>>();
 				Indexes = new long[ArgumentItems.Count];
-				for (var index = staticLength; index < mutableLength; index++)
+				for (var index = staticLength; index < Indexes.Length; index++)
 				{
 					Indexes[index] = 0L;
 				}
@@ -300,6 +300,10 @@ namespace BOG.SwissArmyKnife.Entity
 				if (thisItem != null)
 				{
 					ItemsInProgress.Remove(thisItem.Key);
+					if (State == MegaAccordionState.Sunsetting && ItemsInProgress.Count == 0)
+					{
+						State = MegaAccordionState.Completed;
+					}
 				}
 			}
 		}
@@ -393,7 +397,7 @@ namespace BOG.SwissArmyKnife.Entity
 			{
 				if (!isValidated) Validate();
 				var result = new StringBuilder();
-				for (var index = 0; index <= staticLength + mutableLength - 1; index++)
+				for (var index = 0; index < ArgumentItems.Count;index++)
 				{
 					if (result.Length > 0) result.Append(":");
 					result.Append(string.Format("{0}", Indexes[index]));

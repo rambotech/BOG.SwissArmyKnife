@@ -9,6 +9,7 @@ using System.Threading;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace BOG.SwissArmyKnife.Test
 {
@@ -52,10 +53,8 @@ namespace BOG.SwissArmyKnife.Test
 		public void Accordion_Init_InvalidState()
 		{
 			var invalidStates = new MegaAccordionState[] {
-				MegaAccordionState.CompletedSuccessfully,
-				MegaAccordionState.Deadlocked,
-				MegaAccordionState.MaxErrorsExceeded,
-				MegaAccordionState.UnexpectedError };
+				MegaAccordionState.Completed
+			 };
 			var acc = MakeMegaAccordionTest_OneArgument_Valid();
 			foreach (var state in invalidStates)
 			{
@@ -281,30 +280,366 @@ namespace BOG.SwissArmyKnife.Test
 		[Test]
 		public void Accordion_Validate_Set1()
 		{
+#if TRUE
+			var acc = MakeMegaAccordionTest_Set1();
+			Accordion_Validate_Set_Helper("Set1", acc);
+#else
 			var acc = MakeMegaAccordionTest_Set1();
 			acc.ResetMegaAccordion();
 			var key = acc.BuildKeyFromIndexes();
 			Assert.IsTrue(key == "0", "Expected BuildKeyFromIndexes to be \"0\", but was \"{key}\".");
-			var index = 0;
-			for (; index < 5; index++)
+			var allItemsCount = 1;
+			for (var i = 0; i < acc.ArgumentItems.Count; i++) allItemsCount *= acc.ArgumentItems[i].Items.Length;
+			int index = 0;
+			int nextIndex = 0;
+			for (; index < allItemsCount; index++)
 			{
+				nextIndex = (index + 1) % 5;
 				Assert.IsTrue(acc.State == MegaAccordionState.Active, $"For index {index}, expected state to be Active but was {acc.State}.");
 				key = acc.BuildKeyFromIndexes();
-				Assert.IsTrue(key == $"{index}", $"Expected BuildKeyFromIndexes to be \"{index}\", but was \"{key}\".");
+				Assert.IsTrue(key == $"{index}", $"Expected BuildKeyFromIndexes (1) to be \"{index}\", but was \"{key}\".");
 				MegaAccordionItem<MyMegaObject> o;
-				Assert.IsTrue(acc.TryGetWorkItem(5, true, out o), "Expected TryGetWorkItem to be true.");
+				Assert.IsTrue(acc.TryGetWorkItem(600, true, out o), "Expected TryGetWorkItem to be true.");
 				key = acc.BuildKeyFromIndexes();
-				Assert.IsTrue(key == $"{index + 1}", $"Expected BuildKeyFromIndexes to be \"{index + 1}\", but was \"{key}\".");
-				Assert.IsTrue(acc.ItemsInProgress.Count == 1, $"{index + 1} ", $"Expected BuildKeyFromIndexes to be \"{index + 1}\", but was \"{key}\".");
+				Assert.IsTrue(key == $"{nextIndex}", $"Expected BuildKeyFromIndexes (2) to be \"{nextIndex}\", but was \"{key}\".");
+				Assert.IsTrue(acc.ItemsInProgress.Count == 1, $"Expected ItemsInProgress with one item but has \"{acc.ItemsInProgress.Count}\".");
 				acc.CompleteItem(o.Key);
-				Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"{index + 1} ", $"Expected BuildKeyFromIndexes to be \"{index + 1}\", but was \"{key}\".");
+				Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with not items but has \"{acc.ItemsInProgress.Count}\".");
 			}
-			Assert.IsTrue(key == $"{index}", $"Expected BuildKeyFromIndexes to be \"{index + 1}\", but was \"{key}\".");
 			Assert.IsTrue(acc.State == MegaAccordionState.CompletedSuccessfully, $"Expected final state to be CompletedSuccessfully but was {acc.State}.");
+#endif
 		}
+
+		/// <summary>
+		/// Validate single argument, single-level.
+		/// </summary>
+		[Test]
+		public void Accordion_Validate_Set2()
+		{
+			var acc = MakeMegaAccordionTest_Set2();
+			acc.Level = 0;  // 3 : 0 : 0
+			Accordion_Validate_Set_Helper("Set2", acc);
+		}
+
+		/// <summary>
+		/// Validate multiple argument, multiple level, high level.
+		/// </summary>
+		[Test]
+		public void Accordion_Validate_Set3()
+		{
+			var acc = MakeMegaAccordionTest_Set3();
+			acc.Level = 0;  // 3 : 0 : 0
+			Accordion_Validate_Set_Helper("Set3", acc);
+		}
+
+		/// <summary>
+		/// Validate Level 0 increment and key generation on a 3:2:6 set, with one level.  36 iterations.
+		/// </summary>
+		[Test]
+		public void Accordion_Index_Level_Keys_SL0()
+		{
+			var acc = MakeMegaAccordionTest_Set2();
+			acc.Level = 0;  // 3 : 2 : 6  (36)
+			acc.ResetMegaAccordion();
+			for (var index1 = 0; index1 <= 36; index1++)
+			{
+				var key = acc.BuildKeyFromIndexes();
+				var expectedKey = BuildKeyForTestingIndex(acc, index1);
+				if (index1 == 36)
+				{
+					Assert.IsTrue(key == "0:0:0", $"Expected zero-based index for end but was \"{key}\".");
+					Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with no items but has \"{acc.ItemsInProgress.Count}\".");
+					Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"Expected State as CompletedSuccessfully but is \"{acc.State}\".");
+					continue;
+				}
+				Assert.IsTrue(key == expectedKey, $"Expected BuildKeyFromIndexes (1) to be \"{expectedKey}\", but was \"{key}\".");
+				if (acc.TryGetWorkItem(5, true, out var o))
+				{
+					acc.CompleteItem(o.Key);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate Level 0 increment and key generation on a 3:2:6 set, with one level.  3 iterations.
+		/// </summary>
+		[Test]
+		public void Accordion_Index_Level_Keys_ML0()
+		{
+			var acc = MakeMegaAccordionTest_Set3();
+			acc.Indexes = new long[] { 2, 1, 0 };
+			acc.Level = 0;  // 3 : 2 : 6   (3 of 36)
+			acc.ResetMegaAccordion();
+			for (var index1 = 0; index1 <= 3; index1++)
+			{
+				var key = acc.BuildKeyFromIndexes();
+				var expectedKey = BuildKeyForTestingIndex(acc, index1);
+				if (index1 == 3)
+				{
+					Assert.IsTrue(key == "0:0:0", $"Expected zero-based index for end but was \"{key}\".");
+					Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with no items but has \"{acc.ItemsInProgress.Count}\".");
+					Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"Expected State as CompletedSuccessfully but is \"{acc.State}\".");
+					continue;
+				}
+				Assert.IsTrue(key == expectedKey, $"Expected BuildKeyFromIndexes (1) to be \"{expectedKey}\", but was \"{key}\".");
+				if (acc.TryGetWorkItem(5, true, out var o))
+				{
+					acc.CompleteItem(o.Key);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate Level 1 increment and key generation on a 3:2:6 set, with one level.  2 iterations.
+		/// </summary>
+		[Test]
+		public void Accordion_Index_Level_Keys_ML1()
+		{
+			var acc = MakeMegaAccordionTest_Set3();
+			acc.Indexes = new long[] { 2, 1, 0 };
+			acc.Level = 1;  // 3 : 2 : 6   (2 of 36)
+			acc.ResetMegaAccordion();
+			for (var index1 = 0; index1 <= 2; index1++)
+			{
+				var key = acc.BuildKeyFromIndexes();
+				var expectedKey = BuildKeyForTestingIndex(acc, index1);
+				if (index1 == 2)
+				{
+					Assert.IsTrue(key == "0:0:0", $"Expected zero-based index for end but was \"{key}\".");
+					Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with no items but has \"{acc.ItemsInProgress.Count}\".");
+					Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"Expected State as CompletedSuccessfully but is \"{acc.State}\".");
+					continue;
+				}
+				Assert.IsTrue(key == expectedKey, $"Expected BuildKeyFromIndexes (1) to be \"{expectedKey}\", but was \"{key}\".");
+				if (acc.TryGetWorkItem(5, true, out var o))
+				{
+					acc.CompleteItem(o.Key);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate Level 2 increment and key generation on a 3:2:6 set, with one level.  6 iterations.
+		/// </summary>
+		[Test]
+		public void Accordion_Index_Level_Keys_ML2()
+		{
+			var acc = MakeMegaAccordionTest_Set3();
+			acc.Indexes = new long[] { 2, 1, 0 };
+			acc.Level = 2;  // 3 : 2 : 6   (6 of 36)
+			for (var index1 = 0; index1 <= 6; index1++)
+			{
+				var key = acc.BuildKeyFromIndexes();
+				var expectedKey = BuildKeyForTestingIndex(acc, index1);
+				if (index1 == 6)
+				{
+					Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with no items but has \"{acc.ItemsInProgress.Count}\".");
+					Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"Expected State as CompletedSuccessfully but is \"{acc.State}\".");
+					continue;
+				}
+				Assert.IsTrue(key == expectedKey, $"Expected BuildKeyFromIndexes (1) to be \"{expectedKey}\", but was \"{key}\".");
+				if (acc.TryGetWorkItem(5, true, out var o))
+				{
+					acc.CompleteItem(o.Key);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate Level 0 increment and key generation on a [3:2]:6 set, with one level.  6 iterations.
+		/// </summary> 
+		[Test]
+		public void Accordion_Index_Level_Keys_4_ML0()
+		{
+			var acc = MakeMegaAccordionTest_Set4();
+			acc.Indexes = new long[] { 2, 1, 0 };
+			acc.Level = 0;  // [3 : 2] : 6   (6 of 36)
+			acc.ResetMegaAccordion();
+			for (var index1 = 0; index1 <= 6; index1++)
+			{
+				var key = acc.BuildKeyFromIndexes();
+				var expectedKey = BuildKeyForTestingIndex(acc, index1);
+				if (index1 == 6)
+				{
+					Assert.IsTrue(key == "0:0:0", $"Expected zero-based index for end but was \"{key}\".");
+					Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with no items but has \"{acc.ItemsInProgress.Count}\".");
+					Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"Expected State as CompletedSuccessfully but is \"{acc.State}\".");
+					continue;
+				}
+				Assert.IsTrue(key == expectedKey, $"Expected BuildKeyFromIndexes (1) to be \"{expectedKey}\", but was \"{key}\".");
+				if (acc.TryGetWorkItem(5, true, out var o))
+				{
+					acc.CompleteItem(o.Key);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate Level 1 increment and key generation on a [3:2]:6 set, with one level.  6 iterations.
+		/// </summary>
+		[Test]
+		public void Accordion_Index_Level_Keys_4_ML1()
+		{
+			var acc = MakeMegaAccordionTest_Set4();
+			acc.Indexes = new long[] { 2, 1, 0 };
+			acc.Level = 1;  // [3 : 2] : 6   (6 of 36)
+			acc.ResetMegaAccordion();
+			for (var index1 = 0; index1 <= 6; index1++)
+			{
+				var key = acc.BuildKeyFromIndexes();
+				var expectedKey = BuildKeyForTestingIndex(acc, index1);
+				if (index1 == 6)
+				{
+					Assert.IsTrue(key == "0:0:0", $"Expected zero-based index for end but was \"{key}\".");
+					Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with no items but has \"{acc.ItemsInProgress.Count}\".");
+					Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"Expected State as CompletedSuccessfully but is \"{acc.State}\".");
+					continue;
+				}
+				Assert.IsTrue(key == expectedKey, $"Expected BuildKeyFromIndexes (1) to be \"{expectedKey}\", but was \"{key}\".");
+				if (acc.TryGetWorkItem(5, true, out var o))
+				{
+					acc.CompleteItem(o.Key);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate Level 0 increment and key generation on a 3:[2:6] set, with one level.  3 iterations.
+		/// </summary>
+		[Test]
+		public void Accordion_Index_Level_Keys_5_ML0()
+		{
+			var acc = MakeMegaAccordionTest_Set5();
+			acc.Indexes = new long[] { 2, 1, 0 };
+			acc.Level = 0;  // [3 : 2] : 6   (6 of 36)
+			acc.ResetMegaAccordion();
+			for (var index1 = 0; index1 <= 3; index1++)
+			{
+				var key = acc.BuildKeyFromIndexes();
+				var expectedKey = BuildKeyForTestingIndex(acc, index1);
+				if (index1 == 3)
+				{
+					Assert.IsTrue(key == "0:0:0", $"Expected zero-based index for end but was \"{key}\".");
+					Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with no items but has \"{acc.ItemsInProgress.Count}\".");
+					Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"Expected State as CompletedSuccessfully but is \"{acc.State}\".");
+					continue;
+				}
+				Assert.IsTrue(key == expectedKey, $"Expected BuildKeyFromIndexes (1) to be \"{expectedKey}\", but was \"{key}\".");
+				if (acc.TryGetWorkItem(5, true, out var o))
+				{
+					acc.CompleteItem(o.Key);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate Level 1 increment and key generation on a 3:[2:6] set, with one level.  12 iterations.
+		/// </summary>
+		[Test]
+		public void Accordion_Index_Level_Keys_5_ML1()
+		{
+			var acc = MakeMegaAccordionTest_Set5();
+			acc.Indexes = new long[] { 2, 1, 0 };
+			acc.Level = 0;  // [3 : 2] : 6   (6 of 36)
+			acc.ResetMegaAccordion();
+			for (var index1 = 0; index1 <= 3; index1++)
+			{
+				var key = acc.BuildKeyFromIndexes();
+				var expectedKey = BuildKeyForTestingIndex(acc, index1);
+				if (index1 == 3)
+				{
+					Assert.IsTrue(key == "0:0:0", $"Expected zero-based index for end but was \"{key}\".");
+					Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with no items but has \"{acc.ItemsInProgress.Count}\".");
+					Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"Expected State as CompletedSuccessfully but is \"{acc.State}\".");
+					continue;
+				}
+				Assert.IsTrue(key == expectedKey, $"Expected BuildKeyFromIndexes (1) to be \"{expectedKey}\", but was \"{key}\".");
+				if (acc.TryGetWorkItem(5, true, out var o))
+				{
+					acc.CompleteItem(o.Key);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Set evaluator
+		/// </summary>
+		private void Accordion_Validate_Set_Helper(string title, MegaAccordion<MyMegaObject> acc)
+		{
+			acc.ResetMegaAccordion();
+			var key = acc.BuildKeyFromIndexes();
+			var expectedKey = key;
+			Assert.IsTrue(key == BuildKeyForTestingIndex(acc, 0), $"{title}: Expected BuildKeyFromIndexes to be \"0\", but was \"{key}\".");
+			var allItemsCount = 1;
+			var levelIndex = 0;
+			for (var i = 0; i <= acc.Level; i++)
+			{
+				for (var j = 0; j < acc.Levels[i]; j++)
+				{
+					allItemsCount *= acc.ArgumentItems[levelIndex].Items.Length;
+					levelIndex++;
+				}
+			}
+			var index = 0;
+			var nextIndex = 0;
+			for (; index < allItemsCount; index++)
+			{
+				nextIndex = (index + 1) % allItemsCount;
+				Assert.IsTrue(acc.State == MegaAccordionState.Active, $"{title}: For index {index}, expected state to be Active but was {acc.State}.");
+				key = acc.BuildKeyFromIndexes();
+				expectedKey = BuildKeyForTestingIndex(acc, index);
+				Assert.IsTrue(key == expectedKey, $"{title}: Expected BuildKeyFromIndexes (1) to be \"{expectedKey}\", but was \"{key}\".");
+				MegaAccordionItem<MyMegaObject> o;
+				Assert.IsTrue(acc.TryGetWorkItem(600, true, out o), $"{title}: Expected TryGetWorkItem to be true.");
+				key = acc.BuildKeyFromIndexes();
+				expectedKey = BuildKeyForTestingIndex(acc, nextIndex);
+				Assert.IsTrue(key == expectedKey, $"{title}: Expected BuildKeyFromIndexes (2) to be \"{expectedKey}\", but was \"{key}\".");
+				Assert.IsTrue(acc.ItemsInProgress.Count == 1, $"{title}: Expected ItemsInProgress with one item but has \"{acc.ItemsInProgress.Count}\".");
+				acc.CompleteItem(o.Key);
+				Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"{title}: Expected ItemsInProgress with not items but has \"{acc.ItemsInProgress.Count}\".");
+			}
+			Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"{title}: Expected final state to be CompletedSuccessfully but was {acc.State}.");
+		}
+
 		#endregion
 
 		#region Private Helpers
+
+		private string BuildKeyForTestingIndex(MegaAccordion<MyMegaObject> o, int currentIndex)
+		{
+			string result = string.Empty;
+			var count = currentIndex;
+
+			// define the increment boundries
+			var start = 0;
+			for (var i = 0; i < o.Level; i++) start += o.Levels[i];
+			var end = start + o.Levels[o.Level];
+
+			for (var i = o.Indexes.Length - 1; i >= 0; i--)
+			{
+				var value = 0L;
+				if (result.Length > 0) result = ":" + result;
+				if (i < end)
+				{
+					if (i < start)
+					{
+						value = o.Indexes[i];
+					}
+					else
+					{
+						value = count % o.ArgumentItems[i].Items.Length;
+						count /= o.ArgumentItems[i].Items.Length;
+					}
+				}
+				result = $"{value}" + result;
+			}
+			return result;
+		}
+
+		#endregion
+
+		#region Test Objects
+
 		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_NoArguments()
 		{
 			return new MegaAccordion<MyMegaObject>
@@ -691,6 +1026,10 @@ namespace BOG.SwissArmyKnife.Test
 			};
 		}
 
+		/// <summary>
+		/// MultiArgument, single level
+		/// </summary>
+		/// <returns></returns>
 		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_Set2()
 		{
 			return new MegaAccordion<MyMegaObject>
@@ -698,7 +1037,7 @@ namespace BOG.SwissArmyKnife.Test
 				State = MegaAccordionState.Active,
 				MaxInProgress = 1,
 				Level = 0,
-				Levels = new int[] { 0, 1, 3 },
+				Levels = new int[] { 3 },
 				Indexes = new long[] { 0, 0, 0 },
 				ArgumentItems = new Dictionary<int, ArgumentItem>
 				{
@@ -724,7 +1063,116 @@ namespace BOG.SwissArmyKnife.Test
 			};
 		}
 
+		/// <summary>
+		/// MultiArgument, multiple level
+		/// </summary>
+		/// <returns></returns>
+		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_Set3()
+		{
+			return new MegaAccordion<MyMegaObject>
+			{
+				State = MegaAccordionState.Active,
+				MaxInProgress = 1,
+				Level = 0,
+				Levels = new int[] { 1, 1, 1 },
+				Indexes = new long[] { 0, 0, 0 },
+				ArgumentItems = new Dictionary<int, ArgumentItem>
+				{
+					{0, new ArgumentItem
+						{
+							Name = "Arg1",
+							Items = new string[] {"0", "1", "2"}
+						}
+					},
+					{1, new ArgumentItem
+						{
+							Name = "Arg2",
+							Items = new string[] {"50", "1"}
+						}
+					},
+					{2, new ArgumentItem
+						{
+							Name = "Arg3",
+							Items = new string[] {"100", "101", "102", "103", "104", "105"}
+						}
+					},
+				}
+			};
+		}
 
+		/// <summary>
+		/// MultiArgument, multiple level, level with more than one index
+		/// </summary>
+		/// <returns></returns>
+		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_Set4()
+		{
+			return new MegaAccordion<MyMegaObject>
+			{
+				State = MegaAccordionState.Active,
+				MaxInProgress = 1,
+				Level = 0,
+				Levels = new int[] { 2, 1 },
+				Indexes = new long[] { 0, 0, 0 },
+				ArgumentItems = new Dictionary<int, ArgumentItem>
+				{
+					{0, new ArgumentItem
+						{
+							Name = "Arg1",
+							Items = new string[] {"0", "1", "2"}
+						}
+					},
+					{1, new ArgumentItem
+						{
+							Name = "Arg2",
+							Items = new string[] {"50", "1"}
+						}
+					},
+					{2, new ArgumentItem
+						{
+							Name = "Arg3",
+							Items = new string[] {"100", "101", "102", "103", "104", "105"}
+						}
+					},
+				}
+			};
+		}
+
+		/// <summary>
+		/// MultiArgument, multiple level, level with more than one index
+		/// </summary>
+		/// <returns></returns>
+		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_Set5()
+		{
+			return new MegaAccordion<MyMegaObject>
+			{
+				State = MegaAccordionState.Active,
+				MaxInProgress = 1,
+				Level = 0,
+				Levels = new int[] { 1, 2 },
+				Indexes = new long[] { 0, 0, 0 },
+				ArgumentItems = new Dictionary<int, ArgumentItem>
+				{
+					{0, new ArgumentItem
+						{
+							Name = "Arg1",
+							Items = new string[] {"0", "1", "2"}
+						}
+					},
+					{1, new ArgumentItem
+						{
+							Name = "Arg2",
+							Items = new string[] {"50", "1"}
+						}
+					},
+					{2, new ArgumentItem
+						{
+							Name = "Arg3",
+							Items = new string[] {"100", "101", "102", "103", "104", "105"}
+						}
+					},
+				}
+			};
+		}
 		#endregion
 	}
 }
