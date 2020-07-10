@@ -381,7 +381,7 @@ namespace BOG.SwissArmyKnife.Entity
 				}
 				for (var index = mutableStart + mutableLength - 1; State == MegaAccordionState.Active && index >= mutableStart; index--)
 				{
-					result[index] = long.Parse("0x" + parts[index]);
+					result[index] = long.Parse(parts[index]);
 				}
 				return result;
 			}
@@ -396,7 +396,7 @@ namespace BOG.SwissArmyKnife.Entity
 				for (var index = 0; index <= staticLength + mutableLength - 1; index++)
 				{
 					if (result.Length > 0) result.Append(":");
-					result.Append(string.Format("{0:x", Indexes[index]));
+					result.Append(string.Format("{0}", Indexes[index]));
 				}
 				return result.ToString();
 			}
@@ -417,7 +417,7 @@ namespace BOG.SwissArmyKnife.Entity
 					var thisKey = BuildKeyFromIndexes();
 					ItemsInProgress.Add(thisKey, new MegaAccordionItem<T>
 					{
-						DateAvailableTicks = DateTime.Now.Ticks + TimeoutTicks,
+						DateAvailableTicks = DateTime.Now.Ticks,
 						Key = thisKey
 					});
 					Increment();
@@ -433,7 +433,7 @@ namespace BOG.SwissArmyKnife.Entity
 
 				for (var index = mutableStart + mutableLength - 1; State == MegaAccordionState.Active && index >= mutableStart; index--)
 				{
-					if (Indexes[index] == ArgumentItems.Count - 1)
+					if (Indexes[index] == ArgumentItems[index].Items.Length - 1)
 					{
 						Indexes[index] = 0;
 						if (index > mutableStart) continue;

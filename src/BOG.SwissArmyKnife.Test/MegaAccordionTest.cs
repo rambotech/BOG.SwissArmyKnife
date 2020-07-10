@@ -276,26 +276,31 @@ namespace BOG.SwissArmyKnife.Test
 		}
 
 		/// <summary>
-		/// Validate that default values are correct
+		/// Validate single-level, single index behavior.
 		/// </summary>
 		[Test]
-		public void Accordion_Valid_1()
+		public void Accordion_Validate_Set1()
 		{
-			var acc = MakeMegaAccordionTest_IndexesOutOfBounds();
-			try
+			var acc = MakeMegaAccordionTest_Set1();
+			acc.ResetMegaAccordion();
+			var key = acc.BuildKeyFromIndexes();
+			Assert.IsTrue(key == "0", "Expected BuildKeyFromIndexes to be \"0\", but was \"{key}\".");
+			var index = 0;
+			for (; index < 5; index++)
 			{
-				acc.ResetMegaAccordion();
-				Assert.IsTrue(false, "Expected ArgumentException to be thrown.");
+				Assert.IsTrue(acc.State == MegaAccordionState.Active, $"For index {index}, expected state to be Active but was {acc.State}.");
+				key = acc.BuildKeyFromIndexes();
+				Assert.IsTrue(key == $"{index}", $"Expected BuildKeyFromIndexes to be \"{index}\", but was \"{key}\".");
+				MegaAccordionItem<MyMegaObject> o;
+				Assert.IsTrue(acc.TryGetWorkItem(5, true, out o), "Expected TryGetWorkItem to be true.");
+				key = acc.BuildKeyFromIndexes();
+				Assert.IsTrue(key == $"{index + 1}", $"Expected BuildKeyFromIndexes to be \"{index + 1}\", but was \"{key}\".");
+				Assert.IsTrue(acc.ItemsInProgress.Count == 1, $"{index + 1} ", $"Expected BuildKeyFromIndexes to be \"{index + 1}\", but was \"{key}\".");
+				acc.CompleteItem(o.Key);
+				Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"{index + 1} ", $"Expected BuildKeyFromIndexes to be \"{index + 1}\", but was \"{key}\".");
 			}
-			catch (ArgumentException ex)
-			{
-				var r = new Regex($"The\\svalue\\s\\d+\\sin\\sIndexes\\[\\d+\\]\\sis\\sout\\sof\\sbounds\\sfor\\s.+\\sitems\\).");
-				Assert.That(r.IsMatch(ex.Message), $"Argument exception has unexpected message content: \"{ex.Message}\"");
-			}
-			catch (Exception gex)
-			{
-				Assert.IsTrue(false, $"Expected ArgumentException but type was {gex.GetType()}: \"{gex.Message}\"");
-			}
+			Assert.IsTrue(key == $"{index}", $"Expected BuildKeyFromIndexes to be \"{index + 1}\", but was \"{key}\".");
+			Assert.IsTrue(acc.State == MegaAccordionState.CompletedSuccessfully, $"Expected final state to be CompletedSuccessfully but was {acc.State}.");
 		}
 		#endregion
 
@@ -628,39 +633,6 @@ namespace BOG.SwissArmyKnife.Test
 			};
 		}
 
-		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_Bad()
-		{
-			return new MegaAccordion<MyMegaObject>
-			{
-				State = MegaAccordionState.Active,
-				MaxInProgress = 100,
-				Level = 0,
-				Levels = new int[] { 0, 1, 3 },
-				Indexes = new long[] { 0, 0, 0 },
-				ArgumentItems = new Dictionary<int, ArgumentItem>
-				{
-					{0, new ArgumentItem
-						{
-							Name = "Arg1",
-							Items = new string[] {"0", "1", "2"}
-						}
-					},
-					{1, new ArgumentItem
-						{
-							Name = "Arg2",
-							Items = new string[] {"50", "1"}
-						}
-					},
-					{2, new ArgumentItem
-						{
-							Name = "Arg3",
-							Items = new string[] {"100", "101", "102", "103", "104", "105"}
-						}
-					},
-				}
-			};
-		}
-
 		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_ArgsIndexes()
 		{
 			return new MegaAccordion<MyMegaObject>
@@ -693,6 +665,66 @@ namespace BOG.SwissArmyKnife.Test
 				}
 			};
 		}
+
+		/// <summary>
+		/// Single Argument, single level
+		/// </summary>
+		/// <returns></returns>
+		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_Set1()
+		{
+			return new MegaAccordion<MyMegaObject>
+			{
+				State = MegaAccordionState.Active,
+				MaxInProgress = 1,
+				Level = 0,
+				Levels = new int[] { 1 },
+				Indexes = new long[] { 0 },
+				ArgumentItems = new Dictionary<int, ArgumentItem>
+				{
+					{0, new ArgumentItem
+						{
+							Name = "Arg1",
+							Items = new string[] {"0", "1", "2", "4", "5"}
+						}
+					}
+				}
+			};
+		}
+
+		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_Set2()
+		{
+			return new MegaAccordion<MyMegaObject>
+			{
+				State = MegaAccordionState.Active,
+				MaxInProgress = 1,
+				Level = 0,
+				Levels = new int[] { 0, 1, 3 },
+				Indexes = new long[] { 0, 0, 0 },
+				ArgumentItems = new Dictionary<int, ArgumentItem>
+				{
+					{0, new ArgumentItem
+						{
+							Name = "Arg1",
+							Items = new string[] {"0", "1", "2"}
+						}
+					},
+					{1, new ArgumentItem
+						{
+							Name = "Arg2",
+							Items = new string[] {"50", "1"}
+						}
+					},
+					{2, new ArgumentItem
+						{
+							Name = "Arg3",
+							Items = new string[] {"100", "101", "102", "103", "104", "105"}
+						}
+					},
+				}
+			};
+		}
+
+
 		#endregion
 	}
 }
