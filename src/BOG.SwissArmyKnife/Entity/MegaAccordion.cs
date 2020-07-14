@@ -209,6 +209,7 @@ namespace BOG.SwissArmyKnife.Entity
 				{
 					var index = ItemsInProgress[availableItem.Key].Key;
 					availableItem = ItemsInProgress[availableItem.Key];
+					availableItem.Arguments = GetArgumentValues(availableItem.Key);
 					ItemsInProgress[availableItem.Key].DateAvailableTicks = DateTime.Now.AddSeconds(secondsTimeout).Ticks;
 					result = true;
 				}
@@ -225,7 +226,7 @@ namespace BOG.SwissArmyKnife.Entity
 		{
 			var indexValues = BuildIndexesFromKey(key);
 			var result = new Dictionary<string, string>();
-			for (var index = 0; index <= indexValues.Length; index++)
+			for (var index = 0; index < indexValues.Length; index++)
 			{
 				result.Add(ArgumentItems[index].Name, ArgumentItems[index].Items[indexValues[index]]);
 			}
@@ -262,6 +263,7 @@ namespace BOG.SwissArmyKnife.Entity
 				if (thisItem != null)
 				{
 					ItemsInProgress[thisItem.Key].DateAvailableTicks = DateTime.MinValue.Ticks;
+					ItemsInProgress[thisItem.Key].Arguments = new Dictionary<string, string>();
 				}
 			}
 		}

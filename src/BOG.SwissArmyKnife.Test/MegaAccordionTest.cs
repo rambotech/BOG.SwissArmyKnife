@@ -13,10 +13,12 @@ using System.Text;
 
 namespace BOG.SwissArmyKnife.Test
 {
+	[JsonObject]
 	class MyMegaObject
 	{
-		public long Index { get; set; }
+		[JsonProperty]
 		public string Message { get; set; }
+		[JsonProperty]
 		public bool Succeeded { get; set; } = false;
 	}
 
@@ -280,34 +282,8 @@ namespace BOG.SwissArmyKnife.Test
 		[Test]
 		public void Accordion_Validate_Set1()
 		{
-#if TRUE
 			var acc = MakeMegaAccordionTest_Set1();
 			Accordion_Validate_Set_Helper("Set1", acc);
-#else
-			var acc = MakeMegaAccordionTest_Set1();
-			acc.ResetMegaAccordion();
-			var key = acc.BuildKeyFromIndexes();
-			Assert.IsTrue(key == "0", "Expected BuildKeyFromIndexes to be \"0\", but was \"{key}\".");
-			var allItemsCount = 1;
-			for (var i = 0; i < acc.ArgumentItems.Count; i++) allItemsCount *= acc.ArgumentItems[i].Items.Length;
-			int index = 0;
-			int nextIndex = 0;
-			for (; index < allItemsCount; index++)
-			{
-				nextIndex = (index + 1) % 5;
-				Assert.IsTrue(acc.State == MegaAccordionState.Active, $"For index {index}, expected state to be Active but was {acc.State}.");
-				key = acc.BuildKeyFromIndexes();
-				Assert.IsTrue(key == $"{index}", $"Expected BuildKeyFromIndexes (1) to be \"{index}\", but was \"{key}\".");
-				MegaAccordionItem<MyMegaObject> o;
-				Assert.IsTrue(acc.TryGetWorkItem(600, true, out o), "Expected TryGetWorkItem to be true.");
-				key = acc.BuildKeyFromIndexes();
-				Assert.IsTrue(key == $"{nextIndex}", $"Expected BuildKeyFromIndexes (2) to be \"{nextIndex}\", but was \"{key}\".");
-				Assert.IsTrue(acc.ItemsInProgress.Count == 1, $"Expected ItemsInProgress with one item but has \"{acc.ItemsInProgress.Count}\".");
-				acc.CompleteItem(o.Key);
-				Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with not items but has \"{acc.ItemsInProgress.Count}\".");
-			}
-			Assert.IsTrue(acc.State == MegaAccordionState.CompletedSuccessfully, $"Expected final state to be CompletedSuccessfully but was {acc.State}.");
-#endif
 		}
 
 		/// <summary>
@@ -332,6 +308,9 @@ namespace BOG.SwissArmyKnife.Test
 			Accordion_Validate_Set_Helper("Set3", acc);
 		}
 
+		#endregion
+
+		#region Index behavior
 		/// <summary>
 		/// Validate Level 0 increment and key generation on a 3:2:6 set, with one level.  36 iterations.
 		/// </summary>
@@ -560,6 +539,69 @@ namespace BOG.SwissArmyKnife.Test
 				}
 			}
 		}
+		#endregion
+
+		#region Payload and State behavior
+		/// <summary>
+		/// Validate payload update and retrieval on a two-pass retrieval: pass 1 retry, pass 2 complete.
+		/// </summary>
+		[Test]
+		public void Accordion_Payload1()
+		{
+			var acc = MakeMegaAccordionTest_Payload1();
+			acc.Level = 0;
+			acc.ResetMegaAccordion();
+			int index = 0;
+			Assert.IsTrue(acc.State == MegaAccordionState.Active, $"(Pre-loop) Expected State as Active but is \"{acc.State}\".");
+			while (index < 200)
+			{
+				if (index == 100) Thread.Sleep(2500);
+				if (index == 199)
+				{
+					var stop = "here";
+				}
+				MegaAccordionItem<MyMegaObject> myObj;
+				Assert.IsTrue(acc.TryGetWorkItem(1, true, out myObj), $"({index}) failed to get item");
+				if (index < 199)
+				{
+					if (index >= 100)
+					{
+						Assert.IsNotNull(myObj.Value, $"({index}) Expected not null value for value.");
+					}
+					else
+					{
+						Assert.IsNull(myObj.Value, $"({index}) Expected null value for value.");
+					}
+					myObj.Value = new MyMegaObject
+					{
+						Message = $"{index}",
+						Succeeded = false
+					};
+					acc.UpdateItem(myObj); // updates the item in the ItemsInProgress queue.
+					Assert.IsTrue(acc.State == MegaAccordionState.Sunsetting, $"({index}) Expected State as Sunsetting but is \"{acc.State}\".");
+					acc.RetryItem(myObj.Key); // requeues the item to be processes again.
+					Assert.IsTrue(acc.State == MegaAccordionState.Sunsetting, $"({index}) Expected State as Sunsetting but is \"{acc.State}\".");
+				}
+				else
+				{
+					Assert.IsTrue(acc.State == MegaAccordionState.Sunsetting, $"({index}) Expected State as Sunsetting but is \"{acc.State}\".");
+					acc.CompleteItem(myObj.Key); // clears the item from the in-progress queue.
+					if (index == 199)
+					{
+						Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"({index}) Expected State as Completed but is \"{acc.State}\".");
+					}
+					else
+					{
+						Assert.IsTrue(acc.State == MegaAccordionState.Sunsetting, $"({index}) Expected State as Sunsetting but is \"{acc.State}\".");
+					}
+				}
+				index++;
+			}
+		}
+
+		#endregion
+
+		#region Shared (tests)
 
 		/// <summary>
 		/// Set evaluator
@@ -835,7 +877,6 @@ namespace BOG.SwissArmyKnife.Test
 							Key="0:0:0",
 							Value=new MyMegaObject
 							{
-								Index = 0,
 								Message = "Hello",
 								Succeeded=false
 							}
@@ -847,7 +888,6 @@ namespace BOG.SwissArmyKnife.Test
 							Key="0:0:1",
 							Value=new MyMegaObject
 							{
-								Index = 1,
 								Message = "World",
 								Succeeded=false
 							}
@@ -859,7 +899,6 @@ namespace BOG.SwissArmyKnife.Test
 							Key="0:0:2",
 							Value=new MyMegaObject
 							{
-								Index = 2,
 								Message = "Piece",
 								Succeeded=false
 							}
@@ -1170,6 +1209,49 @@ namespace BOG.SwissArmyKnife.Test
 							Items = new string[] {"100", "101", "102", "103", "104", "105"}
 						}
 					},
+				}
+			};
+		}
+
+		/// <summary>
+		/// MultiArgument, multiple level, 100 test objects, 100 in progress.
+		/// </summary>
+		/// <returns></returns>
+		private MegaAccordion<MyMegaObject> MakeMegaAccordionTest_Payload1()
+		{
+			return new MegaAccordion<MyMegaObject>
+			{
+				State = MegaAccordionState.Active,
+				MaxInProgress = 100,
+				Level = 0,
+				Levels = new int[] { 4 },
+				Indexes = new long[] { 0, 0, 0, 0 },
+				ArgumentItems = new Dictionary<int, ArgumentItem>
+				{
+					{0, new ArgumentItem
+						{
+							Name = "Arg1",
+							Items = new string[] {"0", "1", "2", "3", "5"}
+						}
+					},
+					{1, new ArgumentItem
+						{
+							Name = "Arg2",
+							Items = new string[] {"50", "1"}
+						}
+					},
+					{2, new ArgumentItem
+						{
+							Name = "Arg3",
+							Items = new string[] {"101", "102", "103", "104", "105"}
+						}
+					},
+					{3, new ArgumentItem
+						{
+							Name = "Arg4",
+							Items = new string[] {"106", "107"}
+						}
+					}
 				}
 			};
 		}

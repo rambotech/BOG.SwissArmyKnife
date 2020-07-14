@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace BOG.SwissArmyKnife.Entity
 {
@@ -16,6 +17,8 @@ namespace BOG.SwissArmyKnife.Entity
 		[JsonProperty(Required = Required.Always, PropertyName = "Index")]
 		public string Key { get; set; }
 
+		[JsonProperty(Required = Required.Always, PropertyName = "Arguments")]
+		public Dictionary<string, string> Arguments { get; set; }
 		/// <summary>
 		/// The time when the item is available for processing.  This is usually the time when the item can be re-released,
 		/// since the previous item did not complete on time.
