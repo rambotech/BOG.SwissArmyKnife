@@ -16,25 +16,27 @@ namespace BOG.SwissArmyKnife.Entity
 	[JsonObject]
 	public class MegaAccordion<T>
 	{
+		[JsonProperty(Required = Required.Always, PropertyName = "State")]
+		public MegaAccordionState State { get; set; } = MegaAccordionState.Active;
+
+		/// <summary>
+		/// The levels for which the work is defined.  Entry, and entry before it (if any), define the number of static indexes, then the 
+		/// number of mutable indexes.
+		/// Example:  The Argumentitems.Count is 22, and the Levels are defined as: int[] { 5, 10, 7 };
+		///   at Level 0, the first five indexes are mutable
+		///   at Level 1, the first five indexes are static, then the next 10 are mutable
+		///   at Level 2, the first fifteen indexes are static, then the final seven are mutable.
+		/// NOTE: A call to ResetMegaAccordion() will change the mutable index(es) to 0.  If processing was occurring at a lower level,
+		///   copy the indexes array values from prior level processing into this level's indexes array, prior to resetting.
+		/// </summary>
+		[JsonProperty(Required = Required.Always, PropertyName = "Levels")]
+		public int[] Levels { get; set; } = new int[] { 5, 10, 7 };
+
 		/// <summary>
 		/// The level for the work. And index to Levels: determines the size of the static and mutuable levels.
 		/// </summary>
 		[JsonProperty(Required = Required.Always, PropertyName = "Level")]
 		public int Level { get; set; } = 0;
-
-		[JsonProperty(Required = Required.Always, PropertyName = "State")]
-		public MegaAccordionState State { get; set; } = MegaAccordionState.Active;
-
-		/// <summary>
-		/// The levels for which the work is defined.  Entry, and entry before it (if any), define the number of static indexes, then the number of mutable indexes.
-		/// Example:  The Argumentitems.Count is 22, and the Levels are defined as: int[] { 5, 10, 7 };
-		///   at Level 0, the first five indexes are mutable
-		///   at Level 1, the first five indexes are static, then the next 10 are mutable
-		///   at Level 2, the first fifteen indexes are static, then the final seven are mutable.
-		/// </summary>
-		[JsonProperty(Required = Required.Always, PropertyName = "Level")]
-		public int[] Levels { get; set; } = new int[] { 5, 10, 7 };
-
 		/// <summary>
 		/// The indexes are the offsets of the iteration items.  Note: only the indexes which are mutable (determined by level) will be iterated.
 		/// </summary>
@@ -210,6 +212,8 @@ namespace BOG.SwissArmyKnife.Entity
 					var index = ItemsInProgress[availableItem.Key].Key;
 					availableItem = ItemsInProgress[availableItem.Key];
 					availableItem.Arguments = GetArgumentValues(availableItem.Key);
+					availableItem.Attempts.Add(DateTime.Now);
+					// Set the timeout, after which the item may be reissued for processing.
 					ItemsInProgress[availableItem.Key].DateAvailableTicks = DateTime.Now.AddSeconds(secondsTimeout).Ticks;
 					result = true;
 				}

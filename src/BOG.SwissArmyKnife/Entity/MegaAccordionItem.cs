@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace BOG.SwissArmyKnife.Entity
@@ -14,8 +15,15 @@ namespace BOG.SwissArmyKnife.Entity
 		/// A big-endian style hexadecimal notation of each iteration's current offset, e.g. 32:27A:45:B:7
 		/// Each position represents the 0-based index of the iteration item being processed.
 		/// </summary>
-		[JsonProperty(Required = Required.Always, PropertyName = "Index")]
+		[JsonProperty(Required = Required.Always, PropertyName = "Key")]
 		public string Key { get; set; }
+
+		/// <summary>
+		/// List of attempts made to process this.  Can be used by the client to determine if processing should be abandoned for the item.
+		/// Each entry represents when the item was retrieved for processing.
+		/// </summary>
+		[JsonProperty(Required = Required.Always, PropertyName = "Attempts")]
+		public List<DateTime> Attempts { get; set; } = new List<DateTime>();
 
 		[JsonProperty(Required = Required.Always, PropertyName = "Arguments")]
 		public Dictionary<string, string> Arguments { get; set; }

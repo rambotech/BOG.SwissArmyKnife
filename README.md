@@ -10,7 +10,7 @@ This is a .NET Standard port of BOG.Framework, which is deprecated.
 The classes are:
 
 ### MegaAccordion / MegaAccordionItem&lt;T>
-  An expanded version of Accordion which can track more the 2^64 combinations of argument values
+  An expanded version of Accordion which can track more the 2^64 combinations of argument values.
 
 ### Accordion / AccordionItem&lt;T>
   Provides tracking of a number (ordinal) sequence by an in-progress list, from which items are retrieved and later marked as retry or complete.  Includes time-out to
@@ -100,5 +100,5 @@ See the NUnit project for examples.
     a string, i.e. directory path, etc.
 
 ### Url
-  A Url parser which is designed to validate listener url's for a HttpListener object, is less restrictive on
+  A Url parser which is designed to validate listener url's for an HttpListener object, is less restrictive on
   host portions, and can rebuild a URL after parsing it to remove unnecessary URL encoding.

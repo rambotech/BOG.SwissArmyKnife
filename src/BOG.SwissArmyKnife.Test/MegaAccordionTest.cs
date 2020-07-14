@@ -17,7 +17,8 @@ namespace BOG.SwissArmyKnife.Test
 	class MyMegaObject
 	{
 		[JsonProperty]
-		public string Message { get; set; }
+		public string Message { get; set; } = string.Empty;
+
 		[JsonProperty]
 		public bool Succeeded { get; set; } = false;
 	}
@@ -556,25 +557,14 @@ namespace BOG.SwissArmyKnife.Test
 			while (index < 200)
 			{
 				if (index == 100) Thread.Sleep(2500);
-				if (index == 199)
-				{
-					var stop = "here";
-				}
 				MegaAccordionItem<MyMegaObject> myObj;
 				Assert.IsTrue(acc.TryGetWorkItem(1, true, out myObj), $"({index}) failed to get item");
-				if (index < 199)
+				if (index < 100)
 				{
-					if (index >= 100)
-					{
-						Assert.IsNotNull(myObj.Value, $"({index}) Expected not null value for value.");
-					}
-					else
-					{
-						Assert.IsNull(myObj.Value, $"({index}) Expected null value for value.");
-					}
+					Assert.IsTrue(myObj.Attempts.Count == 1, $"({index}) Expected 1 attempt entry, but have {myObj.Attempts.Count}.");
+					Assert.IsNull(myObj.Value, $"({index}) Expected null value for value.");
 					myObj.Value = new MyMegaObject
 					{
-						Message = $"{index}",
 						Succeeded = false
 					};
 					acc.UpdateItem(myObj); // updates the item in the ItemsInProgress queue.
@@ -584,7 +574,9 @@ namespace BOG.SwissArmyKnife.Test
 				}
 				else
 				{
+					Assert.IsNotNull(myObj.Value, $"({index}) Expected not null value for value.");
 					Assert.IsTrue(acc.State == MegaAccordionState.Sunsetting, $"({index}) Expected State as Sunsetting but is \"{acc.State}\".");
+					Assert.IsTrue(myObj.Attempts.Count == 2, $"({index}) Expected 2 attempt entries, but have {myObj.Attempts.Count}.");
 					acc.CompleteItem(myObj.Key); // clears the item from the in-progress queue.
 					if (index == 199)
 					{

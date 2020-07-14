@@ -3,8 +3,9 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
-1.7.0 -- 07/02/2020
-- Introduction of MegaAccordion class: for combinations in excess of 2^64 items.
+1.7.0 -- 07/14/2020
+- Introduction of MegaAccordion / MegaAccordionItem classes to expand Accordion / AccordionItem
+  for combinations in excess of 2^64 items. Accordion and AccordionItem still maintained.
 
 1.6.3 -- 05/27/2020
 - Fix serialization issue in IterationItems
