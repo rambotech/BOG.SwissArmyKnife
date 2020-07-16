@@ -85,7 +85,7 @@ namespace BOG.SwissArmyKnife.Entity
 		private int mutableStart = 0;
 		private int mutableLength = 0;
 
-		#endregion 
+		#endregion
 
 		#region Support Methods -- Public
 
@@ -211,7 +211,10 @@ namespace BOG.SwissArmyKnife.Entity
 				{
 					var index = ItemsInProgress[availableItem.Key].Key;
 					availableItem = ItemsInProgress[availableItem.Key];
-					availableItem.Arguments = GetArgumentValues(availableItem.Key);
+					if (Level == Levels.Length - 1) // this is the processing level
+					{
+						availableItem.Arguments = GetArgumentValues(availableItem.Key);
+					}
 					availableItem.Attempts.Add(DateTime.Now);
 					// Set the timeout, after which the item may be reissued for processing.
 					ItemsInProgress[availableItem.Key].DateAvailableTicks = DateTime.Now.AddSeconds(secondsTimeout).Ticks;
@@ -238,14 +241,18 @@ namespace BOG.SwissArmyKnife.Entity
 		}
 
 		/// <summary>
-		/// Sets the payload for an item.
+		/// Sets the payload for an item.  Only for use with the lowest (processing) level.
 		/// </summary>
 		/// <param name="itemIndex">The index property value of the Metaset item to be processed.</param>
-		public void UpdateItem(MegaAccordionItem<T> item)
+		public void UpdateItemPayload(MegaAccordionItem<T> item)
 		{
 			lock (lockItemList)
 			{
 				if (!isValidated) Validate();
+				if (Level < Levels.Length - 1) // this is the processing level
+				{
+					throw new ArgumentException($"UpdateItem() can only be used at the processing level ({Levels.Length - 1}), not {Level}");
+				}
 				var thisItem = ItemsInProgress.Values.Where(o => o.Key == item.Key).FirstOrDefault();
 				if (thisItem != null)
 				{
@@ -403,7 +410,7 @@ namespace BOG.SwissArmyKnife.Entity
 			{
 				if (!isValidated) Validate();
 				var result = new StringBuilder();
-				for (var index = 0; index < ArgumentItems.Count;index++)
+				for (var index = 0; index < ArgumentItems.Count; index++)
 				{
 					if (result.Length > 0) result.Append(":");
 					result.Append(string.Format("{0}", Indexes[index]));

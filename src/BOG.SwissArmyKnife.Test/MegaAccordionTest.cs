@@ -567,7 +567,7 @@ namespace BOG.SwissArmyKnife.Test
 					{
 						Succeeded = false
 					};
-					acc.UpdateItem(myObj); // updates the item in the ItemsInProgress queue.
+					acc.UpdateItemPayload(myObj); // updates the item in the ItemsInProgress queue.
 					Assert.IsTrue(acc.State == MegaAccordionState.Sunsetting, $"({index}) Expected State as Sunsetting but is \"{acc.State}\".");
 					acc.RetryItem(myObj.Key); // requeues the item to be processes again.
 					Assert.IsTrue(acc.State == MegaAccordionState.Sunsetting, $"({index}) Expected State as Sunsetting but is \"{acc.State}\".");
@@ -602,7 +602,7 @@ namespace BOG.SwissArmyKnife.Test
 		{
 			acc.ResetMegaAccordion();
 			var key = acc.BuildKeyFromIndexes();
-			var expectedKey = key;
+			var expectedKey = BuildKeyForTestingIndex(acc, 0);
 			Assert.IsTrue(key == BuildKeyForTestingIndex(acc, 0), $"{title}: Expected BuildKeyFromIndexes to be \"0\", but was \"{key}\".");
 			var allItemsCount = 1;
 			var levelIndex = 0;
