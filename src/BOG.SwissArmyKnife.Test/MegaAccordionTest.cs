@@ -385,7 +385,7 @@ namespace BOG.SwissArmyKnife.Test
 				var expectedKey = BuildKeyForTestingIndex(acc, index1);
 				if (index1 == 2)
 				{
-					Assert.IsTrue(key == "0:0:0", $"Expected zero-based index for end but was \"{key}\".");
+					Assert.IsTrue(key == "2:0:0", $"Expected zero-based index for end but was \"{key}\".");
 					Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with no items but has \"{acc.ItemsInProgress.Count}\".");
 					Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"Expected State as CompletedSuccessfully but is \"{acc.State}\".");
 					continue;
@@ -413,6 +413,7 @@ namespace BOG.SwissArmyKnife.Test
 				var expectedKey = BuildKeyForTestingIndex(acc, index1);
 				if (index1 == 6)
 				{
+					Assert.IsTrue(key == "2:1:0", $"Expected zero-based index for end but was \"{key}\".");
 					Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with no items but has \"{acc.ItemsInProgress.Count}\".");
 					Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"Expected State as CompletedSuccessfully but is \"{acc.State}\".");
 					continue;
@@ -461,7 +462,7 @@ namespace BOG.SwissArmyKnife.Test
 		public void Accordion_Index_Level_Keys_4_ML1()
 		{
 			var acc = MakeMegaAccordionTest_Set4();
-			acc.Indexes = new long[] { 2, 1, 0 };
+			acc.Indexes = new long[] { 2, 1, 5};
 			acc.Level = 1;  // [3 : 2] : 6   (6 of 36)
 			acc.ResetMegaAccordion();
 			for (var index1 = 0; index1 <= 6; index1++)
@@ -470,7 +471,7 @@ namespace BOG.SwissArmyKnife.Test
 				var expectedKey = BuildKeyForTestingIndex(acc, index1);
 				if (index1 == 6)
 				{
-					Assert.IsTrue(key == "0:0:0", $"Expected zero-based index for end but was \"{key}\".");
+					Assert.IsTrue(key == "2:1:0", $"Expected zero-based index for end but was \"{key}\".");
 					Assert.IsTrue(acc.ItemsInProgress.Count == 0, $"Expected ItemsInProgress with no items but has \"{acc.ItemsInProgress.Count}\".");
 					Assert.IsTrue(acc.State == MegaAccordionState.Completed, $"Expected State as CompletedSuccessfully but is \"{acc.State}\".");
 					continue;
@@ -490,7 +491,7 @@ namespace BOG.SwissArmyKnife.Test
 		public void Accordion_Index_Level_Keys_5_ML0()
 		{
 			var acc = MakeMegaAccordionTest_Set5();
-			acc.Indexes = new long[] { 2, 1, 0 };
+			acc.Indexes = new long[] { 2, 1, 4 };
 			acc.Level = 0;  // [3 : 2] : 6   (6 of 36)
 			acc.ResetMegaAccordion();
 			for (var index1 = 0; index1 <= 3; index1++)
@@ -519,7 +520,7 @@ namespace BOG.SwissArmyKnife.Test
 		public void Accordion_Index_Level_Keys_5_ML1()
 		{
 			var acc = MakeMegaAccordionTest_Set5();
-			acc.Indexes = new long[] { 2, 1, 0 };
+			acc.Indexes = new long[] { 2, 1, 3 };
 			acc.Level = 0;  // [3 : 2] : 6   (6 of 36)
 			acc.ResetMegaAccordion();
 			for (var index1 = 0; index1 <= 3; index1++)

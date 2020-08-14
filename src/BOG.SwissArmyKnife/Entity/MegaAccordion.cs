@@ -168,8 +168,8 @@ namespace BOG.SwissArmyKnife.Entity
 			{
 				if (!isValidated) Validate();
 				ItemsInProgress = new Dictionary<string, MegaAccordionItem<T>>();
-				Indexes = new long[ArgumentItems.Count];
-				for (var index = staticLength; index < Indexes.Length; index++)
+				var newIndexes = new long[ArgumentItems.Count];
+				for (var index = mutableStart; index < Indexes.Length; index++)
 				{
 					Indexes[index] = 0L;
 				}
