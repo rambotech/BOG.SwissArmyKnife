@@ -46,7 +46,7 @@ namespace BOG.SwissArmyKnife.Entity
 		/// <summary>
 		/// The Iteration object for the parameter combinations. NOTE: StaticOffset.Count + StaticOffset.Count must be <= ArgumentItems.Count 
 		/// </summary>
-		[JsonProperty(Required = Required.Always, PropertyName = "Iterations")]
+		[JsonProperty(Required = Required.Always, PropertyName = "ArgumentItems")]
 		public Dictionary<int, ArgumentItem> ArgumentItems { get; set; } = null;
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace BOG.SwissArmyKnife.Entity
 		/// This time includes not only processing time itself, but lag time in queues or other delays.
 		/// Default is five minutes.
 		/// </summary>
-		[JsonProperty(Required = Required.Always, PropertyName = "MaxInProgress")]
+		[JsonProperty(Required = Required.Always, PropertyName = "TimeoutTicks")]
 		public long TimeoutTicks { get; set; } = TimeSpan.FromMinutes(5).Ticks;
 
 		/// <summary>
