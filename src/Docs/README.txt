@@ -3,6 +3,9 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.7.4 -- 09/18/2020
+- Drop MegaAccordion + assoc.  Too many issues with the design.
+
 1.7.3 -- 08/18/2020
 - Fix JSON attribute names.
 

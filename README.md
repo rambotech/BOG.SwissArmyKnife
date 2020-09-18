@@ -9,9 +9,6 @@ This is a .NET Standard port of BOG.Framework, which is deprecated.
 
 The classes are:
 
-### MegaAccordion / MegaAccordionItem&lt;T>
-  An expanded version of Accordion which can track more the 2^64 combinations of argument values.
-
 ### Accordion / AccordionItem&lt;T>
   Provides tracking of a number (ordinal) sequence by an in-progress list, from which items are retrieved and later marked as retry or complete.  Includes time-out to
   reissue work after a period of time.  Allows large sequences of numbers (even billions and higher) to be processed, with the accordion class providing the tracking.
