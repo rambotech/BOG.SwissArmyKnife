@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace BOG.SwissArmyKnife.Test
 {
@@ -150,23 +151,29 @@ namespace BOG.SwissArmyKnife.Test
             Assert.IsTrue(string.Compare(TextBlob, Result) == 0);
         }
 
-        [Ignore("Skipped: Windows passes; Linux fails")]
         [Test, Description("HeadTailSummary(): default, squashed, small")]
         public void StringEx_HeadTailSummary_Default_Squashed_Small()
         {
             string TextBlob = new string('A', 257);
             string Result = TextBlob.HeadTailSummary();
             string Expected = new string('A', 128) + "\r\n\r\n  ...[1 bytes squashed]...\r\n\r\n" + new string('A', 128) + "\r\n";
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Expected.Replace("\r\n", "\n");
+            }
             Assert.IsTrue(string.Compare(Result, Expected) == 0);
         }
 
-        [Ignore("Skipped: Windows passes; Linux fails")]
         [Test, Description("HeadTailSummary(): default, squashed, large")]
         public void StringEx_HeadTailSummary_Default_Squashed_Large()
         {
             string TextBlob = new string('A', 1257);
             string Result = TextBlob.HeadTailSummary();
             string Expected = new string('A', 128) + "\r\n\r\n  ...[1,001 bytes squashed]...\r\n\r\n" + new string('A', 128) + "\r\n";
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+                Expected.Replace("\r\n", "\n");
+            }
             Assert.IsTrue(string.Compare(Result, Expected) == 0);
         }
 
@@ -208,13 +215,16 @@ namespace BOG.SwissArmyKnife.Test
             Assert.IsTrue(string.Compare(TextBlob, Result) == 0);
         }
 
-        [Ignore("Skipped: Windows passes; Linux fails")]
         [Test, Description("HeadTailSummary(): non-default, squashed, large")]
         public void StringEx_HeadTailSummary_NonDefault_Squashed_Large()
         {
             string TextBlob = new string('A', 1026);
             string Result = TextBlob.HeadTailSummary(512, 512);
             string Expected = new string('A', 512) + "\r\n\r\n  ...[2 bytes squashed]...\r\n\r\n" + new string('A', 512) + "\r\n";
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Expected.Replace("\r\n", "\n");
+            }
             Assert.IsTrue(string.Compare(Result, Expected) == 0);
         }
 

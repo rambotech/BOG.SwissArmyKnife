@@ -3,6 +3,9 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.7.6 -- 02/27/2021
+- Nuget package updates; adjust tests for Windows/Linux runtime environment.
+
 1.7.5 -- 12/30/2020
 - Nuget package updates; travis config update.
 

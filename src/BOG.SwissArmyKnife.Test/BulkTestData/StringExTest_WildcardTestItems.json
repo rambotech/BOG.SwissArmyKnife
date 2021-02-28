@@ -142,7 +142,57 @@
   {
     "DataRow": "14",
     "Value": "The quick red fox jumped",
+    "WildcardPattern": "*jumped*",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "15",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "*quick",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "FALSE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "16",
+    "Value": "The quick red fox jumped",
     "WildcardPattern": "*The * red *jumped",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "17",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "* red *",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "18",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "**",
+    "CaseSensitive": "FALSE",
+    "ExpectedResult": "TRUE",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "Note": ""
+  },
+  {
+    "DataRow": "19",
+    "Value": "The quick red fox jumped",
+    "WildcardPattern": "*",
     "CaseSensitive": "FALSE",
     "ExpectedResult": "TRUE",
     "ThrowsException": "",
