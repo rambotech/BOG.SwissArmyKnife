@@ -16,7 +16,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyVersion>1.7.8.0</AssemblyVersion>
     <FileVersion>1.7.8.0</FileVersion>
-    <Version>1.7.7</Version>
+    <Version>1.7.8</Version>
     <Copyright>(c) 2017-2021, John J Schultz</Copyright>
     <PackageIcon>multitool.png</PackageIcon>
   </PropertyGroup>
