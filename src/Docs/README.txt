@@ -3,6 +3,9 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.7.8 -- 04/25/2021
+- .NET Standard 2.0 -> 2.1 (https://github.com/advisories/GHSA-7jgj-8wvc-jh57)
+
 1.7.7 -- 02/27/2021
 - Misc updates
 
