@@ -63,10 +63,6 @@ namespace BOG.SwissArmyKnife
                 oRegExp = new System.Text.RegularExpressions.Regex(@"([A-Za-z]+)(://)((.*?)@)*([^\s]+)", RegexOptions.IgnoreCase | RegexOptions.Singleline);
                 sValue = oRegExp.Replace(sValue, "$1$2[contents:hidden]@$5");
             }
-            catch (Exception exc)
-            {
-                throw exc;
-            }
             finally
             {
                 oRegExp = null;
