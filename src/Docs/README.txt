@@ -3,6 +3,12 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.7.12 -- 12/12/2022
+- .NET Core to .NET 7 for all projects
+
+1.7.11 -- 12/11/2022
+- Maintenance release: package updates due to security flaw
+
 1.7.10 -- 12/28/2021
 - Maintenance release: package updates
 
