@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Description>Collection of utility classes migrated to NET Standard 2.0 from BOG.Framework</Description>
     <Authors>John J Schultz</Authors>
     <Company>Bits of Genius</Company>
