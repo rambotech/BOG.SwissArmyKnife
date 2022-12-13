@@ -1,7 +1,7 @@
 language: csharp
 solution: ./src/BOG.SwissArmyKnife.sln
 mono: none
-dotnet: 7.0
+dotnet: 7.0.0
 script:
 - chmod +x ./deploy.sh 
 - ./deploy.sh
