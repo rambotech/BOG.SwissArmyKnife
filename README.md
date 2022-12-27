@@ -9,7 +9,7 @@
 | develop | [![Build status](https://app.travis-ci.com/rambotech/BOG.SwissArmyKnife.svg?branch=develop)](https://app.travis-ci.com/rambotech/BOG.SwissArmyKnife) | |
 
 
-This is a .NET 7 port of BOG.Framework, which is deprecated.
+This is a .NET Core 3.1 port of BOG.Framework, which is deprecated.
 
 The classes are:
 
