@@ -27,6 +27,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore BOG.SwissArmyKnife.sln
+      run: dotnet build --no-restore BOG.SwissArmyKnife/BOG.SwissArmyKnife.csproj
     - name: Test
       run: dotnet test --no-build --verbosity normal BOG.SwissArmyKnife.Test/BOG.SwissArmyKnife.Test.csproj
