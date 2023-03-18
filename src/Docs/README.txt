@@ -3,6 +3,14 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.7.14 -- 03/18/2023
+- Drop Travis-CI for Github Actions
+- Update Nuget packages
+
+1.7.13 -- 12/28/2022
+- revert to dotnet core 3
+- Update Nuget packages
+
 1.7.12 -- 12/12/2022
 - .NET Core to .NET 7 for all projects
 
