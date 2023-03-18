@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		global.json = global.json
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
 	EndProjectSection
@@ -26,6 +27,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{8435FD
 	ProjectSection(SolutionItems) = preProject
 		Assets\multitool.ico = Assets\multitool.ico
 		Assets\multitool.png = Assets\multitool.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{B6A42B6F-E233-4C16-ADEC-340C32195C5D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "worklfows", "worklfows", "{D980BE13-7BDD-49E7-BF07-721D4BFD0129}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\dotnet.yml = ..\.github\workflows\dotnet.yml
 	EndProjectSection
 EndProject
 Global
@@ -49,6 +57,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B6A42B6F-E233-4C16-ADEC-340C32195C5D} = {DE59B2B4-4377-4809-9E07-771EEE4D4F27}
+		{D980BE13-7BDD-49E7-BF07-721D4BFD0129} = {B6A42B6F-E233-4C16-ADEC-340C32195C5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {78A256A6-DC06-4C43-8E75-BEAC6E223F63}
