@@ -2,12 +2,11 @@
 
 # BOG.SwissArmyKnife
 
-| *branch* | state | nuget |
-| :--- | :--- | :--- |
-| master | [![Build status](https://app.travis-ci.com/rambotech/BOG.SwissArmyKnife.svg?branch=master)](https://app.travis-ci.com/rambotech/BOG.SwissArmyKnife) | [![Nuget](https://img.shields.io/nuget/v/BOG.SwissArmyKnife)](https://www.nuget.org/packages/BOG.SwissArmyKnife/) |
-| release | [![Build status](https://app.travis-ci.com/rambotech/BOG.SwissArmyKnife.svg?branch=release)](https://app.travis-ci.com/rambotech/BOG.SwissArmyKnife) | |
-| develop | [![Build status](https://app.travis-ci.com/rambotech/BOG.SwissArmyKnife.svg?branch=develop)](https://app.travis-ci.com/rambotech/BOG.SwissArmyKnife) | |
-
+| *branch* | Currently |
+| :--- | :---: |
+| master | [![Build status](https://github.com/rambotech/BOG.SwissArmyKnife/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/rambotech/BOG.SwissArmyKnife) |
+| release | [![Build status](https://github.com/rambotech/BOG.SwissArmyKnife/actions/workflows/dotnet.yml/badge.svg?branch=develop)](https://github.com/rambotech/BOG.SwissArmyKnife/tree/release) |
+| develop | [![Build status](https://github.com/rambotech/BOG.SwissArmyKnife/actions/workflows/dotnet.yml/badge.svg?branch=develop)](https://github.com/rambotech/BOG.SwissArmyKnife/tree/develop) |
 
 This is a .NET Core 3.1 port of BOG.Framework, which is deprecated.
 
