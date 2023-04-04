@@ -5,9 +5,7 @@ name: .NET
 
 on:
   push:
-    branches: [ "develop" ]
-  pull_request:
-    branches: [ "master", "release" ]
+    branches: [ "develop", "release", "master" ]
 
 defaults:
   run:
@@ -15,7 +13,6 @@ defaults:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -28,3 +25,13 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore BOG.SwissArmyKnife.csproj
+			if: github.event.ref == 'refs/heads/master'
+
+  nuget:
+    - name: NuGet package publish
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        NUGET_SOURCE: ${{ NUGET_SOURCE }}
+      run: |
+        dotnet nuget push ./bin/release/BOG.SwissArmyKnife.*.nupkg --api-key $NUGET_API_KEY --source $NUGET_SOURCE --skip-duplicate
+
