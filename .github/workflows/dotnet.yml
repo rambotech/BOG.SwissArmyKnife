@@ -26,9 +26,9 @@ jobs:
     - name: Build
       run: |
         dotnet build --no-restore BOG.SwissArmyKnife.csproj
-			if: github.event.ref == 'refs/heads/master'
+    if: github.event.ref == 'refs/heads/master'
 
-  nuget:
+nuget:
     - name: NuGet package publish
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
