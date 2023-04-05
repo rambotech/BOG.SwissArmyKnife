@@ -1,6 +1,8 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
+# modified to always make a release build, and do a nuget push when on master branch.
+
 name: .NET
 
 on:
@@ -25,7 +27,7 @@ jobs:
       run: dotnet restore
     - name: Build
       run: |
-        dotnet build --no-restore BOG.SwissArmyKnife.csproj
+        dotnet build --no-restore -c release BOG.SwissArmyKnife.csproj
     - name: NuGet package publish
       if: github.event.ref == 'refs/heads/master'
       env:
