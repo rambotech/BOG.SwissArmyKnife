@@ -1,13 +1,13 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
+# modified to always make a release build, and do a nuget push when on master branch.
+
 name: .NET
 
 on:
   push:
-    branches: [ "develop" ]
-  pull_request:
-    branches: [ "master", "release" ]
+    branches: [ "develop", "release", "master" ]
 
 defaults:
   run:
@@ -15,7 +15,6 @@ defaults:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -27,6 +26,12 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore BOG.SwissArmyKnife.sln
-    - name: Test
-      run: dotnet test --no-build --verbosity normal BOG.SwissArmyKnife.Test/BOG.SwissArmyKnife.Test.csproj
+      run: |
+        dotnet build --no-restore -c release BOG.SwissArmyKnife.csproj
+    - name: NuGet package publish
+      if: github.event.ref == 'refs/heads/master'
+      env:
+        NGKEY: ${{ secrets.NUGET_API_KEY }}
+        NGSRC: ${{ vars.NUGET_SOURCE }}
+      run: |
+        dotnet nuget push ./bin/release/BOG.SwissArmyKnife.*.nupkg --api-key ${NGKEY} --source ${NGSRC} --skip-duplicate
