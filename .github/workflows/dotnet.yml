@@ -29,7 +29,7 @@ jobs:
     - name: NuGet package publish
       if: github.event.ref == 'refs/heads/master'
       env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        NUGET_SOURCE: ${{ NUGET_SOURCE }}
+        NGKEY: ${{ secrets.NUGET_API_KEY }}
+        NGSRC: ${{ NUGET_SOURCE }}
       run: |
-        dotnet nuget push ./bin/release/BOG.SwissArmyKnife.*.nupkg --api-key $NUGET_API_KEY --source $NUGET_SOURCE --skip-duplicate
+        dotnet nuget push ./bin/release/BOG.SwissArmyKnife.*.nupkg --api-key ${NGKEY} --source ${NGSRC} --skip-duplicate
