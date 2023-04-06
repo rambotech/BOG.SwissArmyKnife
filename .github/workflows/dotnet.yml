@@ -34,8 +34,4 @@ jobs:
         NGKEY: ${{ secrets.NUGET_API_KEY }}
         NGSRC: ${{ vars.NUGET_SOURCE }}
       run: |
-        echo NGKEY: ${{ secrets.NUGET_API_KEY }}
-        echo NGSRC: ${{ vars.NUGET_SOURCE }}
-        echo NGKEY: ${NGKEY}
-        echo NGSRC: ${NGSRC}
         dotnet nuget push ./bin/release/BOG.SwissArmyKnife.*.nupkg --api-key ${NGKEY} --source ${NGSRC} --skip-duplicate
