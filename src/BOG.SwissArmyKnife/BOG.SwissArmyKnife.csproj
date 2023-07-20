@@ -14,9 +14,9 @@
     <PackageTags>C# netstandardc20 utility harvest monitor strings exception format formatting directory file scripting fuse logging password hash serialize serializing</PackageTags>
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.7.16.0</AssemblyVersion>
-    <FileVersion>1.7.16.0</FileVersion>
-    <Version>1.7.16</Version>
+    <AssemblyVersion>1.7.17.0</AssemblyVersion>
+    <FileVersion>1.7.17.0</FileVersion>
+    <Version>1.7.17</Version>
     <Copyright>(c) 2017-2023, John J Schultz</Copyright>
     <PackageIcon>multitool.png</PackageIcon>
   </PropertyGroup>
