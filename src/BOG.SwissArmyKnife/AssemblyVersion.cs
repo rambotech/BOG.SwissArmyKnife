@@ -8,9 +8,9 @@ namespace BOG.SwissArmyKnife
 {
     public class AssemblyVersion
     {
-        public string Filename { get; private set; }
-        public string Version { get; private set; }
-        public DateTime BuildDate { get; private set; }
+        public string Filename { get; private set; } = string.Empty;
+        public string Version { get; private set; } = string.Empty;
+        public DateTime BuildDate { get; private set; } = DateTime.MaxValue;
 
         public AssemblyVersion()
         {
