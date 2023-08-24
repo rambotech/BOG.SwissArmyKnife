@@ -3,6 +3,9 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+1.8.0 -- 08/23/2023
+- .NET 7.0
+
 1.7.15 -- 04/02/2023
 - Github Actions: add nuget update to actions
 
