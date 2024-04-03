@@ -3,6 +3,13 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
+FUTURUE -- 2.0.0 -- No roadmap
+- Refactoring crypto and others to replace obsolete items.
+
+1.9.0 -- 04/03/2024
+- .NET 8.0
+- Add name and ToJson string output to AssemblyVersion
+
 1.8.0 -- 08/23/2023
 - .NET 7.0
 

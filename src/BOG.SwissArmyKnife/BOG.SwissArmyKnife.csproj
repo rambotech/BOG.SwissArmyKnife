@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Description>Collection of utility classes migrated to NET Standard 2.0 from BOG.Framework</Description>
     <Authors>John J Schultz</Authors>
     <Company>Bits of Genius</Company>
@@ -14,9 +14,9 @@
     <PackageTags>C# netstandardc20 utility harvest monitor strings exception format formatting directory file scripting fuse logging password hash serialize serializing</PackageTags>
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.8.0.0</AssemblyVersion>
-    <FileVersion>1.8.0.0</FileVersion>
-    <Version>1.8.0</Version>
+    <AssemblyVersion>1.9.0.0</AssemblyVersion>
+    <FileVersion>1.9.0.0</FileVersion>
+    <Version>1.9.0</Version>
     <Copyright>(c) 2017-2023, John J Schultz</Copyright>
     <PackageIcon>multitool.png</PackageIcon>
   </PropertyGroup>

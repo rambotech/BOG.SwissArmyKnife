@@ -17,16 +17,13 @@
         /// </summary>
         public CipherUtility()
         {
-            this.CryptoAlgorithm = new AesManaged();
+            this.CryptoAlgorithm = Aes.Create();
         }
 
         /// <summary>
         /// Use a specific encryption provider which inherits from base class SymmetricAlgorithm.
         /// </summary>
-        public CipherUtility(SymmetricAlgorithm cryptoAlgorithm)
-        {
-            this.CryptoAlgorithm = cryptoAlgorithm ?? new AesManaged();
-        }
+        public CipherUtility(SymmetricAlgorithm cryptoAlgorithm) => this.CryptoAlgorithm = cryptoAlgorithm ?? Aes.Create();
 
         /// <summary>
         /// Encrypt a given string using specific password and salt values
