@@ -10,7 +10,7 @@ FUTURE -- 2.0.0 -- No roadmap
 - Add an optional magic string which a TCP client must send, before BabbleOn begins feeding traffic to the client.
 - Add new class CommandArgParser for turning --key VALUE or -k VALUE style arguments into Dictionary<string, List<string>>
 
-1.9.1 -- 12/01/2024
+1.9.1a -- 12/01/2024
 - Updates wip interim
 
 1.9.0 -- 04/03/2024
