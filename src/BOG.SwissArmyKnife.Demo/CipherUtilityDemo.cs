@@ -49,15 +49,11 @@ namespace BOG.SwissArmyKnife.Demo
                 CipherUtility cipher = null;
                 if (algorithm == "System.Security.Cryptography.AesManaged")
                 {
-                    cipher = new CipherUtility(new AesManaged());
+                    cipher = new CipherUtility(Aes.Create());
                 }
                 else if (algorithm == "System.Security.Cryptography.TripleDESCryptoServiceProvider")
                 {
-                    cipher = new CipherUtility(new TripleDESCryptoServiceProvider());
-                }
-                else if (algorithm == "System.Security.Cryptography.RijndaelManaged")
-                {
-                    cipher = new CipherUtility(new RijndaelManaged());
+                    cipher = new CipherUtility(TripleDES.Create());
                 }
 #endif
                 int pass = 1;

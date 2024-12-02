@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -8,6 +9,7 @@ using System.Text;
 
 namespace BOG.SwissArmyKnife
 {
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class AssemblyVersion
     {
         public enum AssemblySource : int
@@ -17,9 +19,13 @@ namespace BOG.SwissArmyKnife
             Executing = 3
         }
 
+        [JsonProperty(PropertyName = "Filename", Required = Required.Always)]
         public string Filename { get; private set; } = string.Empty;
+        [JsonProperty(PropertyName = "Name", Required = Required.Always)]
         public string Name { get; private set; } = string.Empty;
+        [JsonProperty(PropertyName = "Version", Required = Required.Always)]
         public string Version { get; private set; } = string.Empty;
+        [JsonProperty(PropertyName = "BuildDate", Required = Required.Always)]
         public DateTime BuildDate { get; private set; } = DateTime.MaxValue;
 
         /// <summary>

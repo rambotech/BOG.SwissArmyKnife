@@ -2,6 +2,7 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -160,21 +161,8 @@ namespace BOG.SwissArmyKnife
         {
             try
             {
-                WebClient wc = new WebClient();
-                // Add a user agent header in case the requested URI contains a query.
-                if (headers.Length == 0)
-                {
-                    wc.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.75 Safari/537.1 ");
-                }
-                else
-                {
-                    foreach (string line in headers.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        string[] tv = line.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-                        wc.Headers.Add(tv[0].Trim(), tv[1].Trim());
-                    }
-                }
-                captured = wc.DownloadString(url);
+                var wc = new HttpClient();
+                captured = wc.GetStringAsync(url).GetAwaiter().GetResult();
                 return true;
             }
             catch (Exception ex)
@@ -197,63 +185,12 @@ namespace BOG.SwissArmyKnife
             WebScrapeResponse r = new WebScrapeResponse();
             try
             {
-                HttpWebRequest WebReq = (HttpWebRequest)WebRequest.Create(url);
-                if (headers.Length > 0)
-                {
-                    string[] raw = headers.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                    for (int i = 0; i < raw.Length; i++)
-                    {
-                        string[] v = raw[i].Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-                        if (v.Length > 1)
-                        {
-                            try
-                            {
-                                WebReq.Headers.Add(v[0].Trim(), v.Length == 1 ? string.Empty : raw[i].Substring(v[0].Length + 1).Trim());
-                            }
-                            catch
-                            {
-                            }
-                        }
-                    }
-                }
-
-                if (cookie != null && WebReq.CookieContainer.Count == 0)
-                {
-                    WebReq.CookieContainer.Add(cookie);
-                }
-
-                if (postdata.Length > 0)
-                {
-                    WebReq.Method = "POST";
-                    WebReq.ContentType = "application/x-www-form-urlencoded";
-                    byte[] buffer = Encoding.ASCII.GetBytes(postdata);
-                    WebReq.ContentLength = buffer.Length;
-                    using (Stream PostData = WebReq.GetRequestStream())
-                    {
-                        PostData.Write(buffer, 0, buffer.Length);
-                        PostData.Close();
-                    }
-                }
-
-                HttpWebResponse WebResp = (HttpWebResponse)WebReq.GetResponse();
-
-                using (Stream Answer = WebResp.GetResponseStream())
-                {
-                    using (StreamReader _Answer = new StreamReader(Answer))
-                    {
-                        r.Content = _Answer.ReadToEnd();
-                    }
-                }
-                r.CharacterSet = WebResp.CharacterSet;
-                r.ContentEncoding = WebResp.ContentEncoding;
-                r.ContentLength = WebResp.ContentLength;
-                r.ContentType = WebResp.ContentType;
-                r.cookies = WebResp.Cookies;
-                r.ErrorMessage = string.Empty;
-                r.headers = WebResp.Headers;
-                r.ResponseURI = WebResp.ResponseUri.ToString();
-                r.StatusCode = ((int)System.Enum.Parse(typeof(HttpStatusCode), WebResp.StatusCode.ToString())).ToString();
-                r.StatusText = WebResp.StatusDescription;
+                var wc = new HttpClient();
+                var resp = wc.PostAsync(url, new StringContent(postdata)).GetAwaiter().GetResult();
+                // r.ContentType = resp.Headers.GetValues("Content-Type").GetEnumerator();
+                r.Content = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                r.StatusCode = ((int)resp.StatusCode).ToString();
+                r.StatusText = Enum.GetName(typeof(HttpStatusCode),resp.StatusCode);
             }
             catch (Exception ex)
             {

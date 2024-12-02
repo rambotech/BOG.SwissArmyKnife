@@ -1,0 +1,17 @@
+[
+	{
+		"DataRow": "0",
+		"TestToExecute": "ResolvePlaceHolder",
+		"Value": "The quick [[color]] [[animal]] jumped into %USERPROFILE%",
+		"LookupDictionary": {
+			"color": "red",
+			"animal": "bear"
+		},
+		"StartDelimiter": "[[",
+		"EndDelimiter": "]]",
+		"ExpectedResult": "TRUE",
+		"ThrowsException": "",
+		"ExceptionContains": "",
+		"Note": ""
+	}
+]

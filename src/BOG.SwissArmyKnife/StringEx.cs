@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -502,7 +503,7 @@ namespace BOG.SwissArmyKnife.Extensions
                 {
                     if (Index != Offset && Index % 8 == 0)
                     {
-                        Result.Append("|");
+                        Result.Append('|');
                     }
                     if (Index < source.Length)
                     {
@@ -607,6 +608,24 @@ namespace BOG.SwissArmyKnife.Extensions
                 string searchFor = "[" + specialFolderName + "]";
                 string replaceWith = Environment.GetFolderPath(f);
                 result = ReplaceNoCase(result, searchFor, replaceWith, true);
+            }
+            return result;
+        }
+        public static string ResolveLocalSpec(this string localFolderSpec)
+        {
+            string result = string.Empty;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                result = localFolderSpec.Replace(@"/", @"\").ResolvePathPlaceholders();
+                result = result.Replace("$HOME", Environment.GetEnvironmentVariable("USERPROFILE"));
+                while (result.Length > 0 && result[result.Length - 1] == '\\') result = result.Substring(0, result.Length - 1);
+                result += "\\";
+            }
+            else
+            {
+                result = localFolderSpec.Replace("$HOME", Environment.GetEnvironmentVariable("HOME"));
+                while (result.Length > 0 && result[result.Length - 1] == '/') result = result.Substring(0, result.Length - 1);
+                result += "/";
             }
             return result;
         }
@@ -728,7 +747,7 @@ namespace BOG.SwissArmyKnife.Extensions
         }
 
         /// <summary>
-        /// Takes a text blobv containing a format similar to .INI, and parses the values to dictionary object
+        /// Takes a text blob containing a format similar to .INI, and parses the values to a dictionary object
         /// e.g.
         /// 
         /// general=Hi

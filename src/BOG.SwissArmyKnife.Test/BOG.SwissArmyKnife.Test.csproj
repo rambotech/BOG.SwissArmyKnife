@@ -2,28 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
-    <Version>1.9.0d</Version>
-
+    <Version>1.9.0</Version>
     <AssemblyVersion>1.9.0.0</AssemblyVersion>
-
     <FileVersion>1.9.0.0</FileVersion>
-
     <PackageTags>s</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="BulkTestData\IterationTestItems.json" />
-    <None Remove="BulkTestData\StringExTest_WildcardTestItems.json" />
     <None Remove="BulkTestData\UrlTestItems.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="BulkTestData\IterationTestItems.json" />
-    <EmbeddedResource Include="BulkTestData\StringExTest_WildcardTestItems.json" />
-    <EmbeddedResource Include="BulkTestData\UrlTestItems.json" />
+    <EmbeddedResource Include="BulkTestData\StringExTest_ResolvePathTestItems.json" />
+		<EmbeddedResource Include="BulkTestData\StringExTest_WildcardTestItems.json" />
+		<EmbeddedResource Include="BulkTestData\UrlTestItems.json" />
   </ItemGroup>
 
   <ItemGroup>
