@@ -32,10 +32,10 @@ namespace BOG.SwissArmyKnife.Demo
         public void StartBabbling(int numberOfListeners)
         {
             if (IsBabbling) return;
-            if (numberOfListeners < 1 || numberOfListeners > 20) return;
+            if (numberOfListeners < 1) return;
 
             _BabbleOn.Clear();
-            int lowPort = 70000;
+            int lowPort = 5000;
             int highPort = 0;
             for (int listenerIndex = 0; listenerIndex < numberOfListeners; listenerIndex++)
             {

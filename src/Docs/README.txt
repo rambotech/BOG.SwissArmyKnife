@@ -4,14 +4,18 @@ This is a collection of utility classes I have made over the years to handle
 various tasks which weren't native to the Microsoft assemblies.
 
 FUTURE -- 2.0.0 -- No roadmap
-- Refactoring crypto and others to replace obsolete items.
 
-1.10.0 -- 04/21/2024
-- Add an optional magic string which a TCP client must send, before BabbleOn begins feeding traffic to the client.
-- Add new class CommandArgParser for turning --key VALUE or -k VALUE style arguments into Dictionary<string, List<string>>
+
+PENDING*** 1.10.0 -- 12/19/2024 -- Breaking change
+- .NET 8 refactoring:
+  - Cancellation token for BabbleOn; replaces obsolete thread methods (e.g. .Abort())
+  - Refactoring cipher and others to replace obsolete call prototypes.
+
+1.9.2 -- 03/16/2025
+- Add overload to AssemblyVersion to allow assembly by type: typeof() or Type.GetType().
 
 1.9.1 -- 12/01/2024
-- Updates wip interim
+- Updates wip: interim
 
 1.9.0 -- 04/03/2024
 - .NET 8.0

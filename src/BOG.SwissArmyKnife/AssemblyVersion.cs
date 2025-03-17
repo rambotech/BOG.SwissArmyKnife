@@ -33,37 +33,43 @@ namespace BOG.SwissArmyKnife
         /// </summary>
         public AssemblyVersion()
         {
-            Initialize(AssemblySource.Entry);
+            Initialize(Assembly.GetEntryAssembly());
         }
 
         /// <summary>
-        /// Get info for the sepcified assembly
+        /// Get info for an assembly specified by type.
+        /// </summary>
+        public AssemblyVersion(Type typeObj)
+        {
+            Initialize(Assembly.GetAssembly(typeObj));
+        }
+
+        /// <summary>
+        /// Get info for the specified assembly from the 3 common methods in System.Reflection.
         /// </summary>
         public AssemblyVersion(AssemblySource source)
         {
-            Initialize(source);
-        }
-
-        public void Initialize(AssemblySource source)
-        {
-            Assembly sourceAssembly;
             switch (source)
             {
                 case AssemblySource.Entry:
-                    sourceAssembly = Assembly.GetEntryAssembly();
+                    Initialize(Assembly.GetEntryAssembly());
                     break;
                 case AssemblySource.Calling:
-                    sourceAssembly = Assembly.GetCallingAssembly();
+                    Initialize(Assembly.GetCallingAssembly());
                     break;
                 case AssemblySource.Executing:
-                    sourceAssembly = Assembly.GetExecutingAssembly();
+                    Initialize(Assembly.GetExecutingAssembly());
                     break;
                 default:
                     throw new Exception($"Unknown AssemblySource: {source}");
             }
-            var av = sourceAssembly.GetName();
+        }
+
+        public void Initialize(Assembly assembly)
+        {
+            var av = assembly.GetName();
             Name = av.Name;
-            Filename = sourceAssembly.Location;
+            Filename = assembly.Location;
             Version = av.Version.ToString();
             BuildDate = File.GetCreationTime(Filename);
         }

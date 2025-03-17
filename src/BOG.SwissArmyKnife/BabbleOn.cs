@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 
@@ -35,10 +36,10 @@ namespace BOG.SwissArmyKnife
         private string _IdentificationFingerprint = string.Empty;
         private string _appSignature = string.Empty;
         private int _LowListenPort = 65200;
-        private int _HighListenPort = 65299;
+        private int _HighListenPort = 65209;
         private int _ListeningPort = 0;
         private int _MaxListeners = 5;
-        private int _TimeoutSeconds = 900;
+        private int _TimeoutSeconds = 60;
 
         private TcpListener MyTcpListener;
         private Thread MyListenThread;
@@ -46,6 +47,7 @@ namespace BOG.SwissArmyKnife
         private DateTime StartTime = DateTime.Now;
         private bool Running = false;
         private bool Listening = false;
+        private bool StopIsRequested = false;
 
         /// <summary>
         /// 
@@ -53,6 +55,7 @@ namespace BOG.SwissArmyKnife
         public int MaxListeners
         {
             get { return _MaxListeners; }
+            private set { _MaxListeners = value; }
         }
 
         /// <summary>
@@ -62,6 +65,7 @@ namespace BOG.SwissArmyKnife
         public int TimeoutSeconds
         {
             get { return _TimeoutSeconds; }
+            private set { _TimeoutSeconds = value; }
         }
 
         /// <summary>
@@ -91,6 +95,15 @@ namespace BOG.SwissArmyKnife
         /// <summary>
         /// Instantiate with defaults
         /// </summary>
+        public BabbleOn()
+        {
+            _IdentificationFingerprint = string.Empty;
+        }
+
+        /// <summary>
+        /// Instantiate with fingerprint authentication string
+        /// </summary>
+        /// <param name="identificationFingerprint"></param>
         public BabbleOn(string identificationFingerprint)
         {
             _IdentificationFingerprint = identificationFingerprint;
@@ -111,11 +124,33 @@ namespace BOG.SwissArmyKnife
         }
 
         /// <summary>
+        /// Instantiate with explicit arguments.
+        /// </summary>
+        /// <param name="identificationFingerprint"></param>
+        /// <param name="maxListeners"></param>
+        /// <param name="timeoutSeconds"></param>
+        public BabbleOn(string identificationFingerprint, int maxListeners, int timeoutSeconds)
+        {
+            _IdentificationFingerprint = identificationFingerprint;
+            _MaxListeners = maxListeners;
+            if (timeoutSeconds >= 0)
+            {
+                _TimeoutSeconds = timeoutSeconds;
+            }
+        }
+
+        /// <summary>
         /// Ensures the stop command is executed before dispose commences.
         /// </summary>
         ~BabbleOn()
         {
+            StopIsRequested = true;
             Stop();
+        }
+
+        public void RequestStop()
+        {
+            StopIsRequested = true;
         }
 
         /// <summary>
@@ -123,7 +158,7 @@ namespace BOG.SwissArmyKnife
         /// </summary>
         public void Start()
         {
-            if (Running == false)
+            if (Running == false && !StopIsRequested)
             {
                 EstablishListener();
                 StartTime = DateTime.Now;
@@ -138,53 +173,52 @@ namespace BOG.SwissArmyKnife
             if (Running)
             {
                 Running = false;
-                while (Listening)
+                while (Listening && MyListenThread.ThreadState == ThreadState.Running)
                 {
                     Thread.Sleep(100);
                 }
-                if (MyListenThread.ThreadState == ThreadState.Running || MyListenThread.ThreadState == ThreadState.Suspended)
-                {
-                    MyListenThread.Abort();
-                }
-                MyListenThread = null;
                 while (Listeners.Count > 0)
                 {
                     Guid g = Listeners.Keys.ElementAt(0);
                     DropListener(g);
                 }
+                MyListenThread = null;
             }
         }
 
         private void EstablishListener()
         {
-            for (_ListeningPort = _LowListenPort; _ListeningPort <= _HighListenPort; _ListeningPort++)
+            if (!StopIsRequested)
             {
-                try
+                for (_ListeningPort = _LowListenPort; _ListeningPort <= _HighListenPort; _ListeningPort++)
                 {
-                    this.MyTcpListener = new TcpListener(IPAddress.Any, _ListeningPort);
-                    this.MyTcpListener.ExclusiveAddressUse = true;
-                    this.MyTcpListener.Start();
-                    this.MyTcpListener.Stop();
-                    this.MyListenThread = new Thread(new ThreadStart(ListenForClients));
-                    this.MyListenThread.Start();
-                    Running = true;
-                    break;
+                    try
+                    {
+                        this.MyTcpListener = new TcpListener(IPAddress.Any, _ListeningPort);
+                        this.MyTcpListener.ExclusiveAddressUse = true;
+                        this.MyTcpListener.Start();
+                        this.MyTcpListener.Stop();
+                        this.MyListenThread = new Thread(new ThreadStart(ListenForClients));
+                        this.MyListenThread.Start();
+                        Running = true;
+                        break;
+                    }
+                    catch (SocketException)
+                    {
+                        // this is the only error we trap and ignore.
+                    }
                 }
-                catch (SocketException)
+                if (Running == false)
                 {
-                    // this is the only error we trap and ignore.
+                    throw new Exception(string.Format(
+                        "BabbleOn was not able to find an available port for the listener in the range {0} .. {1}",
+                        _LowListenPort,
+                        _HighListenPort));
                 }
+                _appSignature = string.Format(
+                    "#APP: $/{0}/{1}/{2:u}/$\r\n",
+                    _IdentificationFingerprint, _MaxListeners, StartTime);
             }
-            if (Running == false)
-            {
-                throw new Exception(string.Format(
-                    "BabbleOn was not able to find an available port for the listener in the range {0} .. {1}",
-                    _LowListenPort,
-                    _HighListenPort));
-            }
-            _appSignature = string.Format(
-                "#APP: $/{0}/{1}/{2:u}/$\r\n",
-                _IdentificationFingerprint, _MaxListeners, StartTime);
         }
 
         private void DropListener(Guid g)
@@ -200,17 +234,13 @@ namespace BOG.SwissArmyKnife
                         Thread.Sleep(20);
                     }
                     // We assume that all TCP connections and Client Streams are flushed, closed, etc, by the members own code.
-                    if (this.Listeners[g].Worker.ThreadState == ThreadState.Running || this.Listeners[g].Worker.ThreadState == ThreadState.Suspended)
-                    {
-                        this.Listeners[g].Worker.Abort();
-                    }
-                    //this.Listeners[g].Worker = null;
                     this.Listeners[g].Messages.Clear();
                     this.Listeners[g].ClientStream.Flush();
                     this.Listeners[g].ClientStream.Close();
                     this.Listeners[g].ClientStream.Dispose();
                     this.Listeners[g].TcpClient.Close();
-                    //this.Listeners[g].TcpClient = null;
+                    this.Listeners[g].TcpClient = null;
+                    this.Listeners[g].Worker = null;
                     this.Listeners.Remove(g);
                 }
                 catch
@@ -226,7 +256,7 @@ namespace BOG.SwissArmyKnife
             Guid key = Guid.NewGuid();
             bool NeedCleanup = false;
 
-            while (Running)
+            while (Running && ! StopIsRequested)
             {
                 if (this.MyTcpListener.Pending())
                 {
@@ -303,7 +333,9 @@ namespace BOG.SwissArmyKnife
                     }
                 }
                 this.Listeners[myListener].Messages.Enqueue(string.Format("# Activity follows\r\n", this.Listeners[myListener].TcpClient.Client.RemoteEndPoint.ToString()));
+                Thread.Sleep(1000);
             }
+
             while (this.Listeners.ContainsKey(myListener) && this.Listeners[myListener].TcpClient.Connected && this.Listeners[myListener].Running)
             {
                 while (this.Listeners[myListener].TcpClient.Connected && this.Listeners[myListener].Messages.Count > 0)
@@ -321,6 +353,16 @@ namespace BOG.SwissArmyKnife
                 {
                     // A keypress of X will break the connection.
                     // Any other keypress will extend the timeout period.
+                    if (StopIsRequested)
+                    {
+                        string ConnectionEntry = string.Format("# Disconnecting (listener is shutting down)\r\n", this.Listeners[myListener].TcpClient.Client.RemoteEndPoint.ToString());
+                        Byte[] bytes = encoding.GetBytes(ConnectionEntry);
+                        this.Listeners[myListener].ClientStream.Write(bytes, 0, bytes.Length);
+                        this.Listeners[myListener].ClientStream.Flush();
+                        this.Listeners[myListener].StopRequested = true;
+                        break;
+                    }
+
                     int keyPressed = this.Listeners[myListener].ClientStream.ReadByte();
                     if (keyPressed == 0x58 || keyPressed == 0x78)
                     {
@@ -329,7 +371,7 @@ namespace BOG.SwissArmyKnife
                         this.Listeners[myListener].ClientStream.Write(bytes, 0, bytes.Length);
                         break;
                     }
-                    else // reset the timeout period.
+                    else if (keyPressed == 0x0D) // reset the timeout period when ENTER is pressed.
                     {
                         this.Listeners[myListener].TimeoutOn = _TimeoutSeconds <= 0 ? DateTime.MaxValue : DateTime.Now.AddSeconds(_TimeoutSeconds);
                         this.Listeners[myListener].Messages.Enqueue("# Keep alive\r\n");
