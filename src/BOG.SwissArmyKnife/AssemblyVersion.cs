@@ -65,6 +65,11 @@ namespace BOG.SwissArmyKnife
             }
         }
 
+        public AssemblyVersion(string assemblyFileName)
+        {
+            Initialize(Assembly.LoadFile(assemblyFileName));
+        }
+
         public void Initialize(Assembly assembly)
         {
             var av = assembly.GetName();

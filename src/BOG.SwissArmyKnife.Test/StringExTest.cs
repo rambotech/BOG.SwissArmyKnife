@@ -59,56 +59,56 @@ namespace BOG.SwissArmyKnife.Test
         {
             string Test = string.Empty;
             string Result = Test.QuotedTrim(new char[] { ' ', '\t' }, '\"');
-            Assert.IsTrue(string.Compare(string.Empty, Result) == 0);
+            Assert.That(string.Compare(string.Empty, Result) == 0);
         }
 
         [Test, Description("QuotedTrim_QuotedEmptyString(): check for a quoted empty string")]
         public void StringEx_QuotedTrim_QuotedEmptyString()
         {
             string Result = "\"\"".QuotedTrim(new char[] { ' ', '\t' }, '\"');
-            Assert.IsTrue(string.Compare(string.Empty, Result) == 0);
+            Assert.That(string.Compare(string.Empty, Result) == 0);
         }
 
         [Test, Description("QuotedTrim_QuotedSingleSpace(): check for a quoted string of single space")]
         public void StringEx_QuotedTrim_QuotedSingleSpace()
         {
             string Result = "\" \"".QuotedTrim(new char[] { ' ', '\t' }, '\"');
-            Assert.IsTrue(string.Compare(string.Empty, Result) == 0);
+            Assert.That(string.Compare(string.Empty, Result) == 0);
         }
 
         [Test, Description("QuotedTrim_QuotedMultipleSpaces(): check for a quoted string of multiple spaces")]
         public void StringEx_QuotedTrim_QuotedMultipleSpaces()
         {
             string Result = "\"      \"".QuotedTrim(new char[] { ' ', '\t' }, '\"');
-            Assert.IsTrue(string.Compare(string.Empty, Result) == 0);
+            Assert.That(string.Compare(string.Empty, Result) == 0);
         }
 
         [Test, Description("QuotedTrim_QuotedRJString(): check for a quoted string of right justified values")]
         public void StringEx_QuotedTrim_QuotedRJString()
         {
             string Result = "\"     X\"".QuotedTrim(new char[] { ' ', '\t' }, '\"');
-            Assert.IsTrue(string.Compare("X", Result) == 0);
+            Assert.That(string.Compare("X", Result) == 0);
         }
 
         [Test, Description("QuotedTrim_QuotedLJString(): check for a quoted string of left justified values")]
         public void StringEx_QuotedTrim_QuotedLJString()
         {
             string Result = "\"X     \"".QuotedTrim(new char[] { ' ', '\t' }, '\"');
-            Assert.IsTrue(string.Compare("X", Result) == 0);
+            Assert.That(string.Compare("X", Result) == 0);
         }
 
         [Test, Description("QuotedTrim_QuotedCJString(): check for a quoted string of center justified values")]
         public void StringEx_QuotedTrim_QuotedCJString()
         {
             string Result = "\"  X  \"".QuotedTrim(new char[] { ' ', '\t' }, '\"');
-            Assert.IsTrue(string.Compare("X", Result) == 0);
+            Assert.That(string.Compare("X", Result) == 0);
         }
 
         [Test, Description("QuotedTrim_EmbeddedQuotedString(): check for a quoted string embedded in quotes")]
         public void StringEx_QuotedTrim_EmbeddedQuotedString()
         {
             string Result = "\" \"  X  \" \"".QuotedTrim(new char[] { ' ', '\t' }, '\"');
-            Assert.IsTrue(string.Compare("\"  X  \"", Result) == 0);
+            Assert.That(string.Compare("\"  X  \"", Result) == 0);
         }
 
         [Test, Description("Filter(): case-insensitive")]
@@ -116,7 +116,7 @@ namespace BOG.SwissArmyKnife.Test
         {
             string Filter = "0123456789.c";
             string Result = "76.34F.25.41C".Filter(Filter, true);
-            Assert.IsTrue(string.Compare("76.34.25.41C", Result) == 0);
+            Assert.That(string.Compare("76.34.25.41C", Result) == 0);
         }
 
         [Test, Description("Filter(): case-sensitive")]
@@ -124,7 +124,7 @@ namespace BOG.SwissArmyKnife.Test
         {
             string Filter = "0123456789.c";
             string Result = "76.34F.25.41C".Filter(Filter, false);
-            Assert.IsTrue(string.Compare("76.34.25.41", Result) == 0);
+            Assert.That(string.Compare("76.34.25.41", Result) == 0);
         }
 
         [Test, Description("FilterOut(): case-insensitive")]
@@ -132,7 +132,7 @@ namespace BOG.SwissArmyKnife.Test
         {
             string Filter = "0123456789.c";
             string Result = "76.34F.25.41C".FilterOut(Filter, true);
-            Assert.IsTrue(string.Compare("F", Result) == 0);
+            Assert.That(string.Compare("F", Result) == 0);
         }
 
         [Test, Description("FilterOut(): case-sensitive")]
@@ -140,7 +140,7 @@ namespace BOG.SwissArmyKnife.Test
         {
             string Filter = "0123456789.c";
             string Result = "76.34F.25.41C".FilterOut(Filter, false);
-            Assert.IsTrue(string.Compare("FC", Result) == 0);
+            Assert.That(string.Compare("FC", Result) == 0);
         }
 
         [Test, Description("HeadTailSummary(): default, not squashed")]
@@ -148,7 +148,7 @@ namespace BOG.SwissArmyKnife.Test
         {
             string TextBlob = new string('A', 256);
             string Result = TextBlob.HeadTailSummary();
-            Assert.IsTrue(string.Compare(TextBlob, Result) == 0);
+            Assert.That(string.Compare(TextBlob, Result) == 0);
         }
 
         [Test, Description("HeadTailSummary(): default, squashed, small")]
@@ -161,7 +161,7 @@ namespace BOG.SwissArmyKnife.Test
             {
                 Expected.Replace("\r\n", "\n");
             }
-            Assert.IsTrue(string.Compare(Result, Expected) == 0);
+            Assert.That(string.Compare(Result, Expected) == 0);
         }
 
         [Test, Description("HeadTailSummary(): default, squashed, large")]
@@ -171,10 +171,10 @@ namespace BOG.SwissArmyKnife.Test
             string Result = TextBlob.HeadTailSummary();
             string Expected = new string('A', 128) + "\r\n\r\n  ...[1,001 bytes squashed]...\r\n\r\n" + new string('A', 128) + "\r\n";
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
+            {
                 Expected.Replace("\r\n", "\n");
             }
-            Assert.IsTrue(string.Compare(Result, Expected) == 0);
+            Assert.That(string.Compare(Result, Expected) == 0);
         }
 
         [Test, Description("HeadTailSummary(): non-default, invalid head size")]
@@ -196,7 +196,7 @@ namespace BOG.SwissArmyKnife.Test
         {
             string TextBlob = new string('A', 128);
             string Result = TextBlob.HeadTailSummary(128, 0);
-            Assert.IsTrue(string.Compare(TextBlob, Result) == 0);
+            Assert.That(string.Compare(TextBlob, Result) == 0);
         }
 
         [Test, Description("HeadTailSummary(): non-default, non-squashed, small, 0 head")]
@@ -204,7 +204,7 @@ namespace BOG.SwissArmyKnife.Test
         {
             string TextBlob = new string('A', 128);
             string Result = TextBlob.HeadTailSummary(0, 128);
-            Assert.IsTrue(string.Compare(TextBlob, Result) == 0);
+            Assert.That(string.Compare(TextBlob, Result) == 0);
         }
 
         [Test, Description("HeadTailSummary(): non-default, not squashed, large")]
@@ -212,7 +212,7 @@ namespace BOG.SwissArmyKnife.Test
         {
             string TextBlob = new string('A', 1024);
             string Result = TextBlob.HeadTailSummary(512, 512);
-            Assert.IsTrue(string.Compare(TextBlob, Result) == 0);
+            Assert.That(string.Compare(TextBlob, Result) == 0);
         }
 
         [Test, Description("HeadTailSummary(): non-default, squashed, large")]
@@ -225,7 +225,7 @@ namespace BOG.SwissArmyKnife.Test
             {
                 Expected.Replace("\r\n", "\n");
             }
-            Assert.IsTrue(string.Compare(Result, Expected) == 0);
+            Assert.That(string.Compare(Result, Expected) == 0);
         }
 
         [Test, Description("ToKeyValuePair(): simple")]
@@ -234,11 +234,11 @@ namespace BOG.SwissArmyKnife.Test
             string TextBlob =
                 "key=value";
             var Result = TextBlob.ToKeyValuePair();
-            Assert.IsTrue(Result.Keys.Count == 1);
-            Assert.IsTrue(Result.ContainsKey(string.Empty));
-            Assert.IsTrue(Result[string.Empty].ContainsKey("key"));
-            Assert.IsTrue(Result[string.Empty]["key"].Count == 1);
-            Assert.IsTrue(string.Compare(Result[string.Empty]["key"][0], "value", false) == 0);
+            Assert.That(Result.Keys.Count == 1);
+            Assert.That(Result.ContainsKey(string.Empty));
+            Assert.That(Result[string.Empty].ContainsKey("key"));
+            Assert.That(Result[string.Empty]["key"].Count == 1);
+            Assert.That(string.Compare(Result[string.Empty]["key"][0], "value", false) == 0);
         }
 
         [Test, Description("ToKeyValuePair(): Named Category and Multiline Value")]
@@ -250,12 +250,12 @@ namespace BOG.SwissArmyKnife.Test
                 "\r\n" +
                 "key=value2\n";
             var Result = TextBlob.ToKeyValuePair();
-            Assert.IsTrue(Result.Keys.Count == 1);
-            Assert.IsTrue(Result.ContainsKey("general"));
-            Assert.IsTrue(Result["general"].ContainsKey("key"));
-            Assert.IsTrue(Result["general"]["key"].Count == 2);
-            Assert.IsTrue(string.Compare(Result["general"]["key"][0], "value1", false) == 0);
-            Assert.IsTrue(string.Compare(Result["general"]["key"][1], "value2", false) == 0);
+            Assert.That(Result.Keys.Count == 1);
+            Assert.That(Result.ContainsKey("general"));
+            Assert.That(Result["general"].ContainsKey("key"));
+            Assert.That(Result["general"]["key"].Count == 2);
+            Assert.That(string.Compare(Result["general"]["key"][0], "value1", false) == 0);
+            Assert.That(string.Compare(Result["general"]["key"][1], "value2", false) == 0);
         }
 
         [Test, Description("ToKeyValuePair(): Intermix")]
@@ -273,21 +273,21 @@ namespace BOG.SwissArmyKnife.Test
                 "blank-key\r\n" +
                 "double-equal=3=3";
             var Result = TextBlob.ToKeyValuePair();
-            Assert.IsTrue(Result.Keys.Count == 2);
-            Assert.IsTrue(Result.ContainsKey(string.Empty));
-            Assert.IsTrue(Result.ContainsKey("general"));
-            Assert.IsTrue(Result[string.Empty].ContainsKey("key"));
-            Assert.IsTrue(Result[string.Empty]["key"].Count == 2);
-            Assert.IsTrue(string.Compare(Result[string.Empty]["key"][0], "value1", false) == 0);
-            Assert.IsTrue(string.Compare(Result[string.Empty]["key"][1], "value2", false) == 0);
-            Assert.IsTrue(Result[string.Empty]["blank-key"].Count == 1);
-            Assert.IsTrue(string.Compare(Result[string.Empty]["blank-key"][0], string.Empty, false) == 0);
-            Assert.IsTrue(Result[string.Empty]["double-equal"].Count == 1);
-            Assert.IsTrue(string.Compare(Result[string.Empty]["double-equal"][0], "3=3", false) == 0);
-            Assert.IsTrue(Result["general"].ContainsKey("key"));
-            Assert.IsTrue(Result["general"]["key"].Count == 2);
-            Assert.IsTrue(string.Compare(Result["general"]["key"][0], "value3", false) == 0);
-            Assert.IsTrue(string.Compare(Result["general"]["key"][1], "value4", false) == 0);
+            Assert.That(Result.Keys.Count == 2);
+            Assert.That(Result.ContainsKey(string.Empty));
+            Assert.That(Result.ContainsKey("general"));
+            Assert.That(Result[string.Empty].ContainsKey("key"));
+            Assert.That(Result[string.Empty]["key"].Count == 2);
+            Assert.That(string.Compare(Result[string.Empty]["key"][0], "value1", false) == 0);
+            Assert.That(string.Compare(Result[string.Empty]["key"][1], "value2", false) == 0);
+            Assert.That(Result[string.Empty]["blank-key"].Count == 1);
+            Assert.That(string.Compare(Result[string.Empty]["blank-key"][0], string.Empty, false) == 0);
+            Assert.That(Result[string.Empty]["double-equal"].Count == 1);
+            Assert.That(string.Compare(Result[string.Empty]["double-equal"][0], "3=3", false) == 0);
+            Assert.That(Result["general"].ContainsKey("key"));
+            Assert.That(Result["general"]["key"].Count == 2);
+            Assert.That(string.Compare(Result["general"]["key"][0], "value3", false) == 0);
+            Assert.That(string.Compare(Result["general"]["key"][1], "value4", false) == 0);
         }
 
         [TestCaseSource(typeof(WildCardTestData)), Description("Iterative: url parsing")]
@@ -312,15 +312,15 @@ namespace BOG.SwissArmyKnife.Test
                     string[] err = err1.GetType().ToString().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
                     Assert.Multiple(() =>
                     {
-                        Assert.AreEqual(testItem.ThrowsException, err[err.Length - 1], "Exception expected, but caught a different exception (Row {0}).", testItem.DataRow);
+                        Assert.That(string.Compare(testItem.ThrowsException, err[err.Length - 1], true) == 0, "Exception expected, but caught a different exception (Row {0}).", testItem.DataRow);
                         if (!string.IsNullOrWhiteSpace(testItem.ExceptionContains))
                         {
-                            Assert.IsTrue(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
+                            Assert.That(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
                         }
                     });
                     return;
                 }
-                Assert.IsTrue(false, "Expected Exception " + testItem.ThrowsException + ", but no exception was thrown. (Row {0}).", testItem.DataRow);
+                Assert.That(false, "Expected Exception " + testItem.ThrowsException + ", but no exception was thrown. (Row {0}).", testItem.DataRow);
             }
             else
             {
@@ -328,7 +328,7 @@ namespace BOG.SwissArmyKnife.Test
                     testItem.WildcardPattern,
                     bool.Parse(testItem.CaseSensitive));
 
-                Assert.AreEqual(bool.Parse(testItem.ExpectedResult), result, "(Row {0}): {1}", testItem.DataRow, testItem.ExpectedResult);
+                Assert.That(bool.Parse(testItem.ExpectedResult) == result, $"(Row {testItem.DataRow}): {testItem.ExpectedResult}");
             }
         }
     }

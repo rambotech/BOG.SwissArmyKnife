@@ -171,7 +171,7 @@ namespace BOG.SwissArmyKnife.Test
             long number = 72889;
             int length = 6;
             string Result = Formatting.RJLZ(number, length);
-            Assert.IsTrue(string.Compare("072889", Result) == 0);
+            Assert.That(string.Compare("072889", Result) == 0);
         }
 
         [Test, Description("RJLZ(): length equal to length parameter")]
@@ -180,7 +180,7 @@ namespace BOG.SwissArmyKnife.Test
             long number = 72889;
             int length = 5;
             string Result = Formatting.RJLZ(number, length);
-            Assert.IsTrue(string.Compare("72889", Result) == 0);
+            Assert.That(string.Compare("72889", Result) == 0);
         }
 
         [Test, Description("RJLZ(): length less than length parameter")]
@@ -189,7 +189,7 @@ namespace BOG.SwissArmyKnife.Test
             long number = 72889;
             int length = 4;
             string Result = Formatting.RJLZ(number, length);
-            Assert.IsTrue(string.Compare("72889", Result) == 0);
+            Assert.That(string.Compare("72889", Result) == 0);
         }
         [Test, Description("RJLZ(): 0")]
         public void Formatting_RJLZ_long_0()
@@ -197,7 +197,7 @@ namespace BOG.SwissArmyKnife.Test
             long number = 0;
             int length = 6;
             string Result = Formatting.RJLZ(number, length);
-            Assert.IsTrue(string.Compare("000000", Result) == 0);
+            Assert.That(string.Compare("000000", Result) == 0);
         }
     }
 }

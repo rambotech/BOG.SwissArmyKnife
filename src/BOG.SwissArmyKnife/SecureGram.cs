@@ -51,10 +51,7 @@ namespace BOG.SwissArmyKnife
         {
             // base.GetObjectData(info, context);
 
-            if (info == null)
-            {
-                throw new System.ArgumentNullException("Not a valid object");
-            }
+            System.ArgumentNullException.ThrowIfNull(info, "Not a valid object");
 
             this._sender = (string)info.GetString("Sender");
             this._created = (string)info.GetString("Created");
@@ -234,14 +231,13 @@ namespace BOG.SwissArmyKnife
         /// </summary>
         /// <param name="info">Provided by the serializer.</param>
         /// <param name="context">Provided by the serializer.</param>
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             // base.GetObjectData(info, context);
 
             if (info == null)
             {
-                throw new System.ArgumentNullException("Not a valid object");
+                System.ArgumentNullException.ThrowIfNull(info,"Not a valid object");
             }
 
             info.AddValue("Sender", this._sender);

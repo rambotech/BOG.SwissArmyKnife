@@ -74,15 +74,15 @@ namespace BOG.SwissArmyKnife.Test
                     string[] err = err1.GetType().ToString().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
                     Assert.Multiple(() =>
                     {
-                        Assert.AreEqual(testItem.ThrowsException, err[err.Length - 1], "Exception expected, but caught a different exception (Row {0}).", testItem.DataRow);
+                        Assert.That(string.Compare(testItem.ThrowsException, err[err.Length - 1], true) == 0, "Exception expected, but caught a different exception (Row {0}).", testItem.DataRow);
                         if (!string.IsNullOrWhiteSpace(testItem.ExceptionContains))
                         {
-                            Assert.IsTrue(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
+                            Assert.That(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
                         }
                     });
                     return;
                 }
-                Assert.IsTrue(false, "Expected Exception " + testItem.ThrowsException + ", but no exception was thrown. (Row {0}).", testItem.DataRow);
+                Assert.That(false, "Expected Exception " + testItem.ThrowsException + ", but no exception was thrown. (Row {0}).", testItem.DataRow);
             }
             else
             {
@@ -90,24 +90,24 @@ namespace BOG.SwissArmyKnife.Test
 
                 Assert.Multiple(() =>
                 {
-                    Assert.AreEqual(testItem.UrlDecodedScheme, testObj.Scheme, "UrlDecoded Scheme mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.UrlDecodedUser, testObj.User, "UrlDecoded User mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.UrlDecodedPassword, testObj.Password, "UrlDecoded Password mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.UrlDecodedHost, testObj.Host, "UrlDecoded Host mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.UrlDecodedPath, testObj.Path, "UrlDecoded Path mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.UrlDecodedPort, testObj.PortExplicit, "UrlDecoded Port mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.UrlDecodedQuery, testObj.Query, "UrlDecoded Query mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.UrlDecodedFragment, testObj.Fragment, "UrlDecoded Fragment mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.UrlDecodedScheme, testObj.Scheme, true) == 0, "UrlDecoded Scheme mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.UrlDecodedUser, testObj.User, true) == 0, "UrlDecoded User mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.UrlDecodedPassword, testObj.Password, true) == 0, "UrlDecoded Password mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.UrlDecodedHost, testObj.Host, true) == 0, "UrlDecoded Host mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.UrlDecodedPath, testObj.Path, true) == 0, "UrlDecoded Path mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.UrlDecodedPort, testObj.PortExplicit, true) == 0, "UrlDecoded Port mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.UrlDecodedQuery, testObj.Query, true) == 0, "UrlDecoded Query mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.UrlDecodedFragment, testObj.Fragment, true) == 0, "UrlDecoded Fragment mismatch (Row {0}).", testItem.DataRow);
 
-                    Assert.AreEqual(testItem.User, testObj.GetRaw(Url.UrlPart.User), "non-UrlDecoded User mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.Password, testObj.GetRaw(Url.UrlPart.Password), "non-UrlDecoded Password mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.Host, testObj.GetRaw(Url.UrlPart.Host), "non-UrlDecoded Host mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.Port, testObj.GetRaw(Url.UrlPart.Port), "non-UrlDecoded Port mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.Path, testObj.GetRaw(Url.UrlPart.Path), "non-UrlDecoded Path mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.Query, testObj.GetRaw(Url.UrlPart.Query), "non-UrlDecoded Query mismatch (Row {0}).", testItem.DataRow);
-                    Assert.AreEqual(testItem.Fragment, testObj.GetRaw(Url.UrlPart.Fragment), "non-UrlDecoded Fragment mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.User, testObj.GetRaw(Url.UrlPart.User), true) == 0, "non-UrlDecoded User mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.Password, testObj.GetRaw(Url.UrlPart.Password), true) == 0, "non-UrlDecoded Password mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.Host, testObj.GetRaw(Url.UrlPart.Host), true) == 0, "non-UrlDecoded Host mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.Port, testObj.GetRaw(Url.UrlPart.Port), true) == 0, "non-UrlDecoded Port mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.Path, testObj.GetRaw(Url.UrlPart.Path), true) == 0, "non-UrlDecoded Path mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.Query, testObj.GetRaw(Url.UrlPart.Query), true) == 0, "non-UrlDecoded Query mismatch (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.Fragment, testObj.GetRaw(Url.UrlPart.Fragment), true) == 0, "non-UrlDecoded Fragment mismatch (Row {0}).", testItem.DataRow);
 
-                    Assert.AreEqual(testItem.AsString, testObj.ToString(), "original Url reconstruction (Row {0}).", testItem.DataRow);
+                    Assert.That(string.Compare(testItem.AsString, testObj.ToString(), true) == 0, "original Url reconstruction (Row {0}).", testItem.DataRow);
                 });
             }
         }

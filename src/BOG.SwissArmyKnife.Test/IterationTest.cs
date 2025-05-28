@@ -88,26 +88,26 @@ namespace BOG.SwissArmyKnife.Test
 				//string[] err = err1.GetType().ToString().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
 				Assert.Multiple(() =>
 				{
-					Assert.AreEqual(testItem.ThrowsException, err1.GetType().ToString(), $"Exception expected, but caught a different exception (Row {testItem.DataRow}).");
+					Assert.That(string.Compare(testItem.ThrowsException, err1.GetType().ToString(), false) == 0, $"Exception expected, but caught a different exception (Row {testItem.DataRow}).");
 					if (!string.IsNullOrWhiteSpace(testItem.ExceptionContains))
 					{
-						Assert.IsTrue(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception thrown, but message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
+						Assert.That(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception thrown, but message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
 					}
 				});
 				return;
 			}
 			if (!string.IsNullOrWhiteSpace(testItem.ThrowsException))
 			{
-				Assert.Fail("Expected Exception " + testItem.ThrowsException + ", but no exception was thrown. (Row {0}).", testItem.DataRow);
+				Assert.Fail($"Expected Exception {testItem.ThrowsException}, but no exception was thrown. (Row {testItem.DataRow}).");
 			}
-			Assert.IsTrue(testItem.CountTestValue == actualCount, $"Invalid count, expected {testItem.CountTestValue} but got {actualCount}  (Row {testItem.DataRow}).");
+			Assert.That(testItem.CountTestValue == actualCount, $"Invalid count, expected {testItem.CountTestValue} but got {actualCount}  (Row {testItem.DataRow}).");
 		}
 
 		[Test, Description("IterationTests_TotalItemCount1: Instantiate only")]
 		public void IterationTests_TotalItemCount1()
 		{
 			Iteration i = new Iteration();
-			Assert.AreEqual(i.TotalIterationCount, 0, "Count is not zero after instantiation");
+			Assert.That(i.TotalIterationCount == 0, "Count is not zero after instantiation");
 		}
 
 		[Test, Description("IterationTests_TotalItemCount2(): Single entry number set by count")]
@@ -115,7 +115,7 @@ namespace BOG.SwissArmyKnife.Test
 		{
 			Iteration i = new Iteration();
 			i.AddNumberSequence("numbers1", -1, -1, 100);
-			Assert.AreEqual(i.TotalIterationCount, 100);
+			Assert.That(i.TotalIterationCount == 100);
 		}
 
 		[Test, Description("IterationTests_TotalItemCount3(): Single entry number set by range (exclusive)")]
@@ -123,7 +123,7 @@ namespace BOG.SwissArmyKnife.Test
 		{
 			Iteration i = new Iteration();
 			i.AddNumberRange("numbers1", -1, -1, -100, Iteration.EndValueEval.Exclusive);
-			Assert.AreEqual(i.TotalIterationCount, 99);
+			Assert.That(i.TotalIterationCount == 99);
 		}
 
 		[Test, Description("IterationTests_TotalItemCount4(): Single entry number set by range (inclusive)")]
@@ -131,7 +131,7 @@ namespace BOG.SwissArmyKnife.Test
 		{
 			Iteration i = new Iteration();
 			i.AddNumberRange("numbers1", -1, -1, -100, Iteration.EndValueEval.Inclusive);
-			Assert.AreEqual(i.TotalIterationCount, 100);
+			Assert.That(i.TotalIterationCount == 100);
 		}
 
 		[Test, Description("IterationTests_TotalItemCount5(): one number set and one list with one item")]
@@ -140,7 +140,7 @@ namespace BOG.SwissArmyKnife.Test
 			Iteration i = new Iteration();
 			i.AddNumberSequence("numbers1", 1, 1, 100);
 			i.AddListItems("list1", new List<string>(new string[] { "item1" }));
-			Assert.AreEqual(i.TotalIterationCount, 100);
+			Assert.That(i.TotalIterationCount == 100);
 		}
 
 		[Test, Description("IterationTests_TotalItemCount6(): one number set and one list with two items")]
@@ -149,7 +149,7 @@ namespace BOG.SwissArmyKnife.Test
 			Iteration i = new Iteration();
 			i.AddNumberSequence("numbers1", 1, 1, 100);
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
-			Assert.AreEqual(i.TotalIterationCount, 200);
+			Assert.That(i.TotalIterationCount == 200);
 		}
 
 		[Test, Description("IterationTests_TotalItemAutoCount(): validate correct total after new item added")]
@@ -182,13 +182,13 @@ namespace BOG.SwissArmyKnife.Test
 					}
 				}
 			};
-			Assert.AreEqual(i.TotalIterationCount, 7200L);  // 2400 * 3
+			Assert.That(i.TotalIterationCount == 7200L);  // 2400 * 3
 			i.AddNumberSequence("numbers1", 1, 1, 100);
-			Assert.AreEqual(i.TotalIterationCount, 720000L);  // 2400 * 3 * 100
+			Assert.That(i.TotalIterationCount == 720000L);  // 2400 * 3 * 100
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
-			Assert.AreEqual(i.TotalIterationCount, 1440000L);  // 2400 * 3 * 100 * 2
+			Assert.That(i.TotalIterationCount == 1440000L);  // 2400 * 3 * 100 * 2
 			i.AddNumberRange("numbers2", 1.0m, .1m, 2.0m, Iteration.EndValueEval.Exclusive);
-			Assert.AreEqual(i.TotalIterationCount, 14400000L);  // 2400 * 3 * 100 * 2 * 10
+			Assert.That(i.TotalIterationCount == 14400000L);  // 2400 * 3 * 100 * 2 * 10
 		}
 
 		[Test, Description("IterationTests_Serialization(): validate serialize/deserialize")]
@@ -211,9 +211,9 @@ namespace BOG.SwissArmyKnife.Test
 
 			var d = JsonConvert.DeserializeObject<Iteration>(s, settings);
 
-			Assert.AreEqual(o.TotalIterationCount, 2000L, $"Serialization: Expected 2,000 iterations, but got {o.TotalIterationCount}");  // 100 * 2 * 10
-			Assert.AreEqual(d.TotalIterationCount, 2000L, $"Desrialization: Expected 2,000 iterations, but got {d.TotalIterationCount}");  // 100 * 2 * 10
-			Assert.AreEqual(o.IterationItems.Count, d.IterationItems.Count, $"Desrialization: Expected {o.IterationItems.Count} IterationItem, but has {d.IterationItems.Count}");
+			Assert.That(o.TotalIterationCount == 2000L, $"Serialization: Expected 2,000 iterations, but got {o.TotalIterationCount}");  // 100 * 2 * 10
+			Assert.That(d.TotalIterationCount == 2000L, $"Desrialization: Expected 2,000 iterations, but got {d.TotalIterationCount}");  // 100 * 2 * 10
+			Assert.That(o.IterationItems.Count == d.IterationItems.Count, $"Desrialization: Expected {o.IterationItems.Count} IterationItem, but has {d.IterationItems.Count}");
 		}
 
 		[Test, Description("IterationTests_GetIterationValueSet_NegativeIndex(): negative index throws exception")]
@@ -251,23 +251,23 @@ namespace BOG.SwissArmyKnife.Test
 			Iteration i = new Iteration();
 			i.AddNumberSequence("numbers1", 1, 1, 2);
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
-			Assert.AreEqual(i.TotalIterationCount, 4, "Total is not 4");
+			Assert.That(i.TotalIterationCount == 4, "Total is not 4");
 
 			var valueSet = i.GetIterationValueSet(0);
-			Assert.AreEqual(valueSet["numbers1"], "1", "(index 0): numbers1 is not 1");
-			Assert.AreEqual(valueSet["list1"], "item1", "(index 0): list1 is not item1");
+			Assert.That(string.Compare(valueSet["numbers1"], "1", true) == 0, "(index 0): numbers1 is not 1");
+			Assert.That(string.Compare(valueSet["list1"], "item1", true) == 0, "(index 0): list1 is not item1");
 
 			valueSet = i.GetIterationValueSet(1);
-			Assert.AreEqual(valueSet["numbers1"], "1", "(index 1): numbers1 is not 1");
-			Assert.AreEqual(valueSet["list1"], "item2", "(index 1): list1 is not item2");
+			Assert.That(string.Compare(valueSet["numbers1"], "1", true) == 0, "(index 1): numbers1 is not 1");
+			Assert.That(string.Compare(valueSet["list1"], "item2", true) == 0, "(index 1): list1 is not item2");
 
 			valueSet = i.GetIterationValueSet(2);
-			Assert.AreEqual(valueSet["numbers1"], "2", "(index 0): numbers1 is not 2");
-			Assert.AreEqual(valueSet["list1"], "item1", "(index 0): list1 is not item1");
+			Assert.That(string.Compare(valueSet["numbers1"], "2", true) == 0, "(index 0): numbers1 is not 2");
+			Assert.That(string.Compare(valueSet["list1"], "item1", true) == 0, "(index 0): list1 is not item1");
 
 			valueSet = i.GetIterationValueSet(3);
-			Assert.AreEqual(valueSet["numbers1"], "2", "(index 1): numbers1 is not 2");
-			Assert.AreEqual(valueSet["list1"], "item2", "(index 1): list1 is not item2");
+			Assert.That(string.Compare(valueSet["numbers1"], "2", true) == 0, "(index 1): numbers1 is not 2");
+			Assert.That(string.Compare(valueSet["list1"], "item2", true) == 0, "(index 1): list1 is not item2");
 		}
 
 		[Test, Description("IterationTests_ValueByIndex(): one number set with two items and one list with two items")]
@@ -277,67 +277,67 @@ namespace BOG.SwissArmyKnife.Test
 			i.AddNumberSequence("numbers1", 1, 1, 3);
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
 			i.AddNumberSequence("numbers2", 1, 7, 7);
-			Assert.AreEqual(i.TotalIterationCount, 42, "Total is not 42");
+			Assert.That(i.TotalIterationCount == 42, "Total is not 42");
 
 			var valueSet = i.GetIterationValueSet(0);
-			Assert.AreEqual(valueSet["numbers1"], "1", "(index 0): numbers1 is not 1");
-			Assert.AreEqual(valueSet["list1"], "item1", "(index 0): list1 is not item1");
-			Assert.AreEqual(valueSet["numbers2"], "1", "(index 0): numbers2 is not 1");
+            Assert.That(string.Compare(valueSet["numbers1"], "1", true) == 0, "(index 0): numbers1 is not 1");
+            Assert.That(string.Compare(valueSet["list1"], "item1", true) == 0, "(index 0): list1 is not item1");
+            Assert.That(string.Compare(valueSet["numbers2"], "1", true) == 0, "(index 0): numbers2 is not 1");
 
 			valueSet = i.GetIterationValueSet(6);
-			Assert.AreEqual(valueSet["numbers1"], "1", "(index 6): numbers1 is not 1");
-			Assert.AreEqual(valueSet["list1"], "item1", "(index 6): list1 is not item1");
-			Assert.AreEqual(valueSet["numbers2"], "43", "(index 6): numbers2 is not 43");
+            Assert.That(string.Compare(valueSet["numbers1"], "1", true) == 0, "(index 6): numbers1 is not 1");
+            Assert.That(string.Compare(valueSet["list1"], "item1", true) == 0, "(index 6): list1 is not item1");
+            Assert.That(string.Compare(valueSet["numbers2"], "43", true) == 0, "(index 6): numbers2 is not 43");
 
 			valueSet = i.GetIterationValueSet(7);
-			Assert.AreEqual(valueSet["numbers1"], "1", "(index 7): numbers1 is not 1");
-			Assert.AreEqual(valueSet["list1"], "item2", "(index 7): list1 is not item2");
-			Assert.AreEqual(valueSet["numbers2"], "1", "(index 7): numbers2 is not 1");
+            Assert.That(string.Compare(valueSet["numbers1"], "1", true) == 0, "(index 7): numbers1 is not 1");
+            Assert.That(string.Compare(valueSet["list1"], "item2", true) == 0, "(index 7): list1 is not item2");
+            Assert.That(string.Compare(valueSet["numbers2"], "1", true) == 0, "(index 7): numbers2 is not 1");
 
 			valueSet = i.GetIterationValueSet(13);
-			Assert.AreEqual(valueSet["numbers1"], "1", "(index 13): numbers1 is not 1");
-			Assert.AreEqual(valueSet["list1"], "item2", "(index 13): list1 is not item2");
-			Assert.AreEqual(valueSet["numbers2"], "43", "(index 13): numbers2 is not 43");
+			Assert.That(string.Compare(valueSet["numbers1"], "1", true) == 0, "(index 13): numbers1 is not 1");
+			Assert.That(string.Compare(valueSet["list1"], "item2", true) == 0, "(index 13): list1 is not item2");
+			Assert.That(string.Compare(valueSet["numbers2"], "43", true) == 0, "(index 13): numbers2 is not 43");
 
 			valueSet = i.GetIterationValueSet(14);
-			Assert.AreEqual(valueSet["numbers1"], "2", "(index 14): numbers1 is not 2");
-			Assert.AreEqual(valueSet["list1"], "item1", "(index 14): list1 is not item1");
-			Assert.AreEqual(valueSet["numbers2"], "1", "(index 14): numbers2 is not 1");
+			Assert.That(string.Compare(valueSet["numbers1"], "2", true) == 0, "(index 14): numbers1 is not 2");
+			Assert.That(string.Compare(valueSet["list1"], "item1", true) == 0, "(index 14): list1 is not item1");
+			Assert.That(string.Compare(valueSet["numbers2"], "1", true) == 0, "(index 14): numbers2 is not 1");
 
 			valueSet = i.GetIterationValueSet(20);
-			Assert.AreEqual(valueSet["numbers1"], "2", "(index 20): numbers1 is not 2");
-			Assert.AreEqual(valueSet["list1"], "item1", "(index 20): list1 is not item1");
-			Assert.AreEqual(valueSet["numbers2"], "43", "(index 20): numbers2 is not 43");
+			Assert.That(string.Compare(valueSet["numbers1"], "2", true) == 0, "(index 20): numbers1 is not 2");
+			Assert.That(string.Compare(valueSet["list1"], "item1", true) == 0, "(index 20): list1 is not item1");
+			Assert.That(string.Compare(valueSet["numbers2"], "43", true) == 0, "(index 20): numbers2 is not 43");
 
 			valueSet = i.GetIterationValueSet(21);
-			Assert.AreEqual(valueSet["numbers1"], "2", "(index 21): numbers1 is not 2");
-			Assert.AreEqual(valueSet["list1"], "item2", "(index 21): list1 is not item2");
-			Assert.AreEqual(valueSet["numbers2"], "1", "(index 21): numbers2 is not 1");
+			Assert.That(string.Compare(valueSet["numbers1"], "2", true) == 0, "(index 21): numbers1 is not 2");
+			Assert.That(string.Compare(valueSet["list1"], "item2", true) == 0, "(index 21): list1 is not item2");
+			Assert.That(string.Compare(valueSet["numbers2"], "1", true) == 0, "(index 21): numbers2 is not 1");
 
 			valueSet = i.GetIterationValueSet(27);
-			Assert.AreEqual(valueSet["numbers1"], "2", "(index 27): numbers1 is not 2");
-			Assert.AreEqual(valueSet["list1"], "item2", "(index 27): list1 is not item2");
-			Assert.AreEqual(valueSet["numbers2"], "43", "(index 27): numbers2 is not 43");
+			Assert.That(string.Compare(valueSet["numbers1"], "2", true) == 0, "(index 27): numbers1 is not 2");
+			Assert.That(string.Compare(valueSet["list1"], "item2", true) == 0, "(index 27): list1 is not item2");
+			Assert.That(string.Compare(valueSet["numbers2"], "43", true) == 0, "(index 27): numbers2 is not 43");
 
 			valueSet = i.GetIterationValueSet(28);
-			Assert.AreEqual(valueSet["numbers1"], "3", "(index 33): numbers1 is not 3");
-			Assert.AreEqual(valueSet["list1"], "item1", "(index 33): list1 is not item1");
-			Assert.AreEqual(valueSet["numbers2"], "1", "(index 33): numbers2 is not 1");
+			Assert.That(string.Compare(valueSet["numbers1"], "3", true) == 0, "(index 33): numbers1 is not 3");
+			Assert.That(string.Compare(valueSet["list1"], "item1", true) == 0, "(index 33): list1 is not item1");
+			Assert.That(string.Compare(valueSet["numbers2"], "1", true) == 0, "(index 33): numbers2 is not 1");
 
 			valueSet = i.GetIterationValueSet(34);
-			Assert.AreEqual(valueSet["numbers1"], "3", "(index 34): numbers1 is not 3");
-			Assert.AreEqual(valueSet["list1"], "item1", "(index 34): list1 is not item1");
-			Assert.AreEqual(valueSet["numbers2"], "43", "(index 34): numbers2 is not 43");
+			Assert.That(string.Compare(valueSet["numbers1"], "3", true) == 0, "(index 34): numbers1 is not 3");
+			Assert.That(string.Compare(valueSet["list1"], "item1", true) == 0, "(index 34): list1 is not item1");
+			Assert.That(string.Compare(valueSet["numbers2"], "43", true) == 0, "(index 34): numbers2 is not 43");
 
 			valueSet = i.GetIterationValueSet(35);
-			Assert.AreEqual(valueSet["numbers1"], "3", "(index 35): numbers1 is not 3");
-			Assert.AreEqual(valueSet["list1"], "item2", "(index 35): list1 is not item2");
-			Assert.AreEqual(valueSet["numbers2"], "1", "(index 35): numbers2 is not 1");
+			Assert.That(string.Compare(valueSet["numbers1"], "3", true) == 0, "(index 35): numbers1 is not 3");
+			Assert.That(string.Compare(valueSet["list1"], "item2", true) == 0, "(index 35): list1 is not item2");
+			Assert.That(string.Compare(valueSet["numbers2"], "1", true) == 0, "(index 35): numbers2 is not 1");
 
 			valueSet = i.GetIterationValueSet(41);
-			Assert.AreEqual(valueSet["numbers1"], "3", "(index 0): numbers1 is not 3");
-			Assert.AreEqual(valueSet["list1"], "item2", "(index 13): list1 is not item2");
-			Assert.AreEqual(valueSet["numbers2"], "43", "(index 13): numbers2 is not 43");
+			Assert.That(string.Compare(valueSet["numbers1"], "3", true) == 0, "(index 0): numbers1 is not 3");
+			Assert.That(string.Compare(valueSet["list1"], "item2", true) == 0, "(index 13): list1 is not item2");
+			Assert.That(string.Compare(valueSet["numbers2"], "43", true) == 0, "(index 13): numbers2 is not 43");
 
 			object testDelegate() => i.GetIterationValueSet(42);
 			Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "i.GetIterationValueSet(42) did not throw expected ArgumentException");
@@ -355,11 +355,11 @@ namespace BOG.SwissArmyKnife.Test
 			Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "i.GetIterationItemsForName(\"test1\") did not throw expected ArgumentException");
 
 			var x = i.GetIterationItemsForName("numbers1");
-			Assert.AreEqual(x.Keys.Count, 3, $"numbers1 should contain 3 items, but has {x.Keys.Count}");
+			Assert.That(x.Keys.Count == 3, $"numbers1 should contain 3 items, but has {x.Keys.Count}");
 			x = i.GetIterationItemsForName("list1");
-			Assert.AreEqual(x.Keys.Count, 2, $"list1 should contain 3 items, but has {x.Keys.Count}");
+			Assert.That(x.Keys.Count == 2, $"list1 should contain 3 items, but has {x.Keys.Count}");
 			x = i.GetIterationItemsForName("numbers2");
-			Assert.AreEqual(x.Keys.Count, 7, $"numbers2 should contain 7 items, but has {x.Keys.Count}");
+			Assert.That(x.Keys.Count == 7, $"numbers2 should contain 7 items, but has {x.Keys.Count}");
 		}
 	}
 }

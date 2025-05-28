@@ -27,13 +27,13 @@ namespace BOG.SwissArmyKnife.Test
             string encrypted = g.CreateGramContent(key, salt);
             SecureGram decrypted = new SecureGram();
             decrypted.LoadGramContent(encrypted, key, salt);
-            Assert.AreEqual(decrypted.Message, ShortTest);
-            Assert.AreEqual(decrypted.Message.Length, ShortTest.Length);
-            Assert.IsTrue(encrypted.Length > g.Message.Length);
-            Assert.IsFalse(decrypted.IsCompressed);
-            Assert.AreEqual(decrypted.Subject, g.Subject);
-            Assert.AreEqual(decrypted.Sender, g.Sender);
-            Assert.IsFalse(g.IsCompressed);
+            Assert.That(string.Compare(decrypted.Message, ShortTest, true) == 0);
+            Assert.That(decrypted.Message.Length == ShortTest.Length);
+            Assert.That(encrypted.Length < g.Message.Length);
+            Assert.That(!decrypted.IsCompressed);
+            Assert.That(string.Compare(decrypted.Subject, g.Subject, true) == 0);
+            Assert.That(string.Compare(decrypted.Sender, g.Sender, true) == 0);
+            Assert.That(!g.IsCompressed);
         }
 
         [Test, Description("SecureGram_LargeTestWithDefaultEncryptionMethodReturnCorrectValue(): basic encryption / decryption validation with default method")]
@@ -49,13 +49,13 @@ namespace BOG.SwissArmyKnife.Test
             string encrypted = g.CreateGramContent(key, salt);
             SecureGram decrypted = new SecureGram();
             decrypted.LoadGramContent(encrypted, key, salt);
-            Assert.AreEqual(decrypted.Message, g.Message);
-            Assert.AreEqual(decrypted.Message.Length, g.Message.Length);
-            Assert.IsTrue(encrypted.Length < g.Message.Length);
-            Assert.IsTrue(decrypted.IsCompressed);
-            Assert.AreEqual(decrypted.Subject, g.Subject);
-            Assert.AreEqual(decrypted.Sender, g.Sender);
-            Assert.IsFalse(g.IsCompressed);
+            Assert.That(string.Compare(decrypted.Message, g.Message, true) == 0);
+            Assert.That(decrypted.Message.Length == g.Message.Length);
+            Assert.That(encrypted.Length < g.Message.Length);
+            Assert.That(decrypted.IsCompressed);
+            Assert.That(string.Compare(decrypted.Subject, g.Subject, true) == 0);
+            Assert.That(string.Compare(decrypted.Sender, g.Sender, true) == 0);
+            Assert.That(!g.IsCompressed);
         }
 
         [Test, Description("SecureGram_ShortTestWithSpecificEncryptionMethodReturnCorrectValue(): basic encryption / decryption validation with default method")]
@@ -71,13 +71,13 @@ namespace BOG.SwissArmyKnife.Test
             string encrypted = g.CreateGramContent<RijndaelManaged>(key, salt);
             SecureGram decrypted = new SecureGram();
             decrypted.LoadGramContent<RijndaelManaged>(encrypted, key, salt);
-            Assert.AreEqual(decrypted.Message, ShortTest);
-            Assert.AreEqual(decrypted.Message.Length, ShortTest.Length);
-            Assert.IsTrue(encrypted.Length > g.Message.Length);
-            Assert.IsFalse(decrypted.IsCompressed);
-            Assert.AreEqual(decrypted.Subject, g.Subject);
-            Assert.AreEqual(decrypted.Sender, g.Sender);
-            Assert.IsFalse(g.IsCompressed);
+            Assert.That(string.Compare(decrypted.Message, ShortTest, true) == 0);
+            Assert.That(decrypted.Message.Length == ShortTest.Length);
+            Assert.That(encrypted.Length > g.Message.Length);
+            Assert.That(!decrypted.IsCompressed);
+            Assert.That(string.Compare(decrypted.Subject, g.Subject, true) == 0);
+            Assert.That(string.Compare(decrypted.Sender, g.Sender, true) == 0);
+            Assert.That(!g.IsCompressed);
         }
 
         [Test, Description("SecureGram_LargeTestWithSpecificEncryptionMethodReturnCorrectValue(): basic encryption / decryption validation with default method")]
@@ -93,13 +93,13 @@ namespace BOG.SwissArmyKnife.Test
             string encrypted = g.CreateGramContent<RijndaelManaged>(key, salt);
             SecureGram decrypted = new SecureGram();
             decrypted.LoadGramContent<RijndaelManaged>(encrypted, key, salt);
-            Assert.AreEqual(decrypted.Message, g.Message);
-            Assert.AreEqual(decrypted.Message.Length, g.Message.Length);
-            Assert.IsTrue(encrypted.Length < g.Message.Length);
-            Assert.IsTrue(decrypted.IsCompressed);
-            Assert.AreEqual(decrypted.Subject, g.Subject);
-            Assert.AreEqual(decrypted.Sender, g.Sender);
-            Assert.IsFalse(g.IsCompressed);
+            Assert.That(string.Compare(decrypted.Message, g.Message, true) == 0);
+            Assert.That(decrypted.Message.Length == g.Message.Length);
+            Assert.That(encrypted.Length < g.Message.Length);
+            Assert.That(decrypted.IsCompressed);
+            Assert.That(string.Compare(decrypted.Subject, g.Subject, true) == 0);
+            Assert.That(string.Compare(decrypted.Sender, g.Sender, true) == 0);
+            Assert.That(!g.IsCompressed);
         }
 
         /////////////////////////////
@@ -117,13 +117,13 @@ namespace BOG.SwissArmyKnife.Test
             string encrypted = g.CreateGramContent(key, salt);
             SecureGram decrypted = new SecureGram();
             decrypted.LoadGramContent(encrypted, key, salt);
-            Assert.AreEqual(decrypted.Message, string.Empty);
-            Assert.AreEqual(decrypted.Message.Length, 0);
-            Assert.IsTrue(encrypted.Length > g.Message.Length);
-            Assert.IsFalse(decrypted.IsCompressed);
-            Assert.AreEqual(decrypted.Subject, g.Subject);
-            Assert.AreEqual(decrypted.Sender, g.Sender);
-            Assert.IsFalse(g.IsCompressed);
+            Assert.That(string.Compare(decrypted.Message, string.Empty, true) == 0);
+            Assert.That(decrypted.Message.Length == 0);
+            Assert.That(encrypted.Length > g.Message.Length);
+            Assert.That(!decrypted.IsCompressed);
+            Assert.That(string.Compare(decrypted.Subject, g.Subject, true) == 0);
+            Assert.That(string.Compare(decrypted.Sender, g.Sender, true) == 0);
+            Assert.That(!g.IsCompressed);
         }
 
         [Test, Description("SecureGram_EmptyTestWithSpecificEncryptionMethodReturnCorrectValue(): basic encryption / decryption validation with default method")]
@@ -139,13 +139,13 @@ namespace BOG.SwissArmyKnife.Test
             string encrypted = g.CreateGramContent<RijndaelManaged>(key, salt);
             SecureGram decrypted = new SecureGram();
             decrypted.LoadGramContent<RijndaelManaged>(encrypted, key, salt);
-            Assert.AreEqual(decrypted.Message, string.Empty);
-            Assert.AreEqual(decrypted.Message.Length, 0);
-            Assert.IsTrue(encrypted.Length > g.Message.Length);
-            Assert.IsFalse(decrypted.IsCompressed);
-            Assert.AreEqual(decrypted.Subject, g.Subject);
-            Assert.AreEqual(decrypted.Sender, g.Sender);
-            Assert.IsFalse(g.IsCompressed);
+            Assert.That(string.Compare(decrypted.Message, string.Empty, true) == 0);
+            Assert.That(decrypted.Message.Length == 0);
+            Assert.That(encrypted.Length > g.Message.Length);
+            Assert.That(!decrypted.IsCompressed);
+            Assert.That(string.Compare(decrypted.Subject, g.Subject, true) == 0);
+            Assert.That(string.Compare(decrypted.Sender, g.Sender, true) == 0);
+            Assert.That(!g.IsCompressed);
         }
 
         #region Helper methods
