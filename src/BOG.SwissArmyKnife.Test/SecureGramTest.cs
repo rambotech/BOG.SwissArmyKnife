@@ -29,7 +29,7 @@ namespace BOG.SwissArmyKnife.Test
             decrypted.LoadGramContent(encrypted, key, salt);
             Assert.That(string.Compare(decrypted.Message, ShortTest, true) == 0);
             Assert.That(decrypted.Message.Length == ShortTest.Length);
-            Assert.That(encrypted.Length < g.Message.Length);
+            Assert.That(encrypted.Length > g.Message.Length);
             Assert.That(!decrypted.IsCompressed);
             Assert.That(string.Compare(decrypted.Subject, g.Subject, true) == 0);
             Assert.That(string.Compare(decrypted.Sender, g.Sender, true) == 0);

@@ -3,10 +3,9 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
-FUTURE -- 2.0.0 -- No roadmap
+FUTURE -- 2.0.0 -- No roadmap yet
 
-
-PENDING*** 1.10.0 -- 12/19/2024 -- Breaking change
+1.10.0 -- 05/28/2025 -- Breaking change
 - .NET 8 refactoring:
   - Cancellation token for BabbleOn; replaces obsolete thread methods (e.g. .Abort())
   - Refactoring cipher and others to replace obsolete call prototypes.

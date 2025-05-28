@@ -172,7 +172,7 @@ namespace BOG.SwissArmyKnife.Test
             string Expected = new string('A', 128) + "\r\n\r\n  ...[1,001 bytes squashed]...\r\n\r\n" + new string('A', 128) + "\r\n";
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                Expected.Replace("\r\n", "\n");
+                Expected = Expected.Replace("\r\n", "\n");
             }
             Assert.That(string.Compare(Result, Expected) == 0);
         }
