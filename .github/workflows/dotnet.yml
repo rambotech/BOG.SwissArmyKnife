@@ -9,6 +9,13 @@ on:
   push:
     branches: [ "develop", "release", "master" ]
 
+  workflow_dispatch:
+    inputs:
+      launching:
+        description: 'Is it launch time'
+        default: true
+        required: true
+
 defaults:
   run:
     working-directory: src/BOG.SwissArmyKnife
