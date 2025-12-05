@@ -1,20 +1,10 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+# Always make a release build, and do a nuget push when on master branch.
 
-# modified to always make a release build, and do a nuget push when on master branch.
-
-name: .NET
+name: Auto-Build
 
 on:
   push:
     branches: [ "develop", "release", "master" ]
-
-  workflow_dispatch:
-    inputs:
-      launching:
-        description: 'Is it launch time'
-        default: true
-        required: true
 
 defaults:
   run:
