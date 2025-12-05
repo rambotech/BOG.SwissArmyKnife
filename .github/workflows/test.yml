@@ -4,62 +4,29 @@ name: Test
 
 on:
   pull_request:
-    branches: [ "release", "master" ]
-
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-        - info
-        - warning
-        - debug
-      tags:
-        description: 'Test scenario tags'
-        required: false
-        type: boolean
-      environment:
-        description: 'Environment to run tests against'
-        type: environment
-        required: true
+    branches: [ "develop" ]
 
 defaults:
   run:
     working-directory: src/BOG.SwissArmyKnife.Test
 
 jobs:
-  log-the-inputs:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "Log level: $LEVEL"
-          echo "Tags: $TAGS"
-          echo "Environment: $ENVIRONMENT"
-        env:
-          LEVEL: ${{ inputs.logLevel }}
-          TAGS: ${{ inputs.tags }}
-          ENVIRONMENT: ${{ inputs.environment }}
-
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8
     - name: Restore dependencies
       run: dotnet restore
-    - name: Build
+    - name: Test
       run: |
-        dotnet build --no-restore -c release BOG.SwissArmyKnife.csproj
-    - name: NuGet package publish
-      if: github.event.ref == 'refs/heads/master'
+        dotnet test --no-restore -c release BOG.SwissArmyKnifeTest.csproj
+    - name: Run Tests
+      if: (github.event.ref == 'refs/heads/master' || github.event.ref == 'refs/heads/release')
       env:
         NGKEY: ${{ secrets.NUGET_API_KEY }}
         NGSRC: ${{ vars.NUGET_SOURCE }}
