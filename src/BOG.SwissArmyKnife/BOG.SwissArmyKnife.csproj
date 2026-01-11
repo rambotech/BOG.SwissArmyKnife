@@ -1,46 +1,48 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Description>Collection of utility classes migrated to NET Standard 2.0 from BOG.Framework</Description>
-    <Authors>John J Schultz</Authors>
-    <Company>Bits of Genius</Company>
-    <PackageProjectUrl>https://github.com/rambotech/BOG.SwissArmyKnife</PackageProjectUrl>
-    <PackageIconUrl></PackageIconUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <RepositoryType>GIT</RepositoryType>
-    <RepositoryUrl>https://github.com/rambotech/BOG.SwissArmyKnife</RepositoryUrl>
-    <PackageTags>C# netstandardc20 utility harvest monitor strings exception format formatting directory file scripting fuse logging password hash serialize serializing</PackageTags>
-    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.11.0.0</AssemblyVersion>
-    <FileVersion>1.11.0.0</FileVersion>
-    <Version>1.11.0</Version>
-    <Copyright>(c) 2017-2025, John J Schultz</Copyright>
-    <PackageIcon>multitool.png</PackageIcon>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Description>Collection of utility classes migrated to NET Standard 2.0 from BOG.Framework</Description>
+		<Authors>John J Schultz</Authors>
+		<Company>Bits of Genius</Company>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageProjectUrl>https://github.com/rambotech/BOG.SwissArmyKnife</PackageProjectUrl>
+		<PackageIconUrl></PackageIconUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageLicenseUrl></PackageLicenseUrl>
+		<RepositoryType>GIT</RepositoryType>
+		<RepositoryUrl>https://github.com/rambotech/BOG.SwissArmyKnife</RepositoryUrl>
+		<PackageTags>C# netstandardc20 utility harvest monitor strings exception format formatting directory file scripting fuse logging password hash serialize serializing</PackageTags>
+		<PackageReleaseNotes>Initial release</PackageReleaseNotes>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<AssemblyVersion>1.11.0.0</AssemblyVersion>
+		<FileVersion>1.11.0.0</FileVersion>
+		<Version>1.11.0</Version>
+		<Copyright>(c) 2017-2026, John J Schultz</Copyright>
+		<PackageIcon>multitool.png</PackageIcon>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="Newtonsoft.Json">
+			<HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
+		</Reference> 
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\Assets\multitool.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\Assets\multitool.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Enums\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Enums\" />
+		<None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+	</ItemGroup>
 
 </Project>
