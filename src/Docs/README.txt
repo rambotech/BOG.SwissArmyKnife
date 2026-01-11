@@ -3,7 +3,10 @@ BOG.SwissArmyKnife
 This is a collection of utility classes I have made over the years to handle 
 various tasks which weren't native to the Microsoft assemblies.
 
-FUTURE -- 2.0.0 -- No roadmap yet
+FUTURE -- No roadmap yet
+
+1.11.1 -- 01/11/2026 -- Breaking change
+  - Test fixes for OSPlatform variations (HeadTail() in StringEx)
 
 1.11.0 -- 01/11/2026 -- Breaking change
   - .NET 10
