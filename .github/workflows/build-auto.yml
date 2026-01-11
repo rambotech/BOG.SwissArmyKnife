@@ -27,7 +27,7 @@ jobs:
         dotnet build --no-restore -c release BOG.SwissArmyKnife.csproj
     - name: Test
       run: |
-        dotnet test --no-build -c release BOG.SwissArmyKnife.Test.csproj
+        dotnet test --no-build BOG.SwissArmyKnife.Test.csproj
     - name: NuGet package publish
       if: github.event.ref == 'refs/heads/master'
       env:
