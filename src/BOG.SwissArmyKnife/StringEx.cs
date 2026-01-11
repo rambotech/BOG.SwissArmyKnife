@@ -738,11 +738,8 @@ namespace BOG.SwissArmyKnife.Extensions
             var squashedSize = string.Format("{0:#,0}", source.Length - (headSize + tailSize));
             StringBuilder result = new();
             result.Append(source.Substring(0, headSize));
-            result.AppendLine();
-            result.AppendLine();
-            result.AppendLine($"  ...[{squashedSize} bytes squashed]...");
-            result.AppendLine();
-            result.AppendLine(source.Substring(source.Length - tailSize - 1, tailSize));
+            result.Append($" ...[{squashedSize} bytes squashed]... ");
+            result.Append(source.Substring(source.Length - tailSize - 1, tailSize));
             return result.ToString();
         }
 
