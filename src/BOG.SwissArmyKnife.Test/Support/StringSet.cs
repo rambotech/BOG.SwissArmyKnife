@@ -38,7 +38,6 @@ namespace BOG.SwissArmyKnife.Test.Support
         /// </summary>
         /// <param name="info">Provided by the serializer.</param>
         /// <param name="context">Provided by the serializer.</param>
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public MyDataSet(SerializationInfo info, StreamingContext context)
         {
             // base.GetObjectData(info, context);
@@ -226,7 +225,6 @@ namespace BOG.SwissArmyKnife.Test.Support
         /// </summary>
         /// <param name="info">Provided by the serializer.</param>
         /// <param name="context">Provided by the serializer.</param>
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             // base.GetObjectData(info, context);

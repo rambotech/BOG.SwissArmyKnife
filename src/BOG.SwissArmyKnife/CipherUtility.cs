@@ -49,7 +49,7 @@
                 throw new ArgumentException("salt can not be blank");
             }
 
-            DeriveBytes rgb = new Rfc2898DeriveBytes(password, Encoding.Unicode.GetBytes(salt));
+            DeriveBytes rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt),1, HashAlgorithmName.SHA1);
 
             byte[] rgbKey = rgb.GetBytes(this.CryptoAlgorithm.KeySize >> 3);
             byte[] rgbIV = rgb.GetBytes(this.CryptoAlgorithm.BlockSize >> 3);
@@ -81,7 +81,7 @@
             if (string.IsNullOrEmpty(protectedValue))
                 return string.Empty;
 
-            DeriveBytes rgb = new Rfc2898DeriveBytes(password, Encoding.Unicode.GetBytes(salt));
+            DeriveBytes rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt), 1, HashAlgorithmName.SHA1);
 
             byte[] rgbKey = rgb.GetBytes(this.CryptoAlgorithm.KeySize >> 3);
             byte[] rgbIV = rgb.GetBytes(this.CryptoAlgorithm.BlockSize >> 3);
@@ -123,7 +123,7 @@
                 throw new ArgumentException("salt can not be blank");
             }
 
-            DeriveBytes rgb = new Rfc2898DeriveBytes(password, Encoding.Unicode.GetBytes(salt));
+            DeriveBytes rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt),1,HashAlgorithmName.SHA1);
 
             byte[] rgbKey = rgb.GetBytes(this.CryptoAlgorithm.KeySize >> 3);
             byte[] rgbIV = rgb.GetBytes(this.CryptoAlgorithm.BlockSize >> 3);
@@ -154,7 +154,7 @@
                 return new byte[] { };
             }
 
-            DeriveBytes rgb = new Rfc2898DeriveBytes(password, Encoding.Unicode.GetBytes(salt));
+            DeriveBytes rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt), 1, HashAlgorithmName.SHA1);
 
             byte[] rgbKey = rgb.GetBytes(this.CryptoAlgorithm.KeySize >> 3);
             byte[] rgbIV = rgb.GetBytes(this.CryptoAlgorithm.BlockSize >> 3);

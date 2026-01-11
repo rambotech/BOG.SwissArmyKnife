@@ -5,10 +5,12 @@ various tasks which weren't native to the Microsoft assemblies.
 
 FUTURE -- 2.0.0 -- No roadmap yet
 
+1.11.0 -- 01/11/2026 -- Breaking change
+  - Refactoring cipher and others to replace obsolete call prototypes.
+
 1.10.0 -- 05/28/2025 -- Breaking change
 - .NET 8 refactoring:
   - Cancellation token for BabbleOn; replaces obsolete thread methods (e.g. .Abort())
-  - Refactoring cipher and others to replace obsolete call prototypes.
 
 1.9.2 -- 03/16/2025
 - Add overload to AssemblyVersion to allow assembly by type: typeof() or Type.GetType().

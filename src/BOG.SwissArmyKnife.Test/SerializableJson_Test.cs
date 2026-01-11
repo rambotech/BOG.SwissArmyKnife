@@ -44,7 +44,7 @@ namespace BOG.SwissArmyKnife.Test
             string password = "Uncomplicated";
             string salt = "JustAsEasy";
 
-            SymmetricAlgorithm algorithm = new DESCryptoServiceProvider();
+            SymmetricAlgorithm algorithm = TripleDES.Create();
 
             string transitContent = ObjectJsonSerializer<MyDataSet>.CreateTransitContainerForObject(original, password, salt, algorithm);
 
