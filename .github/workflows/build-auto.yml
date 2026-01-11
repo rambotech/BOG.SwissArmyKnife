@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 10
     - name: Restore dependencies
@@ -27,7 +27,7 @@ jobs:
         dotnet build --no-restore -c release BOG.SwissArmyKnife.csproj
     - name: Test
       run: |
-        dotnet test --no-restore -c release BOG.SwissArmyKnife.Test.csproj
+        dotnet test --no-build -c release BOG.SwissArmyKnife.Test.csproj
     - name: NuGet package publish
       if: github.event.ref == 'refs/heads/master'
       env:
