@@ -14,7 +14,7 @@ namespace BOG.SwissArmyKnife.Test
     public class WildCardTestData : IEnumerable
     {
         private readonly Newtonsoft.Json.JsonSerializerSettings _JsonSetting =
-            new JsonSerializerSettings
+            new()
             {
                 Formatting = Newtonsoft.Json.Formatting.Indented,
                 DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
@@ -35,7 +35,7 @@ namespace BOG.SwissArmyKnife.Test
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
-                using (StreamReader reader = new StreamReader(stream))
+                using (StreamReader reader = new(stream))
                 {
                     urlTestItemList = new List<WildcardTestItem>(
                         JsonConvert.DeserializeObject<List<WildcardTestItem>>(
@@ -146,7 +146,7 @@ namespace BOG.SwissArmyKnife.Test
         [Test, Description("HeadTailSummary(): default, not squashed")]
         public void StringEx_HeadTailSummary_Default_NotSquashed()
         {
-            string TextBlob = new string('A', 256);
+            string TextBlob = new('A', 256);
             string Result = TextBlob.HeadTailSummary();
             Assert.That(string.Compare(TextBlob, Result) == 0);
         }
@@ -154,7 +154,7 @@ namespace BOG.SwissArmyKnife.Test
         [Test, Description("HeadTailSummary(): default, squashed, small")]
         public void StringEx_HeadTailSummary_Default_Squashed_Small()
         {
-            string TextBlob = new string('A', 257);
+            string TextBlob = new('A', 257);
             string Result = TextBlob.HeadTailSummary();
             string Expected = new string('A', 128) + "\r\n\r\n  ...[1 bytes squashed]...\r\n\r\n" + new string('A', 128) + "\r\n";
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -167,7 +167,7 @@ namespace BOG.SwissArmyKnife.Test
         [Test, Description("HeadTailSummary(): default, squashed, large")]
         public void StringEx_HeadTailSummary_Default_Squashed_Large()
         {
-            string TextBlob = new string('A', 1257);
+            string TextBlob = new('A', 1257);
             string Result = TextBlob.HeadTailSummary();
             string Expected = new string('A', 128) + "\r\n\r\n  ...[1,001 bytes squashed]...\r\n\r\n" + new string('A', 128) + "\r\n";
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -180,21 +180,21 @@ namespace BOG.SwissArmyKnife.Test
         [Test, Description("HeadTailSummary(): non-default, invalid head size")]
         public void StringEx_HeadTailSummary_NonDefault_InvalidHeadSize()
         {
-            string TextBlob = new string('A', 128);
+            string TextBlob = new('A', 128);
             Assert.Throws<ArgumentOutOfRangeException>(() => TextBlob.HeadTailSummary(-1, 128));
         }
 
         [Test, Description("HeadTailSummary(): non-default, invalid tail size")]
         public void StringEx_HeadTailSummary_NonDefault_InvalidTailSize()
         {
-            string TextBlob = new string('A', 128);
+            string TextBlob = new('A', 128);
             Assert.Throws<ArgumentOutOfRangeException>(() => TextBlob.HeadTailSummary(128, -1));
         }
 
         [Test, Description("HeadTailSummary(): non-default, non-squashed, small, 0 tail")]
         public void StringEx_HeadTailSummary_NonDefault_Squashed_Small_0Tail()
         {
-            string TextBlob = new string('A', 128);
+            string TextBlob = new('A', 128);
             string Result = TextBlob.HeadTailSummary(128, 0);
             Assert.That(string.Compare(TextBlob, Result) == 0);
         }
@@ -202,7 +202,7 @@ namespace BOG.SwissArmyKnife.Test
         [Test, Description("HeadTailSummary(): non-default, non-squashed, small, 0 head")]
         public void StringEx_HeadTailSummary_NonDefault_Squashed_Small_0Head()
         {
-            string TextBlob = new string('A', 128);
+            string TextBlob = new('A', 128);
             string Result = TextBlob.HeadTailSummary(0, 128);
             Assert.That(string.Compare(TextBlob, Result) == 0);
         }
@@ -210,7 +210,7 @@ namespace BOG.SwissArmyKnife.Test
         [Test, Description("HeadTailSummary(): non-default, not squashed, large")]
         public void StringEx_HeadTailSummary_NonDefault_NotSquashed_Large()
         {
-            string TextBlob = new string('A', 1024);
+            string TextBlob = new('A', 1024);
             string Result = TextBlob.HeadTailSummary(512, 512);
             Assert.That(string.Compare(TextBlob, Result) == 0);
         }
@@ -218,7 +218,7 @@ namespace BOG.SwissArmyKnife.Test
         [Test, Description("HeadTailSummary(): non-default, squashed, large")]
         public void StringEx_HeadTailSummary_NonDefault_Squashed_Large()
         {
-            string TextBlob = new string('A', 1026);
+            string TextBlob = new('A', 1026);
             string Result = TextBlob.HeadTailSummary(512, 512);
             string Expected = new string('A', 512) + "\r\n\r\n  ...[2 bytes squashed]...\r\n\r\n" + new string('A', 512) + "\r\n";
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

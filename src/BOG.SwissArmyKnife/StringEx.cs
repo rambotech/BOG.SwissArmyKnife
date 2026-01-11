@@ -36,7 +36,7 @@ namespace BOG.SwissArmyKnife.Extensions
             int BaseIndex = 0;
             int Offset = 0;
             bool IsMatch;
-            StringBuilder s = new StringBuilder();
+            StringBuilder s = new();
 
             while (Index < original.Length && pattern.Length > 0)
             {
@@ -89,7 +89,7 @@ namespace BOG.SwissArmyKnife.Extensions
         /// <returns></returns>
         public static string RegExMatchReplace(this string content, string pattern, string locate, string substitute, bool ignoreCase)
         {
-            Regex r = new Regex(pattern, ignoreCase ? System.Text.RegularExpressions.RegexOptions.IgnoreCase : 0);
+            Regex r = new(pattern, ignoreCase ? System.Text.RegularExpressions.RegexOptions.IgnoreCase : 0);
             MatchCollection mc = r.Matches(content);
 
             foreach (Match m in mc)
@@ -268,7 +268,7 @@ namespace BOG.SwissArmyKnife.Extensions
         /// the original raw string </returns>
         public static string TextAsInnerText(this string raw)
         {
-            XmlDocument xml = new XmlDocument();
+            XmlDocument xml = new();
             try
             {
                 xml.LoadXml("<?xml version='1.0'?><root>" + raw + "</root>");
@@ -288,7 +288,7 @@ namespace BOG.SwissArmyKnife.Extensions
         public static string Base64DecodeString(this string inputStr)
         {
             byte[] decodedByteArray = Convert.FromBase64CharArray(inputStr.ToCharArray(), 0, inputStr.Length);
-            StringBuilder s = new StringBuilder();
+            StringBuilder s = new();
             for (int i = 0; i < decodedByteArray.Length; i++)
             {
                 s.Append((char)decodedByteArray[i]);
@@ -318,7 +318,7 @@ namespace BOG.SwissArmyKnife.Extensions
                 0,
                 insertLineBreaks ?
                     Base64FormattingOptions.InsertLineBreaks : Base64FormattingOptions.None);
-            string EncodedString = new string(encodedArray);
+            string EncodedString = new(encodedArray);
             int ActualLength = EncodedString.Length;
             while (ActualLength-- > 0 && EncodedString[ActualLength] == '\0')
                 ;
@@ -349,7 +349,7 @@ namespace BOG.SwissArmyKnife.Extensions
             {
                 throw new Exception("A spacer can not be a hexidecimal character.");
             }
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new();
 
             string formatter = useUpperCase ? "{0:X2}{1}" : "{0:x2}{1}";
             int index = 0;
@@ -370,7 +370,7 @@ namespace BOG.SwissArmyKnife.Extensions
         /// <returns>the string represented by the hex digits</returns>
         public static string FromHex(this string source)
         {
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new();
 
             int index = 0;
             byte hexIndex = 0;
@@ -413,7 +413,7 @@ namespace BOG.SwissArmyKnife.Extensions
             {
                 throw new Exception("A spacer can not be a hexidecimal character.");
             }
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new();
 
             string formatter = useUpperCase ? "{0:X2}{1}" : "{0:x2}{1}";
             int index = 0;
@@ -461,7 +461,7 @@ namespace BOG.SwissArmyKnife.Extensions
             {
                 throw new ArgumentException("The source string is invalid: it has an odd number of hex digits.");
             }
-            MemoryStream m = new MemoryStream(hexIndex);
+            MemoryStream m = new(hexIndex);
             m.Write(buffer, 0, hexIndex);
             return m.ToArray();
         }
@@ -476,7 +476,7 @@ namespace BOG.SwissArmyKnife.Extensions
         {
             int Offset = 0;
             int Index = 0;
-            StringBuilder Result = new StringBuilder();
+            StringBuilder Result = new();
 
             while (true)
             {
@@ -678,7 +678,7 @@ namespace BOG.SwissArmyKnife.Extensions
 
         private static string Filtering(string original, string mustContain, bool ignoreCase, bool filterOut)
         {
-            StringBuilder response = new StringBuilder();
+            StringBuilder response = new();
             string originalCompare = ignoreCase ? original.ToUpper() : original;
             string mustContainCompare = ignoreCase ? mustContain.ToUpper() : mustContain;
 
@@ -736,7 +736,7 @@ namespace BOG.SwissArmyKnife.Extensions
                 return source;
 
             var squashedSize = string.Format("{0:#,0}", source.Length - (headSize + tailSize));
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new();
             result.Append(source.Substring(0, headSize));
             result.AppendLine();
             result.AppendLine();

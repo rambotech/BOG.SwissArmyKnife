@@ -28,8 +28,8 @@ namespace BOG.SwissArmyKnife
 		/// <param name="reader">A reader initialized to the xml source stream.</param>
 		public void ReadXml(System.Xml.XmlReader reader)
 		{
-			XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
-			XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
+			XmlSerializer keySerializer = new(typeof(TKey));
+			XmlSerializer valueSerializer = new(typeof(TValue));
 
 			bool wasEmpty = reader.IsEmptyElement;
 			reader.Read();
@@ -63,8 +63,8 @@ namespace BOG.SwissArmyKnife
 		/// <param name="writer">A writer initialized to the xml target stream.</param>
 		public void WriteXml(System.Xml.XmlWriter writer)
 		{
-			XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
-			XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
+			XmlSerializer keySerializer = new(typeof(TKey));
+			XmlSerializer valueSerializer = new(typeof(TValue));
 
 			foreach (TKey key in this.Keys)
 			{

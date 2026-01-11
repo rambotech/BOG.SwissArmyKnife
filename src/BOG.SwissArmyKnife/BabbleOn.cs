@@ -16,7 +16,7 @@ namespace BOG.SwissArmyKnife
         public DateTime TimeoutOn = DateTime.MinValue;
         public TcpClient TcpClient = null;
         public NetworkStream ClientStream = null;
-        public Queue<string> Messages = new Queue<string>();
+        public Queue<string> Messages = new();
         public bool Running = true;
         public bool StopRequested = false;
         public int KeepAliveRequests = 0;
@@ -43,7 +43,7 @@ namespace BOG.SwissArmyKnife
 
         private TcpListener MyTcpListener;
         private Thread MyListenThread;
-        private Dictionary<Guid, EavesDropper> Listeners = new Dictionary<Guid, EavesDropper>();
+        private Dictionary<Guid, EavesDropper> Listeners = new();
         private DateTime StartTime = DateTime.Now;
         private bool Running = false;
         private bool Listening = false;
@@ -260,7 +260,7 @@ namespace BOG.SwissArmyKnife
             {
                 if (this.MyTcpListener.Pending())
                 {
-                    EavesDropper NewGuy = new EavesDropper();
+                    EavesDropper NewGuy = new();
                     NewGuy.StartedOn = DateTime.Now;
                     NewGuy.TimeoutOn = _TimeoutSeconds <= 0 ? DateTime.MaxValue : NewGuy.StartedOn.AddSeconds(_TimeoutSeconds);
                     NewGuy.TcpClient = this.MyTcpListener.AcceptTcpClient();
@@ -304,7 +304,7 @@ namespace BOG.SwissArmyKnife
         {
             Guid myListener = (Guid)client;
             this.Listeners[myListener].ClientStream = this.Listeners[myListener].TcpClient.GetStream();
-            System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
+            System.Text.ASCIIEncoding encoding = new();
 
             // send the signal string as the first line, in case the caller is BabbleFinder building a list of available
             // connections.
@@ -398,7 +398,7 @@ namespace BOG.SwissArmyKnife
             if (this.Listeners.Count == 0)
                 return;
 
-            List<Guid> DeadConnections = new List<Guid>();
+            List<Guid> DeadConnections = new();
             foreach (Guid g in Listeners.Keys)
             {
                 if (this.Listeners[g].TcpClient.Connected)
@@ -479,7 +479,7 @@ namespace BOG.SwissArmyKnife
         private int _LowListenPort = 65200;
         private int _HighListenPort = 65299;
 
-        private static Dictionary<int, ScannedPort> _Answers = new Dictionary<int, ScannedPort>();
+        private static Dictionary<int, ScannedPort> _Answers = new();
 
         /// <summary>
         /// Instantiation with default localhost and default port range.
@@ -521,9 +521,9 @@ namespace BOG.SwissArmyKnife
         /// <returns></returns>
         public List<ScannedPort> ScanPorts(bool includeNotFound)
         {
-            List<ScannedPort> result = new List<ScannedPort>();
+            List<ScannedPort> result = new();
             _Answers.Clear();
-            Dictionary<int, Thread> workers = new Dictionary<int, Thread>();
+            Dictionary<int, Thread> workers = new();
             for (int portNumber = _LowListenPort; portNumber <= _HighListenPort; portNumber++)
             {
                 workers.Add(portNumber, new Thread(PollPort));
@@ -548,8 +548,8 @@ namespace BOG.SwissArmyKnife
         private static void PollPort(object PortNumberObject)
         {
             int portNumber = (int)PortNumberObject;
-            TcpClient c = new TcpClient();
-            ScannedPort p = new ScannedPort();
+            TcpClient c = new();
+            ScannedPort p = new();
 
             p.Port = portNumber;
             c.ReceiveTimeout = 5;
@@ -565,7 +565,7 @@ namespace BOG.SwissArmyKnife
                 if (c.Client.Connected)
                 {
                     bool HaveFrame = false;
-                    StringBuilder lines = new StringBuilder();
+                    StringBuilder lines = new();
                     byte[] RecvBuffer = new byte[2048];
                     while (lines.Length < 500)
                     {

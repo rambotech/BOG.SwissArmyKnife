@@ -39,7 +39,7 @@ namespace BOG.SwissArmyKnife.Test
         #region Helpers
         private static IEnumerable<string[]> GetTestData()
         {
-            Dictionary<string, string[]> TestIterations = new Dictionary<string, string[]>()
+            Dictionary<string, string[]> TestIterations = new()
             {
                 { "ConnectionString", new string[] {
                     "uid=somevalue;user id=somevalue;userid=somevalue;user=somevalue;username=somevalue;user name=somevalue;pwd=somevalue;pass=somevalue;password=somevalue;pwd=somevalue;",

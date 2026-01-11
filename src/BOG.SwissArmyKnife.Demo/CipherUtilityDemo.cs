@@ -7,7 +7,7 @@ namespace BOG.SwissArmyKnife.Demo
 {
     public class CipherUtilityDemo
     {
-        List<string> AlgorithmClassList = new List<string>();
+        List<string> AlgorithmClassList = new();
 
         public CipherUtilityDemo()
         {

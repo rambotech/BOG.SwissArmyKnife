@@ -85,7 +85,6 @@ namespace BOG.SwissArmyKnife
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
@@ -161,7 +160,7 @@ namespace BOG.SwissArmyKnife
         // internal
         private int _Hits = 0;
         private float _Volume = 0.0F;
-        private Queue<FuseEvent> _Triggers = new Queue<FuseEvent>();
+        private Queue<FuseEvent> _Triggers = new();
 
         /// <summary>
         /// Instantiate with defaults.
@@ -349,7 +348,7 @@ namespace BOG.SwissArmyKnife
         {
             get
             {
-                List<FuseEvent> result = new List<FuseEvent>();
+                List<FuseEvent> result = new();
                 lock (_Triggers)
                 {
                     // dequeue items to keep the order in the resulting dictionary.
@@ -452,11 +451,9 @@ namespace BOG.SwissArmyKnife
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            if (info == null)
-                throw new System.ArgumentNullException("info");
+            System.ArgumentNullException.ThrowIfNull(info);
             info.AddValue("Fuse_Trigger_Rule", _Fuse_Trigger_Rule);
             info.AddValue("Hit_Threshold", _Hit_Threshold);
             info.AddValue("Volume_Threshold", _Volume_Threshold);

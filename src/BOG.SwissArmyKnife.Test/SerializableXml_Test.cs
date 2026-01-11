@@ -46,7 +46,7 @@ namespace BOG.SwissArmyKnife.Test
             string password = "Uncomplicated";
             string salt = "JustAsEasy";
 
-            SymmetricAlgorithm algorithm = new DESCryptoServiceProvider();
+            SymmetricAlgorithm algorithm = DES.Create();
 
             string transitContent = ObjectXMLSerializer<MyDataSet>.CreateTransitContainerForObject(original, password, salt, algorithm);
 
@@ -75,7 +75,7 @@ namespace BOG.SwissArmyKnife.Test
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
-                using (StreamReader reader = new StreamReader(stream))
+                using (StreamReader reader = new(stream))
                 {
                     while (!reader.EndOfStream)
                     {

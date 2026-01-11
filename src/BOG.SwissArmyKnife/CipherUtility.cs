@@ -49,18 +49,18 @@
                 throw new ArgumentException("salt can not be blank");
             }
 
-            DeriveBytes rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt),1, HashAlgorithmName.SHA1);
+            var rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt),1, HashAlgorithmName.SHA1);
 
             byte[] rgbKey = rgb.GetBytes(this.CryptoAlgorithm.KeySize >> 3);
             byte[] rgbIV = rgb.GetBytes(this.CryptoAlgorithm.BlockSize >> 3);
 
             ICryptoTransform transform = this.CryptoAlgorithm.CreateEncryptor(rgbKey, rgbIV);
 
-            using (MemoryStream buffer = new MemoryStream())
+            using (MemoryStream buffer = new())
             {
-                using (CryptoStream stream = new CryptoStream(buffer, transform, CryptoStreamMode.Write))
+                using (CryptoStream stream = new(buffer, transform, CryptoStreamMode.Write))
                 {
-                    using (StreamWriter writer = new StreamWriter(stream, Encoding.Unicode))
+                    using (StreamWriter writer = new(stream, Encoding.Unicode))
                     {
                         writer.Write(value);
                     }
@@ -81,18 +81,18 @@
             if (string.IsNullOrEmpty(protectedValue))
                 return string.Empty;
 
-            DeriveBytes rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt), 1, HashAlgorithmName.SHA1);
+            var rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt), 1, HashAlgorithmName.SHA1);
 
             byte[] rgbKey = rgb.GetBytes(this.CryptoAlgorithm.KeySize >> 3);
             byte[] rgbIV = rgb.GetBytes(this.CryptoAlgorithm.BlockSize >> 3);
 
             ICryptoTransform transform = this.CryptoAlgorithm.CreateDecryptor(rgbKey, rgbIV);
 
-            using (MemoryStream buffer = new MemoryStream(Convert.FromBase64String(protectedValue)))
+            using (MemoryStream buffer = new(Convert.FromBase64String(protectedValue)))
             {
-                using (CryptoStream stream = new CryptoStream(buffer, transform, CryptoStreamMode.Read))
+                using (CryptoStream stream = new(buffer, transform, CryptoStreamMode.Read))
                 {
-                    using (StreamReader reader = new StreamReader(stream, Encoding.Unicode))
+                    using (StreamReader reader = new(stream, Encoding.Unicode))
                     {
                         return reader.ReadToEnd();
                     }
@@ -123,16 +123,16 @@
                 throw new ArgumentException("salt can not be blank");
             }
 
-            DeriveBytes rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt),1,HashAlgorithmName.SHA1);
+            var rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt),1,HashAlgorithmName.SHA1);
 
             byte[] rgbKey = rgb.GetBytes(this.CryptoAlgorithm.KeySize >> 3);
             byte[] rgbIV = rgb.GetBytes(this.CryptoAlgorithm.BlockSize >> 3);
 
             ICryptoTransform transform = this.CryptoAlgorithm.CreateEncryptor(rgbKey, rgbIV);
 
-            using (MemoryStream buffer = new MemoryStream())
+            using (MemoryStream buffer = new())
             {
-                using (CryptoStream stream = new CryptoStream(buffer, transform, CryptoStreamMode.Write))
+                using (CryptoStream stream = new(buffer, transform, CryptoStreamMode.Write))
                 {
                     stream.Write(value, 0, value.Length);
                 }
@@ -151,22 +151,22 @@
         {
             if (protectedValue.Length == 0)
             {
-                return new byte[] { };
+                return Array.Empty<byte>();
             }
 
-            DeriveBytes rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt), 1, HashAlgorithmName.SHA1);
+            var rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt), 1, HashAlgorithmName.SHA1);
 
             byte[] rgbKey = rgb.GetBytes(this.CryptoAlgorithm.KeySize >> 3);
             byte[] rgbIV = rgb.GetBytes(this.CryptoAlgorithm.BlockSize >> 3);
 
             ICryptoTransform transform = this.CryptoAlgorithm.CreateDecryptor(rgbKey, rgbIV);
-            using (MemoryStream sourceBuffer = new MemoryStream(Convert.FromBase64String(protectedValue)))
+            using (MemoryStream sourceBuffer = new(Convert.FromBase64String(protectedValue)))
             {
-                using (CryptoStream stream = new CryptoStream(sourceBuffer, transform, CryptoStreamMode.Read))
+                using (CryptoStream stream = new(sourceBuffer, transform, CryptoStreamMode.Read))
                 {
                     const int size = 4096;
                     byte[] buffer = new byte[size];
-                    using (MemoryStream memory = new MemoryStream())
+                    using (MemoryStream memory = new())
                     {
                         int count = -1;
                         while (count != 0)

@@ -193,7 +193,7 @@ namespace BOG.SwissArmyKnife.Demo.Support
 
         public List<string> GetPhrase(int count)
         {
-            List<string> result = new List<string>();
+            List<string> result = new();
             for (int index = 0; index < count; index++)
                 result.Add(adjective[r.Next(adjective.Length)] + " " + noun[r.Next(noun.Length)]);
             return result;

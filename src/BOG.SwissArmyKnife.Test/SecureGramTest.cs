@@ -20,12 +20,12 @@ namespace BOG.SwissArmyKnife.Test
             string key = RandomString();
             string salt = RandomString();
 
-            SecureGram g = new SecureGram();
+            SecureGram g = new();
             g.Sender = "Pinnochio";
             g.Subject = "Marionette";
             g.Message = ShortTest;
             string encrypted = g.CreateGramContent(key, salt);
-            SecureGram decrypted = new SecureGram();
+            SecureGram decrypted = new();
             decrypted.LoadGramContent(encrypted, key, salt);
             Assert.That(string.Compare(decrypted.Message, ShortTest, true) == 0);
             Assert.That(decrypted.Message.Length == ShortTest.Length);
@@ -42,12 +42,12 @@ namespace BOG.SwissArmyKnife.Test
             string key = RandomString();
             string salt = RandomString();
 
-            SecureGram g = new SecureGram();
+            SecureGram g = new();
             g.Sender = "Pinnochio";
             g.Subject = "Marionette";
             g.Message = MakeLargeTest();
             string encrypted = g.CreateGramContent(key, salt);
-            SecureGram decrypted = new SecureGram();
+            SecureGram decrypted = new();
             decrypted.LoadGramContent(encrypted, key, salt);
             Assert.That(string.Compare(decrypted.Message, g.Message, true) == 0);
             Assert.That(decrypted.Message.Length == g.Message.Length);
@@ -64,13 +64,14 @@ namespace BOG.SwissArmyKnife.Test
             string key = RandomString();
             string salt = RandomString();
 
-            SecureGram g = new SecureGram();
+            SecureGram g = new();
             g.Sender = "Pinnochio";
             g.Subject = "Marionette";
             g.Message = ShortTest;
-            string encrypted = g.CreateGramContent<RijndaelManaged>(key, salt);
-            SecureGram decrypted = new SecureGram();
-            decrypted.LoadGramContent<RijndaelManaged>(encrypted, key, salt);
+            var algorithm = TripleDES.Create();
+            string encrypted = g.CreateGramContent(algorithm, key, salt);
+            SecureGram decrypted = new();
+            decrypted.LoadGramContent(algorithm, encrypted, key, salt);
             Assert.That(string.Compare(decrypted.Message, ShortTest, true) == 0);
             Assert.That(decrypted.Message.Length == ShortTest.Length);
             Assert.That(encrypted.Length > g.Message.Length);
@@ -86,13 +87,14 @@ namespace BOG.SwissArmyKnife.Test
             string key = RandomString();
             string salt = RandomString();
 
-            SecureGram g = new SecureGram();
+            SecureGram g = new();
             g.Sender = "Pinnochio";
             g.Subject = "Marionette";
             g.Message = MakeLargeTest();
-            string encrypted = g.CreateGramContent<RijndaelManaged>(key, salt);
-            SecureGram decrypted = new SecureGram();
-            decrypted.LoadGramContent<RijndaelManaged>(encrypted, key, salt);
+            var algorithm = TripleDES.Create();
+            string encrypted = g.CreateGramContent(algorithm, key, salt);
+            SecureGram decrypted = new();
+            decrypted.LoadGramContent(algorithm, encrypted, key, salt);
             Assert.That(string.Compare(decrypted.Message, g.Message, true) == 0);
             Assert.That(decrypted.Message.Length == g.Message.Length);
             Assert.That(encrypted.Length < g.Message.Length);
@@ -110,12 +112,12 @@ namespace BOG.SwissArmyKnife.Test
             string key = RandomString();
             string salt = RandomString();
 
-            SecureGram g = new SecureGram();
+            SecureGram g = new();
             g.Sender = "Pinnochio";
             g.Subject = "Marionette";
             g.Message = string.Empty;
             string encrypted = g.CreateGramContent(key, salt);
-            SecureGram decrypted = new SecureGram();
+            SecureGram decrypted = new();
             decrypted.LoadGramContent(encrypted, key, salt);
             Assert.That(string.Compare(decrypted.Message, string.Empty, true) == 0);
             Assert.That(decrypted.Message.Length == 0);
@@ -132,13 +134,14 @@ namespace BOG.SwissArmyKnife.Test
             string key = RandomString();
             string salt = RandomString();
 
-            SecureGram g = new SecureGram();
+            SecureGram g = new();
             g.Sender = "Pinnochio";
             g.Subject = "Marionette";
             g.Message = string.Empty;
-            string encrypted = g.CreateGramContent<RijndaelManaged>(key, salt);
-            SecureGram decrypted = new SecureGram();
-            decrypted.LoadGramContent<RijndaelManaged>(encrypted, key, salt);
+            var algorithm = TripleDES.Create();
+            string encrypted = g.CreateGramContent(algorithm, key, salt);
+            SecureGram decrypted = new();
+            decrypted.LoadGramContent(algorithm, encrypted, key, salt);
             Assert.That(string.Compare(decrypted.Message, string.Empty, true) == 0);
             Assert.That(decrypted.Message.Length == 0);
             Assert.That(encrypted.Length > g.Message.Length);
@@ -151,7 +154,7 @@ namespace BOG.SwissArmyKnife.Test
         #region Helper methods
         private string MakeLargeTest()
         {
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new();
             while (result.Length < 10000)
             {
                 result.AppendLine(ShortTest);
@@ -161,9 +164,9 @@ namespace BOG.SwissArmyKnife.Test
 
         private string RandomString()
         {
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new();
             DateTime now = DateTime.Now;
-            Random r = new Random(
+            Random r = new(
                 now.Millisecond + now.Second * 1000 + now.Minute * 60000 + now.Hour * 3600000
                 + (now.DayOfYear % 25) * 86400000);
             int length = r.Next(18, 50);

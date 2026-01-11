@@ -18,7 +18,7 @@ namespace BOG.SwissArmyKnife
         private string _ConfigurationFile = string.Empty;
         private string _RootNodeName = "settings";
 
-        private Dictionary<string, object> AppSettings = new Dictionary<string, object>();
+        private Dictionary<string, object> AppSettings = new();
         private bool HasChanges = false;
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace BOG.SwissArmyKnife
         /// <returns>string containing an XML document</returns>
         public string BuildSettingsXML()
         {
-            XmlDocument doc = new XmlDocument();
+            XmlDocument doc = new();
             XmlNode docNode = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
             doc.AppendChild(docNode);
 
@@ -212,7 +212,7 @@ namespace BOG.SwissArmyKnife
         /// <returns>array of strings with the values.</returns>
         public string[] GetKeys()
         {
-            List<string> result = new List<string>();
+            List<string> result = new();
             foreach (string key in AppSettings.Keys)
                 result.Add(key);
             return result.ToArray();

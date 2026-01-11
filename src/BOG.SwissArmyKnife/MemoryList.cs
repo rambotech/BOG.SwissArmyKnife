@@ -105,7 +105,7 @@ namespace BOG.SwissArmyKnife
             /// </summary>
             FIFO
         }
-        Dictionary<long, MemoryItem<T>> _l = new Dictionary<long, MemoryItem<T>>();
+        Dictionary<long, MemoryItem<T>> _l = new();
         MemoryListRetrieveSequence _sequence = MemoryListRetrieveSequence.FIFO;
         string _Name = string.Empty;
         bool _UniqueValues = false;
@@ -192,7 +192,7 @@ namespace BOG.SwissArmyKnife
         {
             get
             {
-                List<MemoryItem<T>> result = new List<MemoryItem<T>>();
+                List<MemoryItem<T>> result = new();
                 foreach (MemoryItem<T> item in _l.Values)
                     result.Add(item);
                 return result;

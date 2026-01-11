@@ -169,8 +169,8 @@ namespace BOG.SwissArmyKnife
 			if (endValueEval == Iteration.EndValueEval.Inclusive && (limitValue != initialValue) && modulo == 0.0M) count++;
 
 			int result = count;
-			IterationItem item = new IterationItem
-			{
+			IterationItem item = new()
+            {
 				Name = name,
 				HandleAs = IterationItem.Handling.OrdinalNumber,
 				NumericStartValue = initialValue,
@@ -209,8 +209,8 @@ namespace BOG.SwissArmyKnife
 			}
 
 			int result = iterationCount;
-			IterationItem item = new IterationItem
-			{
+			IterationItem item = new()
+            {
 				Name = name,
 				HandleAs = IterationItem.Handling.OrdinalNumber,
 				NumericStartValue = initialValue,
@@ -243,8 +243,8 @@ namespace BOG.SwissArmyKnife
 			{
 				throw new ArgumentException(string.Format("The list of items to add can not be empty.", name));
 			}
-			IterationItem item = new IterationItem
-			{
+			IterationItem item = new()
+            {
 				Name = name,
 				HandleAs = IterationItem.Handling.Literal,
 				LiteralValues = new Dictionary<int, string>()
@@ -276,7 +276,7 @@ namespace BOG.SwissArmyKnife
 			}
 
 			long index = indexSpecific;
-			Dictionary<string, string> result = new Dictionary<string, string>();
+			Dictionary<string, string> result = new();
 			for (int ItemInSetIndex = IterationItems.Count - 1; ItemInSetIndex >= 0; ItemInSetIndex--)
 			{
 				Int64 whole = 0;

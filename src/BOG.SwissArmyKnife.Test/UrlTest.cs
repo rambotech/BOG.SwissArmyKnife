@@ -12,7 +12,7 @@ namespace BOG.SwissArmyKnife.Test
     public class UrlTestData : IEnumerable
     {
         private Newtonsoft.Json.JsonSerializerSettings _JsonSetting =
-            new JsonSerializerSettings
+            new()
             {
                 Formatting = Newtonsoft.Json.Formatting.Indented,
                 DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
@@ -33,7 +33,7 @@ namespace BOG.SwissArmyKnife.Test
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
-                using (StreamReader reader = new StreamReader(stream))
+                using (StreamReader reader = new(stream))
                 {
                     urlTestItemList = new List<UrlTestItem>(
                         JsonConvert.DeserializeObject<List<UrlTestItem>>(

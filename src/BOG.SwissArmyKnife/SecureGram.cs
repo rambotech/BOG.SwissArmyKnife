@@ -46,7 +46,6 @@ namespace BOG.SwissArmyKnife
         /// </summary>
         /// <param name="info">Provided by the serializer.</param>
         /// <param name="context">Provided by the serializer.</param>
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public SecureGram(SerializationInfo info, StreamingContext context)
         {
             // base.GetObjectData(info, context);
@@ -237,7 +236,7 @@ namespace BOG.SwissArmyKnife
 
             if (info == null)
             {
-                System.ArgumentNullException.ThrowIfNull(info,"Not a valid object");
+                System.ArgumentNullException.ThrowIfNull(info, "Not a valid object");
             }
 
             info.AddValue("Sender", this._sender);
@@ -257,20 +256,20 @@ namespace BOG.SwissArmyKnife
         /// <param name="salt"></param>
         public void LoadGramContent(string encryptedContent, string key, string salt)
         {
-            LoadGramContent<AesManaged>(encryptedContent, key, salt);
+            LoadGramContent(Aes.Create(), encryptedContent, key, salt);
         }
 
         /// <summary>
         /// Takes a string with the content of the encrypted message, and decrypts/decompresses/validates the content.
         /// Client provides the encryption method to use as <typeparam name="T">SymmetricAlgorithm</typeparam>.
         /// </summary>
+        /// <param name="symmetricAlgorithm">The encryption object to use: e.g. TripleDes Aes.Create(), </param>
         /// <param name="encryptedContent"></param>
         /// <param name="key"></param>
         /// <param name="salt"></param>
-        public void LoadGramContent<T>(string encryptedContent, string key, string salt)
-            where T : SymmetricAlgorithm, new()
+        public void LoadGramContent(SymmetricAlgorithm symmetricAlgorithm, string encryptedContent, string key, string salt)
         {
-            CipherUtility cipher = new CipherUtility(new T());
+            CipherUtility cipher = new(symmetricAlgorithm);
             this.Load(
                 ObjectJsonSerializer<SecureGram>.CreateObjectFormat(
                     cipher.Decrypt(
@@ -279,8 +278,8 @@ namespace BOG.SwissArmyKnife
                         salt)));
             if (this._isCompressed)
             {
-                MemoryStream messageCompressed = new MemoryStream(Convert.FromBase64String(this._message));
-                StringBuilder result = new StringBuilder();
+                MemoryStream messageCompressed = new(Convert.FromBase64String(this._message));
+                StringBuilder result = new();
                 using (var inGZipStream = new GZipStream(messageCompressed, CompressionMode.Decompress))
                 {
                     const int size = 16384;
@@ -314,7 +313,7 @@ namespace BOG.SwissArmyKnife
         /// <returns></returns>
         public string CreateGramContent(string key, string salt)
         {
-            return CreateGramContent<AesManaged>(key, salt);
+            return CreateGramContent(Aes.Create(), key, salt);
         }
 
         /// <summary>
@@ -324,27 +323,27 @@ namespace BOG.SwissArmyKnife
         /// <param name="key"></param>
         /// <param name="salt"></param>
         /// <returns></returns>
-        public string CreateGramContent<T>(string key, string salt)
-            where T : SymmetricAlgorithm, new()
+        public string CreateGramContent(SymmetricAlgorithm symmetricAlgorithm, string key, string salt)
+
         {
             DateTime Now = DateTime.Now.ToUniversalTime();
             this._created = string.Format("{0:yyyy-MM-dd-TZ-HH:mm:ss.fff}", Now);
             this._messageLength = this._message.Length;
-            StringBuilder SaltedMessage = new StringBuilder(this.Message);
-            Random r = new Random((int)DateTime.Now.Ticks);
+            StringBuilder SaltedMessage = new(this.Message);
+            Random r = new((int)DateTime.Now.Ticks);
             int charCount = r.Next(3, 25);
             for (int charIndex = 0; charIndex < charCount; charIndex++)
             {
                 SaltedMessage.Append((char)r.Next(32, 90));
             }
-            SecureGram work = new SecureGram(this);
+            SecureGram work = new(this);
             work.IsCompressed = this._messageLength >= 10000;
             if (work.IsCompressed)
             {
-                MemoryStream messageCompressed = new MemoryStream();
+                MemoryStream messageCompressed = new();
                 using (var outGZipStream = new GZipStream(messageCompressed, CompressionLevel.Optimal))
                 {
-                    using (StreamWriter sw = new StreamWriter(outGZipStream))
+                    using (StreamWriter sw = new(outGZipStream))
                     {
                         sw.Write(SaltedMessage.ToString());
                         sw.Close();
@@ -353,7 +352,7 @@ namespace BOG.SwissArmyKnife
                 work.Message = Convert.ToBase64String(messageCompressed.ToArray());
             }
 
-            CipherUtility cipher = new CipherUtility(new T());
+            CipherUtility cipher = new(symmetricAlgorithm);
             return
                 cipher.Encrypt(
                     ObjectJsonSerializer<SecureGram>.CreateDocumentFormat(work),

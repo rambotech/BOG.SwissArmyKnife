@@ -79,22 +79,22 @@ namespace BOG.SwissArmyKnife
         /// <returns>A hex-encoded value of the hash value</returns>
         public static string GetHash(byte[] content, HashMethod method)
         {
-            HashAlgorithm hashString = new SHA1Managed();
+            HashAlgorithm hashString = SHA1.Create();
             switch (method)
             {
                 case HashMethod.SHA1:
                     break;
                 case HashMethod.SHA256:
-                    hashString = new SHA256Managed();
+                    hashString = SHA256.Create();
                     break;
                 case HashMethod.SHA384:
-                    hashString = new SHA384Managed();
+                    hashString = SHA384.Create();
                     break;
                 case HashMethod.SHA512:
-                    hashString = new SHA512Managed();
+                    hashString = SHA512.Create();
                     break;
                 case HashMethod.MD5:
-                    hashString = new MD5CryptoServiceProvider();
+                    hashString = MD5.Create();
                     break;
                 default:
                     throw new ArgumentException("Unrecognized hash encoding: " + method.ToString());

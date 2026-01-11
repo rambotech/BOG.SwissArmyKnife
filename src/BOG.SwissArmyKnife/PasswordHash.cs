@@ -28,6 +28,7 @@
 
 using System;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace BOG.SwissArmyKnife
 {
@@ -74,9 +75,7 @@ namespace BOG.SwissArmyKnife
         public static string CreateHash(string password)
         {
             // Generate a random salt
-            RNGCryptoServiceProvider csprng = new RNGCryptoServiceProvider();
-            byte[] salt = new byte[SALT_BYTE_SIZE];
-            csprng.GetBytes(salt);
+            byte[] salt = RandomNumberGenerator.GetBytes(SALT_BYTE_SIZE);
 
             // Hash the password and encode the parameters
             byte[] hash = PBKDF2(password, salt, PBKDF2_ITERATIONS, HASH_BYTE_SIZE);
@@ -130,7 +129,7 @@ namespace BOG.SwissArmyKnife
         /// <returns>A hash of the password.</returns>
         private static byte[] PBKDF2(string password, byte[] salt, int iterations, int outputBytes)
         {
-            Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, salt);
+            var pbkdf2 = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), salt, 1, HashAlgorithmName.SHA1);
             pbkdf2.IterationCount = iterations;
             return pbkdf2.GetBytes(outputBytes);
         }

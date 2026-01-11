@@ -139,7 +139,7 @@ namespace BOG.SwissArmyKnife
             bool showThousands = false;
 
             // Use StringBuilder to build result
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new();
             // Convert integer portion of value to string
             digits = ((long)value).ToString();
             // Traverse characters in reverse order

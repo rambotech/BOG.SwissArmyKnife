@@ -8,7 +8,7 @@ namespace BOG.SwissArmyKnife.Test
         [Test, Description("Check for 3 items, in any order")]
         public void MemoryList_RandomNonUniqueIgnoreCase()
         {
-            MemoryList<string> t = new MemoryList<string>("testlist", false, true, MemoryList<string>.MemoryListRetrieveSequence.Random);
+            MemoryList<string> t = new("testlist", false, true, MemoryList<string>.MemoryListRetrieveSequence.Random);
 
             Assert.That(t.CountAll() == 0, "(1) Count() == 0");
             Assert.That(!t.HasValues(), "t.HasValues() == false");

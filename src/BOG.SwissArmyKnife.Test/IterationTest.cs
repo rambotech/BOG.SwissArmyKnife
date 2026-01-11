@@ -12,8 +12,8 @@ namespace BOG.SwissArmyKnife.Test
 	public class IterationTestData : IEnumerable
 	{
 		private readonly Newtonsoft.Json.JsonSerializerSettings _JsonSetting =
-			new JsonSerializerSettings
-			{
+			new()
+            {
 				Formatting = Newtonsoft.Json.Formatting.Indented,
 				DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
 				DateParseHandling = DateParseHandling.None,
@@ -33,7 +33,7 @@ namespace BOG.SwissArmyKnife.Test
 
 			using (Stream stream = assembly.GetManifestResourceStream(resourceName))
 			{
-				using StreamReader reader = new StreamReader(stream);
+				using StreamReader reader = new(stream);
 					iterationTestItemList = new List<IterationTestItem>(
 						JsonConvert.DeserializeObject<List<IterationTestItem>>(
 							reader.ReadToEnd(),
@@ -106,14 +106,14 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationTests_TotalItemCount1: Instantiate only")]
 		public void IterationTests_TotalItemCount1()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			Assert.That(i.TotalIterationCount == 0, "Count is not zero after instantiation");
 		}
 
 		[Test, Description("IterationTests_TotalItemCount2(): Single entry number set by count")]
 		public void IterationTests_TotalItemCount2()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			i.AddNumberSequence("numbers1", -1, -1, 100);
 			Assert.That(i.TotalIterationCount == 100);
 		}
@@ -121,7 +121,7 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationTests_TotalItemCount3(): Single entry number set by range (exclusive)")]
 		public void IterationTests_TotalItemCount3()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			i.AddNumberRange("numbers1", -1, -1, -100, Iteration.EndValueEval.Exclusive);
 			Assert.That(i.TotalIterationCount == 99);
 		}
@@ -129,7 +129,7 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationTests_TotalItemCount4(): Single entry number set by range (inclusive)")]
 		public void IterationTests_TotalItemCount4()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			i.AddNumberRange("numbers1", -1, -1, -100, Iteration.EndValueEval.Inclusive);
 			Assert.That(i.TotalIterationCount == 100);
 		}
@@ -137,7 +137,7 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationTests_TotalItemCount5(): one number set and one list with one item")]
 		public void IterationTests_TotalItemCount5()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			i.AddNumberSequence("numbers1", 1, 1, 100);
 			i.AddListItems("list1", new List<string>(new string[] { "item1" }));
 			Assert.That(i.TotalIterationCount == 100);
@@ -146,7 +146,7 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationTests_TotalItemCount6(): one number set and one list with two items")]
 		public void IterationTests_TotalItemCount6()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			i.AddNumberSequence("numbers1", 1, 1, 100);
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
 			Assert.That(i.TotalIterationCount == 200);
@@ -155,8 +155,8 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationTests_TotalItemAutoCount(): validate correct total after new item added")]
 		public void IterationTests_TotalItemAutoCount()
 		{
-			Iteration i = new Iteration
-			{
+			Iteration i = new()
+            {
 				IterationItems = new Dictionary<int, IterationItem>
 				{
 					{0, new IterationItem
@@ -202,7 +202,7 @@ namespace BOG.SwissArmyKnife.Test
 				NullValueHandling = NullValueHandling.Ignore
 			};
 
-			Iteration o = new Iteration();
+			Iteration o = new();
 			o.AddNumberSequence("numbers1", 1, 1, 100);
 			o.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
 			o.AddNumberRange("numbers2", 1.0m, .1m, 2.0m, Iteration.EndValueEval.Exclusive);
@@ -219,7 +219,7 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationTests_GetIterationValueSet_NegativeIndex(): negative index throws exception")]
 		public void IterationTests_GetIterationValueSet_NegativeIndex()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			i.AddNumberSequence("numbers1", 1, 1, 2);
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
 
@@ -230,14 +230,14 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationTests_GetIterationValueSet_NegativeCount(): negative count throws exception")]
 		public void IterationTests_GetIterationValueSet_NegativeCount()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			Assert.Throws<ArgumentException>(() =>  i.AddNumberSequence("numbers1", 1, 1, -1));
 		}
 
 		[Test, Description("IterationTests_GetIterationValueSet_IndexOverMax(): index over max range throws exception")]
 		public void IterationTests_GetIterationValueSet_IndexOverMax()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			i.AddNumberSequence("numbers1", 1, 1, 2);
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
 
@@ -248,7 +248,7 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationTests_ValueByIndex(): one number set with two items and one list with two items")]
 		public void IterationTests_ValueByIndex()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			i.AddNumberSequence("numbers1", 1, 1, 2);
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
 			Assert.That(i.TotalIterationCount == 4, "Total is not 4");
@@ -273,7 +273,7 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationTests_ValueByIndex(): one number set with two items and one list with two items")]
 		public void IterationTests_ComplexSets_ValidStartAndEndValuesPerValueSet()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			i.AddNumberSequence("numbers1", 1, 1, 3);
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
 			i.AddNumberSequence("numbers2", 1, 7, 7);
@@ -346,7 +346,7 @@ namespace BOG.SwissArmyKnife.Test
 		[Test, Description("IterationTests_GetIterationItemsForNameByName()")]
 		public void IterationTests_GetIterationItemsForNameByName()
 		{
-			Iteration i = new Iteration();
+			Iteration i = new();
 			i.AddNumberSequence("numbers1", 1, 1, 3);
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
 			i.AddNumberSequence("numbers2", 1, 7, 7);

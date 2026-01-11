@@ -64,7 +64,7 @@ namespace BOG.SwissArmyKnife
 		[JsonProperty(Required = Required.Always, PropertyName = "IndexOffset")]
 		public Int64 IndexOffset { get; private set; } = 0;
 
-		private readonly object lockItemList = new object();
+		private readonly object lockItemList = new();
 
 		#region Helper methods
 

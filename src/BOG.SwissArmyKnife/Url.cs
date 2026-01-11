@@ -63,7 +63,7 @@ namespace BOG.SwissArmyKnife
 
         bool UnknownDefaultPort = true;
 
-        private Dictionary<string, int> _defaultPorts = new Dictionary<string, int>()
+        private Dictionary<string, int> _defaultPorts = new()
         {
             { "ftp", 21 },
             { "ftps", 990 },

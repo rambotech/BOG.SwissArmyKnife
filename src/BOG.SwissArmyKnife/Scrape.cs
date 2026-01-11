@@ -182,7 +182,7 @@ namespace BOG.SwissArmyKnife
         /// <returns></returns>
         public WebScrapeResponse HttpCapture(string url, string postdata, string headers, CookieCollection cookie)
         {
-            WebScrapeResponse r = new WebScrapeResponse();
+            WebScrapeResponse r = new();
             try
             {
                 var wc = new HttpClient();
@@ -223,9 +223,9 @@ namespace BOG.SwissArmyKnife
                 int MaximumMatches, int MaxLengthCheck)
         {
             int MatchCount = 0;
-            StringCollection StringMatches = new StringCollection();
-            Regex rStart = new Regex(startPattern, ignoreStartCase ? RegexOptions.IgnoreCase : RegexOptions.None);
-            Regex rEnd = new Regex(endPattern, ignoreEndCase ? RegexOptions.IgnoreCase : RegexOptions.None);
+            StringCollection StringMatches = new();
+            Regex rStart = new(startPattern, ignoreStartCase ? RegexOptions.IgnoreCase : RegexOptions.None);
+            Regex rEnd = new(endPattern, ignoreEndCase ? RegexOptions.IgnoreCase : RegexOptions.None);
             MatchCollection matchesStart = rStart.Matches(rawText);
             for (int i = startIteration == 0 ? 0 : startIteration - 1; i < matchesStart.Count && (MaximumMatches == 0 || MatchCount < MaximumMatches); i++)
             {
@@ -273,8 +273,8 @@ namespace BOG.SwissArmyKnife
         public StringCollection RegExFind(string rawText, string pattern, bool ignoreCase, int iteration)
         {
             int MatchCount = 0;
-            StringCollection StringMatches = new StringCollection();
-            Regex r = new Regex(pattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
+            StringCollection StringMatches = new();
+            Regex r = new(pattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
             MatchCollection matches = r.Matches(rawText);
             for (int i = 0; i < matches.Count; i++)
             {
@@ -310,9 +310,9 @@ namespace BOG.SwissArmyKnife
         /// <returns>the extracted result.  Note: html encodings are resolved.</returns>
         public string ExtractText(string blob, string XPath, bool cleanAttributes)
         {
-            StringBuilder Fragment = new StringBuilder();
+            StringBuilder Fragment = new();
             Fragment.Append("<?xml version='1.0' ?><root>");
-            StringBuilder cleaned = new StringBuilder();
+            StringBuilder cleaned = new();
             if (cleanAttributes == false)
             {
                 cleaned.Append(blob);
@@ -347,7 +347,7 @@ namespace BOG.SwissArmyKnife
             }
             Fragment.Append(System.Web.HttpUtility.HtmlDecode(cleaned.ToString()));
             Fragment.Append("</root>");
-            XmlDocument doc = new XmlDocument();
+            XmlDocument doc = new();
             doc.LoadXml(Fragment.ToString());
             return doc.SelectNodes("//root" + XPath)[0].InnerText;
         }

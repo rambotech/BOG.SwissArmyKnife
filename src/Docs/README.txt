@@ -6,7 +6,13 @@ various tasks which weren't native to the Microsoft assemblies.
 FUTURE -- 2.0.0 -- No roadmap yet
 
 1.11.0 -- 01/11/2026 -- Breaking change
+  - .NET 10
   - Refactoring cipher and others to replace obsolete call prototypes.
+  - SecureGram methods CreateGramContent() and LoadGramContent(), when using the overload for a specific crypto method
+    (instead of the default AES) require the caller to now pass the crypto object for that method), e.g.
+    Example:
+    - old: CreateGramContent<TripleDES>(content, password)
+    - new: CreateGramContent<TripleDES.Create(), content, password)
 
 1.10.0 -- 05/28/2025 -- Breaking change
 - .NET 8 refactoring:

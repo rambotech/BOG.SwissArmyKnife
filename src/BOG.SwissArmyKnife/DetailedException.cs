@@ -16,7 +16,7 @@ namespace BOG.SwissArmyKnife
     {
         // These two static variables are a cache... do not use them directly.
         // Call method GetLocalIPAddresses()
-        static List<string> myIpAddressInfo = new List<string>();
+        static List<string> myIpAddressInfo = new();
         static DateTime myIpAddressInfoExpires = DateTime.MinValue;
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace BOG.SwissArmyKnife
 
         private static string GetLocalIPAddresses(string formatString, string firstLine)
         {
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new();
             if (myIpAddressInfoExpires < DateTime.Now)
             {
                 myIpAddressInfo.Clear();

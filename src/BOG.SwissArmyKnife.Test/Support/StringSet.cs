@@ -24,7 +24,7 @@ namespace BOG.SwissArmyKnife.Test.Support
         private Int32 _i32 = 1453123992;
         private Int16 _i16 = 32705;
         private DateTime _timestamp = DateTime.Now;
-        private List<string> _coll = new List<string>();
+        private List<string> _coll = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MyDataSet"/> class.

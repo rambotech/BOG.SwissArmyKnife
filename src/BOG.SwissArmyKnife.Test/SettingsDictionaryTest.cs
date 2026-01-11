@@ -44,7 +44,7 @@ namespace BOG.SwissArmyKnife.Test
         [Test, Description("Merge Settings 1 (precedence) and 2, save to 3")]
         public void SettingsDictionary_MergeTestData3()
         {
-            SettingsDictionary sd1 = new SettingsDictionary(persist_file2);
+            SettingsDictionary sd1 = new(persist_file2);
             sd1.LoadSettings();
             sd = new SettingsDictionary(persist_file1);
             sd.LoadSettings();
@@ -57,7 +57,7 @@ namespace BOG.SwissArmyKnife.Test
         [Test, Description("Merge Settings 1 and 2 (precedence), save to 4")]
         public void SettingsDictionary_MergeTestData4()
         {
-            SettingsDictionary sd1 = new SettingsDictionary(persist_file2);
+            SettingsDictionary sd1 = new(persist_file2);
             sd1.LoadSettings();
             sd = new SettingsDictionary(persist_file1);
             sd.LoadSettings();

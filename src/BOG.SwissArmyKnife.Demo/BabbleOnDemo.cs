@@ -7,13 +7,13 @@ namespace BOG.SwissArmyKnife.Demo
 {
     public class BabbleOnDemo : IDisposable
     {
-        Dictionary<int, BabbleOn> _BabbleOn = new Dictionary<int, BabbleOn>();
+        Dictionary<int, BabbleOn> _BabbleOn = new();
         BabbleFinder _BabbleFinder;
-        Queue<string> _Messages = new Queue<string>();
-        PhraseGenerator p = new PhraseGenerator();
+        Queue<string> _Messages = new();
+        PhraseGenerator p = new();
         Timer tmrMessageSender = null;
         bool IsBabbling = false;
-        AutoResetEvent autoEvent = new AutoResetEvent(true);
+        AutoResetEvent autoEvent = new(true);
 
         public BabbleOnDemo()
         {

@@ -41,7 +41,7 @@ namespace BOG.SwissArmyKnife
 
         private static string ByteToString(byte[] b)
         {
-            StringBuilder s = new StringBuilder();
+            StringBuilder s = new();
             for (int x = 0; x < b.Length; ++x)
             {
                 s.Append((char)b[x]);
@@ -56,7 +56,7 @@ namespace BOG.SwissArmyKnife
         /// <returns>a string containing the XML</returns>
         public static string CreateDocumentFormat(T serializableObject)
         {
-            MemoryStream o = new MemoryStream();
+            MemoryStream o = new();
             XmlSerializer xmlSerializer = CreateXmlSerializer(null);
             xmlSerializer.Serialize(o, serializableObject);
             return ByteToString(o.ToArray());
@@ -70,8 +70,8 @@ namespace BOG.SwissArmyKnife
         public static T CreateObjectFormat(string xml)
         {
             T serializableObject = null;
-            MemoryStream o = new MemoryStream();
-            System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
+            MemoryStream o = new();
+            System.Text.ASCIIEncoding encoding = new();
             byte[] b = encoding.GetBytes(xml);
             o.Write(b, 0, b.Length);
             o.Position = 0;
@@ -104,9 +104,9 @@ namespace BOG.SwissArmyKnife
         /// <param name="compressedFilename">The file in which to store the serialized content.</param>
         public static void SaveCompressedDocumentFormat(T serializableObject, string compressedFilename)
         {
-            using (System.IO.Compression.GZipStream outGZipStream = new GZipStream(File.OpenWrite(compressedFilename), CompressionMode.Compress))
+            using (System.IO.Compression.GZipStream outGZipStream = new(File.OpenWrite(compressedFilename), CompressionMode.Compress))
             {
-                using (StreamWriter sw = new StreamWriter(outGZipStream))
+                using (StreamWriter sw = new(outGZipStream))
                 {
                     XmlSerializer xmlSerializer = CreateXmlSerializer(null);
                     xmlSerializer.Serialize(sw, serializableObject);
@@ -124,7 +124,7 @@ namespace BOG.SwissArmyKnife
         /// <param name="salt">The salt used for encryption.</param>
         public static string CreateTransitContainerForObject(T serializableObject, string password, string salt)
         {
-            return CreateTransitContainerForObject(serializableObject, password, salt, new AesManaged());
+            return CreateTransitContainerForObject(serializableObject, password, salt, Aes.Create());
         }
 
         /// <summary>
@@ -138,11 +138,11 @@ namespace BOG.SwissArmyKnife
         /// <param name="algorithm">an instance of an inheriting class of SymmetricAlgorithm to do the encryption.</param>
         public static string CreateTransitContainerForObject(T serializableObject, string password, string salt, SymmetricAlgorithm algorithm)
         {
-            using (MemoryStream m = new MemoryStream())
+            using (MemoryStream m = new())
             {
-                using (System.IO.Compression.GZipStream outGZipStream = new GZipStream(m, CompressionMode.Compress))
+                using (System.IO.Compression.GZipStream outGZipStream = new(m, CompressionMode.Compress))
                 {
-                    using (StreamWriter sw = new StreamWriter(outGZipStream))
+                    using (StreamWriter sw = new(outGZipStream))
                     {
                         sw.Write(CreateDocumentFormat(serializableObject));
                     }
@@ -160,7 +160,7 @@ namespace BOG.SwissArmyKnife
         /// <param name="salt">The salt used for encryption.</param>
         public static T CreateObjectFromTransitContainer(string secureBase64, string password, string salt)
         {
-            return CreateObjectFromTransitContainer(secureBase64, password, salt, new AesManaged());
+            return CreateObjectFromTransitContainer(secureBase64, password, salt, Aes.Create());
         }
 
         /// <summary>
@@ -176,11 +176,11 @@ namespace BOG.SwissArmyKnife
         {
             T serializableObject = null;
 
-            using (MemoryStream m = new MemoryStream(new CipherUtility(algorithm).DecryptByteArray(secureBase64, password, salt)))
+            using (MemoryStream m = new(new CipherUtility(algorithm).DecryptByteArray(secureBase64, password, salt)))
             {
-                using (System.IO.Compression.GZipStream inGZipStream = new GZipStream(m, CompressionMode.Decompress))
+                using (System.IO.Compression.GZipStream inGZipStream = new(m, CompressionMode.Decompress))
                 {
-                    using (StreamReader sr = new StreamReader(inGZipStream))
+                    using (StreamReader sr = new(inGZipStream))
                     {
                         serializableObject = CreateObjectFormat(sr.ReadToEnd());
                     }
@@ -198,7 +198,7 @@ namespace BOG.SwissArmyKnife
         public static T LoadDocumentFormat(string filename)
         {
             T serializableObject = null;
-            using (StreamReader o = new StreamReader(filename))
+            using (StreamReader o = new(filename))
             {
                 XmlSerializer xmlSerializer = CreateXmlSerializer(null);
                 serializableObject = (T)xmlSerializer.Deserialize(o);
@@ -215,9 +215,9 @@ namespace BOG.SwissArmyKnife
         public static T LoadCompressedDocumentFormat(string compressedFilename)
         {
             T serializableObject = null;
-            using (GZipStream inGZipStream = new GZipStream(File.OpenRead(compressedFilename), CompressionMode.Decompress))
+            using (GZipStream inGZipStream = new(File.OpenRead(compressedFilename), CompressionMode.Decompress))
             {
-                using (StreamReader o = new StreamReader(inGZipStream))
+                using (StreamReader o = new(inGZipStream))
                 {
                     XmlSerializer xmlSerializer = CreateXmlSerializer(null);
                     serializableObject = (T)xmlSerializer.Deserialize(o);
