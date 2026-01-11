@@ -19,14 +19,13 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8
+        dotnet-version: 10
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: |
         dotnet build --no-restore -c release BOG.SwissArmyKnife.csproj
     - name: Test
-      if: (github.event.ref == 'refs/heads/master' || github.event.ref == 'refs/heads/release')
       run: |
         dotnet test --no-restore -c release BOG.SwissArmyKnifeTest.csproj
     - name: NuGet package publish

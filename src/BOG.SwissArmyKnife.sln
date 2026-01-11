@@ -34,8 +34,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "worklfows", "worklfows", "{D980BE13-7BDD-49E7-BF07-721D4BFD0129}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\build-auto.yml = ..\.github\workflows\build-auto.yml
-		..\.github\workflows\build-manual.yml = ..\.github\workflows\build-manual.yml
-		..\.github\workflows\test.yml = ..\.github\workflows\test.yml
 	EndProjectSection
 EndProject
 Global
