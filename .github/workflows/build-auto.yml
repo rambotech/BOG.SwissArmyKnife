@@ -8,7 +8,7 @@ on:
 
 defaults:
   run:
-    working-directory: src/BOG.SwissArmyKnife
+    working-directory: src
 
 jobs:
   build:
@@ -24,14 +24,14 @@ jobs:
       run: dotnet restore
     - name: Build
       run: |
-        dotnet build --no-restore -c release BOG.SwissArmyKnife.csproj
+        dotnet build --no-restore -c release ./BOG.SwissArmyKnife/BOG.SwissArmyKnife.csproj
     - name: Test
       run: |
-        dotnet test --no-build BOG.SwissArmyKnife.Test.csproj
+        dotnet test --no-build ./BOG.SwissArmyKnife.Test/BOG.SwissArmyKnife.Test.csproj
     - name: NuGet package publish
       if: github.event.ref == 'refs/heads/master'
       env:
         NGKEY: ${{ secrets.NUGET_API_KEY }}
         NGSRC: ${{ vars.NUGET_SOURCE }}
       run: |
-        dotnet nuget push ./bin/release/BOG.SwissArmyKnife.*.nupkg --api-key ${NGKEY} --source ${NGSRC} --skip-duplicate
+        dotnet nuget push ./BOG.SwissArmyKnife/bin/release/BOG.SwissArmyKnife.*.nupkg --api-key ${NGKEY} --source ${NGSRC} --skip-duplicate
