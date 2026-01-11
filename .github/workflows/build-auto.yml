@@ -22,12 +22,12 @@ jobs:
         dotnet-version: 10
     - name: Restore dependencies
       run: dotnet restore
-    - name: Build
+    - name: Build Main
       run: |
         dotnet build --no-restore -c release ./BOG.SwissArmyKnife/BOG.SwissArmyKnife.csproj
     - name: Test
       run: |
-        dotnet test --no-build ./BOG.SwissArmyKnife.Test/BOG.SwissArmyKnife.Test.csproj
+        dotnet test ./BOG.SwissArmyKnife.Test/BOG.SwissArmyKnife.Test.csproj
     - name: NuGet package publish
       if: github.event.ref == 'refs/heads/master'
       env:
