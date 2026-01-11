@@ -156,11 +156,11 @@ namespace BOG.SwissArmyKnife.Test
         {
             string TextBlob = new('A', 257);
             string Result = TextBlob.HeadTailSummary();
-            string Expected = new string('A', 128) + "\r\n\r\n  ...[1 bytes squashed]...\r\n\r\n" + new string('A', 128) + "\r\n";
-            //if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            //{
-            //    Expected.Replace("\r\n", "\n");
-            //}
+            string Expected = new string('A', 128) + "...[1 bytes squashed]..." + new string('A', 128);
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Expected.Replace("\r\n", "\n");
+            }
             Assert.That(string.Compare(Result, Expected) == 0);
         }
 
@@ -169,11 +169,11 @@ namespace BOG.SwissArmyKnife.Test
         {
             string TextBlob = new('A', 1257);
             string Result = TextBlob.HeadTailSummary();
-            string Expected = new string('A', 128) + "\r\n\r\n  ...[1,001 bytes squashed]...\r\n\r\n" + new string('A', 128) + "\r\n";
-            //if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            //{
-            //    Expected = Expected.Replace("\r\n", "\n");
-            //}
+            string Expected = new string('A', 128) + "...[1,001 bytes squashed]..." + new string('A', 128);
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Expected = Expected.Replace("\r\n", "\n");
+            }
             Assert.That(string.Compare(Result, Expected) == 0);
         }
 
@@ -220,11 +220,11 @@ namespace BOG.SwissArmyKnife.Test
         {
             string TextBlob = new('A', 1026);
             string Result = TextBlob.HeadTailSummary(512, 512);
-            string Expected = new string('A', 512) + "\r\n\r\n  ...[2 bytes squashed]...\r\n\r\n" + new string('A', 512) + "\r\n";
-            //if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            //{
-            //    Expected.Replace("\r\n", "\n");
-            //}
+            string Expected = new string('A', 512) + "...[2 bytes squashed]..." + new string('A', 512);
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Expected.Replace("\r\n", "\n");
+            }
             Assert.That(string.Compare(Result, Expected) == 0);
         }
 
