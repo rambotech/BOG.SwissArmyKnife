@@ -5,6 +5,9 @@ various tasks which weren't native to the Microsoft assemblies.
 
 FUTURE -- No roadmap yet
 
+1.12.0 -- 01/11/2026
+  - .NET 9
+
 1.11.1 -- 01/11/2026 -- Breaking change
   - Test fixes for OSPlatform variations (HeadTail() in StringEx)
 
