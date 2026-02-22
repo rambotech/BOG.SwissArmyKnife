@@ -1,0 +1,80 @@
+[
+  {
+    "DataRow": "1",
+    "OriginalDateTime": "2025-04-22T00:00:01",
+    "DateTimeValuesToCompare": [
+      "2025-04-09T00:00:00",
+      "2025-04-22T00:00:00"
+    ],
+    "TestAs": "Earliest",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "ExpectedResultValue": "2025-04-09T00:00:00",
+    "Note": ""
+  },
+  {
+    "DataRow": "2",
+    "OriginalDateTime": "2025-04-22T00:00:01",
+    "DateTimeValuesToCompare": [
+      "2025-04-09T00:00:00",
+      "2025-04-22T00:00:00"
+    ],
+    "TestAs": "Latest",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "ExpectedResultValue": "2025-04-22T00:00:01",
+    "Note": ""
+  },
+  {
+    "DataRow": "3",
+    "OriginalDateTime": "2025-04-22",
+    "DateTimeValuesToCompare": [
+      "2025-04-09",
+      "2025-04-22"
+    ],
+    "TestAs": "Latest",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "ExpectedResultValue": "2025-04-22T00:00:00",
+    "Note": ""
+  },
+  {
+    "DataRow": "4",
+    "OriginalDateTime": "2025-04-22T14:27:13.406",
+    "DateTimeValuesToCompare": [
+      "2025-04-22T14:27:13.404",
+      "2025-04-22T14:27:13.405"
+    ],
+    "TestAs": "Earliest",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "ExpectedResultValue": "2025-04-22T14:27:13.404",
+    "Note": "High resolution"
+  },
+  {
+    "DataRow": "5",
+    "OriginalDateTime": "2025-04-22T14:27:13.406",
+    "DateTimeValuesToCompare": [
+      "2025-04-22T14:27:13.404",
+      "2025-04-22T14:27:13.405"
+    ],
+    "TestAs": "Latest",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "ExpectedResultValue": "2025-04-22T14:27:13.406",
+    "Note": "High resolution"
+  },
+  {
+    "DataRow": "6",
+    "OriginalDateTime": "2025-04-22T14:27:13.406-0500",
+    "DateTimeValuesToCompare": [
+      "2025-04-22T14:27:13.406-0400",
+      "2025-04-22T14:27:13.406-0600"
+    ],
+    "TestAs": "Latest",
+    "ThrowsException": "",
+    "ExceptionContains": "",
+    "ExpectedResultValue": "2025-04-22T14:27:13.406-0600",
+    "Note": "High resolution, various time zones: 2PM in time zone -0600 is later than 2PM in time zone -0500"
+  }
+]

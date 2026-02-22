@@ -5,6 +5,9 @@ various tasks which weren't native to the Microsoft assemblies.
 
 FUTURE -- No roadmap yet
 
+1.13.0 -- 02/22/2026
+  - Added Eariest() and Latest() extension methods for System.DateTime, for Min and Max values.
+
 1.12.0 -- 01/11/2026
   - .NET 9
 
