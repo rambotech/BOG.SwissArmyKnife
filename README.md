@@ -4,9 +4,9 @@
 
 | *branch* | Currently |
 | :--- | :---: |
-| master | [![Build status](https://github.com/rambotech/BOG.SwissArmyKnife/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/rambotech/BOG.SwissArmyKnife) |
-| release | [![Build status](https://github.com/rambotech/BOG.SwissArmyKnife/actions/workflows/dotnet.yml/badge.svg?branch=develop)](https://github.com/rambotech/BOG.SwissArmyKnife/tree/release) |
-| develop | [![Build status](https://github.com/rambotech/BOG.SwissArmyKnife/actions/workflows/dotnet.yml/badge.svg?branch=develop)](https://github.com/rambotech/BOG.SwissArmyKnife/tree/develop) |
+| master | [![Build status](https://github.com/rambotech/BOG.SwissArmyKnife/actions/workflows/build-auto.yml/badge.svg?branch=master)](https://github.com/rambotech/BOG.SwissArmyKnife) |
+| release | [![Build status](https://github.com/rambotech/BOG.SwissArmyKnife/actions/workflows/build-auto.yml/badge.svg?branch=release)](https://github.com/rambotech/BOG.SwissArmyKnife/tree/release) |
+| develop | [![Build status](https://github.com/rambotech/BOG.SwissArmyKnife/actions/workflows/build-auto.yml/badge.svg?branch=develop)](https://github.com/rambotech/BOG.SwissArmyKnife/tree/develop) |
 
 This is a .NET 10 port of BOG.Framework, which is deprecated.
 
