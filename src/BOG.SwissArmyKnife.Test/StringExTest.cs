@@ -278,6 +278,30 @@ namespace BOG.SwissArmyKnife.Test
             Assert.That(string.Compare(Result["general"]["key"][1], "value4", false) == 0);
         }
 
+        [Test, Description("ToHexView()")]
+        public void StringEx_ToHexView()
+        {
+            string TextBlob = @"The quick brown fox jumped over the lazy dogs back !";
+            string ValidHexView = @"0000: 54 68 65 20 71 75 69 63 | 6b 20 62 72 6f 77 6e 20  .. The.quic|k.brown.
+0010: 66 6f 78 20 6a 75 6d 70 | 65 64 20 6f 76 65 72 20  .. fox.jump|ed.over.
+0020: 74 68 65 20 6c 61 7a 79 | 20 64 6f 67 73 20 62 61  .. the.lazy|.dogs.ba
+0030: 63 6b 20 21             |                          .. ck.!    |        ";
+            var Result = TextBlob.ToHexView();
+            Assert.That(string.Compare(Result, ValidHexView, false) == 0);
+        }
+
+        [Test, Description("FromHexView()")]
+        public void StringEx_FromHexView()
+        {
+            string TextBlob = @"0000: 54 68 65 20 71 75 69 63 | 6b 20 62 72 6f 77 6e 20  .. The.quic|k.brown.
+0010: 66 6f 78 20 6a 75 6d 70 | 65 64 20 6f 76 65 72 20  .. fox.jump|ed.over.
+0020: 74 68 65 20 6c 61 7a 79 | 20 64 6f 67 73 20 62 61  .. the.lazy|.dogs.ba
+0030: 63 6b 20 21             |                          .. ck.!    |        ";
+            string ValidHexView = @"The quick brown fox jumped over the lazy dogs back !";
+            var Result = TextBlob.FromHexView();
+            Assert.That(string.Compare(Result, ValidHexView, false) == 0);
+        }
+
         [TestCaseSource(typeof(WildCardTestData)), Description("Iterative: url parsing")]
         public void WildcardTests_Iterative(WildcardTestItem testItem)
         {

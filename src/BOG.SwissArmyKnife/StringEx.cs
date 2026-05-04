@@ -804,5 +804,118 @@ namespace BOG.SwissArmyKnife.Extensions
             }
             return result;
         }
+
+        /// <summary>
+        /// Takes a string and transforms it into a hex view similar to:
+        /// 
+        /// The quick brown fox jumped over the lazy dogs back !
+        /// 
+        /// ...
+        /// 
+        /// 0000: 54 68 65 20 71 75 69 63 | 6b 20 62 72 6f 77 6e 20  .. The.quic|k.brown.
+        /// 0010: 66 6f 78 20 6a 75 6d 70 | 65 64 20 6f 76 65 72 20  .. fox.jump|ed.over.
+        /// 0020: 74 68 65 20 6c 61 7a 79 | 20 64 6f 67 73 20 62 61  .. the.lazy|.dogs.ba
+        /// 0030: 63 6b 20 21             |                          .. ck.!    |        
+        /// 
+        /// </summary>
+        /// <param name="source">The string to expose as hex format</param>
+        /// <returns></returns>
+        public static string ToHexView(this string source)
+        {
+            int Offset = 0;
+            int Index = 0;
+            var Result = new StringBuilder();
+
+            while (true)
+            {
+                Result.Append(string.Format("{0:x4}: ", Offset));
+
+                for (Index = Offset; Index < Offset + 16; Index++)
+                {
+                    if (Index != Offset && Index % 8 == 0)
+                    {
+                        Result.Append("| ");
+                    }
+                    if (Index < source.Length)
+                    {
+                        Result.Append(string.Format("{0:x2} ", (byte)source[Index]));
+                    }
+                    else
+                    {
+                        Result.Append("   ");
+                    }
+                }
+
+                Result.Append(" .. ");
+
+                for (Index = Offset; Index < Offset + 16; Index++)
+                {
+                    if (Index != Offset && Index % 8 == 0)
+                    {
+                        Result.Append('|');
+                    }
+                    if (Index < source.Length)
+                    {
+                        var thisChar = source[Index];
+                        if (thisChar < 0x21 || thisChar > 0x7E)
+                        {
+                            thisChar = '.';
+                        }
+                        Result.Append(thisChar);
+                    }
+                    else
+                    {
+                        Result.Append(' ');
+                    }
+                }
+                if (Index >= source.Length)
+                {
+                    break;
+                }
+                Result.AppendLine();
+                Offset += 16;
+            }
+            return Result.ToString();
+        }
+
+        /// <summary>
+        /// Takes a hex view string and transforms it back into the original string.
+        /// 
+        /// 0000: 54 68 65 20 71 75 69 63 | 6b 20 62 72 6f 77 6e 20  .. The.quic|k.brown.
+        /// 0010: 66 6f 78 20 6a 75 6d 70 | 65 64 20 6f 76 65 72 20  .. fox.jump|ed.over.
+        /// 0020: 74 68 65 20 6c 61 7a 79 | 20 64 6f 67 73 20 62 61  .. the.lazy|.dogs.ba
+        /// 0030: 63 6b 20 21             |                          .. ck.!    |        
+        /// 
+        /// ...
+        /// 
+        /// The quick brown fox jumped over the lazy dogs back !
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static string FromHexView(this string source)
+        {
+            var lineRegEx = new Regex(
+                @"^[0-9a-fA-F]{4}:(\s[0-9a-fA-F\s]{24})\|(\s[0-9a-fA-F\s]{24})\s[\.]{2}",
+                RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+            var Result = new StringBuilder();
+            foreach (var line in source.Split(new string[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (!lineRegEx.IsMatch(line))
+                {
+                    throw new ArgumentException("The clipboard does not contain a valid HexView output");
+                }
+                var section = line.Substring(6, 50).Replace("| ", string.Empty);
+                var values = section.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (var index = 0; index < values.Length; index++)
+                {
+                    Result.Append((char)byte.Parse(values[index], System.Globalization.NumberStyles.HexNumber));
+                }
+            }
+            return Result.ToString();
+        }
+
     }
 }

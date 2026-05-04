@@ -5,6 +5,9 @@ various tasks which weren't native to the Microsoft assemblies.
 
 FUTURE -- No roadmap yet
 
+1.14.0 -- 05/02/2026
+  - Added ToHexValue() and FromHexValue() extension methods for string values.  For logging and reconstructing data blobs.
+
 1.13.0 -- 02/22/2026
   - Added Eariest() and Latest() extension methods for System.DateTime, for Min and Max values.
 
