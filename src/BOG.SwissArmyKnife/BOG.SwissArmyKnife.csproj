@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<Description>Collection of utility classes migrated to NET Standard 2.0 from BOG.Framework</Description>
 		<Authors>John J Schultz</Authors>
 		<Company>Bits of Genius</Company>
@@ -12,18 +12,18 @@
 		<PackageLicenseUrl></PackageLicenseUrl>
 		<RepositoryType>GIT</RepositoryType>
 		<RepositoryUrl>https://github.com/rambotech/BOG.SwissArmyKnife</RepositoryUrl>
-		<PackageTags>C# netstandardc20 utility harvest monitor strings exception format formatting directory file scripting fuse logging password hash serialize serializing</PackageTags>
+		<PackageTags>C# netstandardc20 utility harvest monitor strings exception format formatting directory file scripting fuse logging password hash serialize serializing utility</PackageTags>
 		<PackageReleaseNotes>Initial release</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<AssemblyVersion>1.14.0.0</AssemblyVersion>
-		<FileVersion>1.14.0.0</FileVersion>
-		<Version>1.14.0</Version>
+		<Version>1.15.0.0</Version>
+		<AssemblyVersion>1.15.0.0</AssemblyVersion>
+		<FileVersion>1.15.0</FileVersion>
 		<Copyright>(c) 2017-2026, John J Schultz</Copyright>
 		<PackageIcon>multitool.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
 	</ItemGroup>
 

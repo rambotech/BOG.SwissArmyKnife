@@ -5,6 +5,9 @@ various tasks which weren't native to the Microsoft assemblies.
 
 FUTURE -- No roadmap yet
 
+1.15.0 -- 06/14/2026
+  - Update to .NET 10
+
 1.14.0 -- 05/02/2026
   - Added ToHexValue() and FromHexValue() extension methods for string values.  For logging and reconstructing data blobs.
 
