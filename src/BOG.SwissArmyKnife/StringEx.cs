@@ -198,7 +198,8 @@ namespace BOG.SwissArmyKnife.Extensions
 
         private static String WildCardToRegularExpression(String value)
         {
-            return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
+            var regexPattern = Regex.Escape(value).Replace(@"\?", ".").Replace(@"\*", ".*");
+			return "^" + regexPattern + "$";
         }
 
         /// <summary>

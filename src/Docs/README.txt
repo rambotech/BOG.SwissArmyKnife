@@ -5,6 +5,9 @@ various tasks which weren't native to the Microsoft assemblies.
 
 FUTURE -- No roadmap yet
 
+1.16.0 -- 08/14/2026
+  - Fix bug in StringEx.ContainsWildcardPattern() for multiple wildcards in a string.
+
 1.15.0 -- 06/14/2026
   - Update to .NET 10
 

@@ -1,4 +1,4 @@
-﻿using BOG.SwissArmyKnife.Extensions;
+using BOG.SwissArmyKnife.Extensions;
 using BOG.SwissArmyKnife.Test.Support;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -13,14 +13,13 @@ namespace BOG.SwissArmyKnife.Test
 {
     public class WildCardTestData : IEnumerable
     {
-        private readonly Newtonsoft.Json.JsonSerializerSettings _JsonSetting =
-            new()
-            {
-                Formatting = Newtonsoft.Json.Formatting.Indented,
-                DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
-                DateParseHandling = DateParseHandling.None,
-                NullValueHandling = NullValueHandling.Include
-            };
+        private readonly Newtonsoft.Json.JsonSerializerSettings _JsonSetting = new()
+        {
+            Formatting = Newtonsoft.Json.Formatting.Indented,
+            DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+            DateParseHandling = DateParseHandling.None,
+            NullValueHandling = NullValueHandling.Include
+        };
 
         public WildCardTestData()
         {
@@ -339,6 +338,11 @@ namespace BOG.SwissArmyKnife.Test
                 result = testItem.Value.ContainsWildcardPattern(
                     testItem.WildcardPattern,
                     bool.Parse(testItem.CaseSensitive));
+
+                if (bool.Parse(testItem.ExpectedResult) != result)
+                {
+                    var x = 0;
+                }
 
                 Assert.That(bool.Parse(testItem.ExpectedResult) == result, $"(Row {testItem.DataRow}): {testItem.ExpectedResult}");
             }
