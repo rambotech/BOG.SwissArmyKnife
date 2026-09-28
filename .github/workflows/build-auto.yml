@@ -1,40 +1,48 @@
-# Always make a release build, and do a nuget push when on master branch.
-
+# Always make a release build, and publish to NuGet on master.
 name: Auto-Build
 
 on:
   push:
-    branches: [ "develop", "release", "master" ]
+    branches: ["develop", "release", "master"]
+
+permissions:
+  contents: read
 
 defaults:
   run:
     working-directory: src
-  runs:
-    using: 'node24'
-    main: 'main.js'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v6
-      with:
-        dotnet-version: 9
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build Main
-      run: |
-        dotnet build --no-restore -c release ./BOG.SwissArmyKnife/BOG.SwissArmyKnife.csproj
-    - name: Test
-      run: |
-        dotnet test ./BOG.SwissArmyKnife.Test/BOG.SwissArmyKnife.Test.csproj
-    - name: NuGet package publish
-      if: github.event.ref == 'refs/heads/master'
-      env:
-        NGKEY: ${{ secrets.NUGET_API_KEY }}
-        NGSRC: ${{ vars.NUGET_SOURCE }}
-      run: |
-        dotnet nuget push ./BOG.SwissArmyKnife/bin/release/BOG.SwissArmyKnife.*.nupkg --api-key ${NGKEY} --source ${NGSRC} --skip-duplicate
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build Main
+        run: dotnet build --no-restore -c Release ./BOG.SwissArmyKnife/BOG.SwissArmyKnife.csproj
+
+      - name: Test
+        run: dotnet test --no-restore -c Release ./BOG.SwissArmyKnife.Test/BOG.SwissArmyKnife.Test.csproj
+
+      - name: NuGet package publish
+        if: github.ref == 'refs/heads/master'
+        env:
+          NGKEY: ${{ secrets.NUGET_API_KEY }}
+          NGSRC: ${{ vars.NUGET_SOURCE }}
+        run: |
+          dotnet nuget push ./BOG.SwissArmyKnife/bin/Release/BOG.SwissArmyKnife.*.nupkg \
+            --api-key "$NGKEY" \
+            --source "$NGSRC" \
+            --skip-duplicate
