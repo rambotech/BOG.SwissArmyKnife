@@ -1,14 +1,14 @@
 {
   "sdk": {
-    "version": "7"
+    "version": "9"
   },
 
   "tools": {
-    "dotnet": "7"
+    "dotnet": "9"
   },
 
   "msbuild-sdks": {
-    "Microsoft.DotNet.Arcade.Sdk": "7",
-    "Microsoft.DotNet.Helix.Sdk": "7"
+    "Microsoft.DotNet.Arcade.Sdk": "9",
+    "Microsoft.DotNet.Helix.Sdk": "9"
   }
 }
