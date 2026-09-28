@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using BOG.SwissArmyKnife;
@@ -56,7 +56,7 @@ namespace BOG.SwissArmyKnife.Test
 		public void Accordion_Init_BadIndexStart()
 		{
 			static object testDelegate() => new Accordion<MyObject>(-1, 1, 1);
-			Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "indexStart must be >= 0");
+			Assert.That((Action)(() => testDelegate()), Throws.TypeOf<ArgumentException>(), "indexStart must be >= 0");
 		}
 
 		/// <summary>
@@ -66,9 +66,9 @@ namespace BOG.SwissArmyKnife.Test
 		public void Accordion_Init_Bad_CountTooLow()
 		{
 #pragma warning disable IDE0039 // Use local function
-			ActualValueDelegate<object> testDelegate = () => new Accordion<MyObject>(1, 0, 1);
+			Func<object> testDelegate = () => new Accordion<MyObject>(1, 0, 1);
 #pragma warning restore IDE0039 // Use local function
-			Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "count must be > 0");
+			Assert.That((Action)(() => testDelegate()), Throws.TypeOf<ArgumentException>(), "count must be > 0");
 		}
 
 		/// <summary>
@@ -78,9 +78,9 @@ namespace BOG.SwissArmyKnife.Test
 		public void Accordion_Init_MaxBad()
 		{
 #pragma warning disable IDE0039 // Use local function
-			ActualValueDelegate<object> testDelegate = () => new Accordion<MyObject>(1, 1, 9);
+			Func<object> testDelegate = () => new Accordion<MyObject>(1, 1, 9);
 #pragma warning restore IDE0039 // Use local function
-			Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "maxInProgress must be >= 10");
+			Assert.That((Action)(() => testDelegate()), Throws.TypeOf<ArgumentException>(), "maxInProgress must be >= 10");
 		}
 
 		/// <summary>
@@ -90,9 +90,9 @@ namespace BOG.SwissArmyKnife.Test
 		public void Accordion_Init_Max_Bad_Under_MinValue()
 		{
 #pragma warning disable IDE0039 // Use local function
-			TestDelegate testDelegate = () => new Accordion<MyObject>(2, 2, 9);
+			Action testDelegate = () => new Accordion<MyObject>(2, 2, 9);
 #pragma warning restore IDE0039 // Use local function
-			Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "maxInProgress must be >= 10");
+			Assert.That((Action)(() => testDelegate()), Throws.TypeOf<ArgumentException>(), "maxInProgress must be >= 10");
 		}
 
 		/// <summary>
@@ -102,7 +102,7 @@ namespace BOG.SwissArmyKnife.Test
 		public void Accordion_Init_Max_Good_MinValue()
 		{
 #pragma warning disable IDE0039 // Use local function
-			TestDelegate testDelegate = () => new Accordion<MyObject>(2, 2, 10);
+			Action testDelegate = () => new Accordion<MyObject>(2, 2, 10);
 #pragma warning restore IDE0039 // Use local function
 			Assert.DoesNotThrow(testDelegate, "max should allow min value of 10, but does not.");
 		}

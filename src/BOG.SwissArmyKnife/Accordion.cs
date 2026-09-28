@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -64,7 +64,7 @@ namespace BOG.SwissArmyKnife
 		[JsonProperty(Required = Required.Always, PropertyName = "IndexOffset")]
 		public Int64 IndexOffset { get; private set; } = 0;
 
-		private readonly object lockItemList = new();
+		private readonly object lockItemList = new object();
 
 		#region Helper methods
 

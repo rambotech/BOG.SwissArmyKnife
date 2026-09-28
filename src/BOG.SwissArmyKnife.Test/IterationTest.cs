@@ -1,4 +1,4 @@
-﻿using BOG.SwissArmyKnife.Test.Support;
+using BOG.SwissArmyKnife.Test.Support;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
@@ -85,15 +85,15 @@ namespace BOG.SwissArmyKnife.Test
 				{
 					Assert.Fail($"Unexpected Exception (Row {testItem.DataRow}): {DetailedException.WithUserContent(ref err1)}");
 				}
-				//string[] err = err1.GetType().ToString().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
-				Assert.Multiple(() =>
+				string[] err = err1.GetType().ToString().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+				Assert.Multiple((Action)(() =>
 				{
 					Assert.That(string.Compare(testItem.ThrowsException, err1.GetType().ToString(), false) == 0, $"Exception expected, but caught a different exception (Row {testItem.DataRow}).");
 					if (!string.IsNullOrWhiteSpace(testItem.ExceptionContains))
 					{
 						Assert.That(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception thrown, but message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
 					}
-				});
+				}));
 				return;
 			}
 			if (!string.IsNullOrWhiteSpace(testItem.ThrowsException))
@@ -224,14 +224,14 @@ namespace BOG.SwissArmyKnife.Test
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
 
 			object testDelegate() => i.GetIterationValueSet(-1);
-			Assert.That(testDelegate, Throws.TypeOf<ArgumentException>());
+			Assert.That((Action)(() => testDelegate()), Throws.TypeOf<ArgumentException>());
 		}
 
 		[Test, Description("IterationTests_GetIterationValueSet_NegativeCount(): negative count throws exception")]
 		public void IterationTests_GetIterationValueSet_NegativeCount()
 		{
 			Iteration i = new();
-			Assert.Throws<ArgumentException>(() =>  i.AddNumberSequence("numbers1", 1, 1, -1));
+			Assert.Throws<ArgumentException>((Action)(() =>  i.AddNumberSequence("numbers1", 1, 1, -1)));
 		}
 
 		[Test, Description("IterationTests_GetIterationValueSet_IndexOverMax(): index over max range throws exception")]
@@ -242,7 +242,7 @@ namespace BOG.SwissArmyKnife.Test
 			i.AddListItems("list1", new List<string>(new string[] { "item1", "item2" }));
 
 			object testDelegate() => i.GetIterationValueSet(5);
-			Assert.That(testDelegate, Throws.TypeOf<ArgumentException>());
+			Assert.That((Action)(() => testDelegate()), Throws.TypeOf<ArgumentException>());
 		}
 
 		[Test, Description("IterationTests_ValueByIndex(): one number set with two items and one list with two items")]
@@ -340,7 +340,7 @@ namespace BOG.SwissArmyKnife.Test
 			Assert.That(string.Compare(valueSet["numbers2"], "43", true) == 0, "(index 13): numbers2 is not 43");
 
 			object testDelegate() => i.GetIterationValueSet(42);
-			Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "i.GetIterationValueSet(42) did not throw expected ArgumentException");
+			Assert.That((Action)(() => testDelegate()), Throws.TypeOf<ArgumentException>(), "i.GetIterationValueSet(42) did not throw expected ArgumentException");
 		}
 
 		[Test, Description("IterationTests_GetIterationItemsForNameByName()")]
@@ -352,7 +352,7 @@ namespace BOG.SwissArmyKnife.Test
 			i.AddNumberSequence("numbers2", 1, 7, 7);
 
 			object testDelegate() => i.GetIterationItemsForName("test1");
-			Assert.That(testDelegate, Throws.TypeOf<ArgumentException>(), "i.GetIterationItemsForName(\"test1\") did not throw expected ArgumentException");
+			Assert.That((Action)(() => testDelegate()), Throws.TypeOf<ArgumentException>(), "i.GetIterationItemsForName(\"test1\") did not throw expected ArgumentException");
 
 			var x = i.GetIterationItemsForName("numbers1");
 			Assert.That(x.Keys.Count == 3, $"numbers1 should contain 3 items, but has {x.Keys.Count}");

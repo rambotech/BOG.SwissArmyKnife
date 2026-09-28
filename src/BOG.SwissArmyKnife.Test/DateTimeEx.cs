@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -83,14 +83,14 @@ namespace BOG.SwissArmyKnife.Test
                 catch (Exception err1)
                 {
                     string[] err = err1.GetType().ToString().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
-                    Assert.Multiple(() =>
+                    Assert.Multiple((Action)(() =>
                     {
                         Assert.That(string.Compare(testItem.ThrowsException, err[err.Length - 1], true) == 0, "Exception expected, but caught a different exception (Row {0}).", testItem.DataRow);
                         if (!string.IsNullOrWhiteSpace(testItem.ExceptionContains))
                         {
                             Assert.That(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
                         }
-                    });
+                    }));
                     return;
                 }
                 Assert.That(false, "Expected Exception " + testItem.ThrowsException + ", but no exception was thrown. (Row {0}).", testItem.DataRow);

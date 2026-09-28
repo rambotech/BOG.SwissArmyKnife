@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -48,9 +48,8 @@ namespace BOG.SwissArmyKnife
         /// <param name="context">Provided by the serializer.</param>
         public SecureGram(SerializationInfo info, StreamingContext context)
         {
-            // base.GetObjectData(info, context);
-
-            System.ArgumentNullException.ThrowIfNull(info, "Not a valid object");
+			// base.GetObjectData(info, context);
+			if (info == null) throw new ArgumentNullException("info");
 
             this._sender = (string)info.GetString("Sender");
             this._created = (string)info.GetString("Created");
@@ -232,14 +231,11 @@ namespace BOG.SwissArmyKnife
         /// <param name="context">Provided by the serializer.</param>
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            // base.GetObjectData(info, context);
+			// base.GetObjectData(info, context);
 
-            if (info == null)
-            {
-                System.ArgumentNullException.ThrowIfNull(info, "Not a valid object");
-            }
+			if (info == null) throw new ArgumentNullException("info");
 
-            info.AddValue("Sender", this._sender);
+			info.AddValue("Sender", this._sender);
             info.AddValue("Created", this._created);
             info.AddValue("Subject", this._subject);
             info.AddValue("MessageLength", this._messageLength);
@@ -269,7 +265,7 @@ namespace BOG.SwissArmyKnife
         /// <param name="salt"></param>
         public void LoadGramContent(SymmetricAlgorithm symmetricAlgorithm, string encryptedContent, string key, string salt)
         {
-            CipherUtility cipher = new(symmetricAlgorithm);
+            CipherUtility cipher = new CipherUtility(symmetricAlgorithm);
             this.Load(
                 ObjectJsonSerializer<SecureGram>.CreateObjectFormat(
                     cipher.Decrypt(

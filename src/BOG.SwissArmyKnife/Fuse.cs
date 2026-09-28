@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -453,7 +453,7 @@ namespace BOG.SwissArmyKnife
         /// <param name="context"></param>
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            System.ArgumentNullException.ThrowIfNull(info);
+            if (info == null) throw new ArgumentNullException("info");
             info.AddValue("Fuse_Trigger_Rule", _Fuse_Trigger_Rule);
             info.AddValue("Hit_Threshold", _Hit_Threshold);
             info.AddValue("Volume_Threshold", _Volume_Threshold);

@@ -172,14 +172,14 @@ namespace BOG.SwissArmyKnife.Test
         public void StringEx_HeadTailSummary_NonDefault_InvalidHeadSize()
         {
             string TextBlob = new('A', 128);
-            Assert.Throws<ArgumentOutOfRangeException>(() => TextBlob.HeadTailSummary(-1, 128));
+			Assert.Throws<ArgumentOutOfRangeException>((Action)(() => TextBlob.HeadTailSummary(-1, 128)));
         }
 
         [Test, Description("HeadTailSummary(): non-default, invalid tail size")]
         public void StringEx_HeadTailSummary_NonDefault_InvalidTailSize()
         {
             string TextBlob = new('A', 128);
-            Assert.Throws<ArgumentOutOfRangeException>(() => TextBlob.HeadTailSummary(128, -1));
+			Assert.Throws<ArgumentOutOfRangeException>((Action)(() => TextBlob.HeadTailSummary(128, -1)));
         }
 
         [Test, Description("HeadTailSummary(): non-default, non-squashed, small, 0 tail")]
@@ -321,14 +321,14 @@ namespace BOG.SwissArmyKnife.Test
                 catch (Exception err1)
                 {
                     string[] err = err1.GetType().ToString().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
-                    Assert.Multiple(() =>
+					Assert.Multiple((Action)(() =>
                     {
                         Assert.That(string.Compare(testItem.ThrowsException, err[err.Length - 1], true) == 0, "Exception expected, but caught a different exception (Row {0}).", testItem.DataRow);
                         if (!string.IsNullOrWhiteSpace(testItem.ExceptionContains))
                         {
                             Assert.That(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
                         }
-                    });
+                    }));
                     return;
                 }
                 Assert.That(false, "Expected Exception " + testItem.ThrowsException + ", but no exception was thrown. (Row {0}).", testItem.DataRow);
@@ -338,11 +338,6 @@ namespace BOG.SwissArmyKnife.Test
                 result = testItem.Value.ContainsWildcardPattern(
                     testItem.WildcardPattern,
                     bool.Parse(testItem.CaseSensitive));
-
-                if (bool.Parse(testItem.ExpectedResult) != result)
-                {
-                    var x = 0;
-                }
 
                 Assert.That(bool.Parse(testItem.ExpectedResult) == result, $"(Row {testItem.DataRow}): {testItem.ExpectedResult}");
             }

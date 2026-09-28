@@ -1,4 +1,4 @@
-﻿using BOG.SwissArmyKnife.Test.Support;
+using BOG.SwissArmyKnife.Test.Support;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
@@ -72,14 +72,14 @@ namespace BOG.SwissArmyKnife.Test
                 catch (Exception err1)
                 {
                     string[] err = err1.GetType().ToString().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
-                    Assert.Multiple(() =>
+                    Assert.Multiple((Action)(() =>
                     {
                         Assert.That(string.Compare(testItem.ThrowsException, err[err.Length - 1], true) == 0, "Exception expected, but caught a different exception (Row {0}).", testItem.DataRow);
                         if (!string.IsNullOrWhiteSpace(testItem.ExceptionContains))
                         {
                             Assert.That(err1.Message.ToUpper().Contains(testItem.ExceptionContains.ToUpper()), "Exception message does not contain expected text \"" + testItem.ExceptionContains + "\"\r\nMessage: \"" + err1.Message + "\"  (Row {0}).", testItem.DataRow);
                         }
-                    });
+                    }));
                     return;
                 }
                 Assert.That(false, "Expected Exception " + testItem.ThrowsException + ", but no exception was thrown. (Row {0}).", testItem.DataRow);
@@ -88,7 +88,7 @@ namespace BOG.SwissArmyKnife.Test
             {
                 testObj = new Url(testItem.OriginalUrl);
 
-                Assert.Multiple(() =>
+                Assert.Multiple((Action)(() =>
                 {
                     Assert.That(string.Compare(testItem.UrlDecodedScheme, testObj.Scheme, true) == 0, "UrlDecoded Scheme mismatch (Row {0}).", testItem.DataRow);
                     Assert.That(string.Compare(testItem.UrlDecodedUser, testObj.User, true) == 0, "UrlDecoded User mismatch (Row {0}).", testItem.DataRow);
@@ -108,7 +108,7 @@ namespace BOG.SwissArmyKnife.Test
                     Assert.That(string.Compare(testItem.Fragment, testObj.GetRaw(Url.UrlPart.Fragment), true) == 0, "non-UrlDecoded Fragment mismatch (Row {0}).", testItem.DataRow);
 
                     Assert.That(string.Compare(testItem.AsString, testObj.ToString(), true) == 0, "original Url reconstruction (Row {0}).", testItem.DataRow);
-                });
+                }));
             }
         }
     }

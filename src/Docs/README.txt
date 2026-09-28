@@ -5,6 +5,9 @@ various tasks which weren't native to the Microsoft assemblies.
 
 FUTURE -- No roadmap yet
 
+1.17.0 -- 09/27/2026
+  - Remove .NET Standard as a build target, use only .NET 9
+
 1.16.0 -- 08/14/2026
   - Fix bug in StringEx.ContainsWildcardPattern() for multiple wildcards in a string.
 

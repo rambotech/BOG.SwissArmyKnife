@@ -1,0 +1,23 @@
+<Solution>
+  <Folder Name="/Assets/">
+    <File Path="Assets/multitool.ico" />
+    <File Path="Assets/multitool.png" />
+  </Folder>
+  <Folder Name="/Docs/">
+    <File Path="Docs/README.txt" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="../LICENSE" />
+    <File Path="../README.md" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="global.json" />
+  </Folder>
+  <Folder Name="/Solution Items/.github/" />
+  <Folder Name="/Solution Items/.github/worklfows/">
+    <File Path="../.github/workflows/build-auto.yml" />
+  </Folder>
+  <Project Path="BOG.SwissArmyKnife.Demo/BOG.SwissArmyKnife.Demo.csproj" />
+  <Project Path="BOG.SwissArmyKnife.Test/BOG.SwissArmyKnife.Test.csproj" />
+  <Project Path="BOG.SwissArmyKnife/BOG.SwissArmyKnife.csproj" />
+</Solution>

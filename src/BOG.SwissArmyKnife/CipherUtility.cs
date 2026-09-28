@@ -1,10 +1,10 @@
-﻿namespace BOG.SwissArmyKnife
-{
-    using System;
-    using System.IO;
-    using System.Security.Cryptography;
-    using System.Text;
+using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
+namespace BOG.SwissArmyKnife
+{
     /// <summary>
     /// Drived from: http://www.superstarcoders.com/blogs/posts/symmetric-encryption-in-c-sharp.aspx
     /// </summary>
@@ -49,18 +49,18 @@
                 throw new ArgumentException("salt can not be blank");
             }
 
-            var rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt),1, HashAlgorithmName.SHA1);
+            var rgb = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(password), Encoding.Unicode.GetBytes(salt), 1, HashAlgorithmName.SHA1);
 
             byte[] rgbKey = rgb.GetBytes(this.CryptoAlgorithm.KeySize >> 3);
             byte[] rgbIV = rgb.GetBytes(this.CryptoAlgorithm.BlockSize >> 3);
 
             ICryptoTransform transform = this.CryptoAlgorithm.CreateEncryptor(rgbKey, rgbIV);
 
-            using (MemoryStream buffer = new())
-            {
-                using (CryptoStream stream = new(buffer, transform, CryptoStreamMode.Write))
+            using (MemoryStream buffer = new MemoryStream())
+			{
+                using (CryptoStream stream = new CryptoStream(buffer, transform, CryptoStreamMode.Write))
                 {
-                    using (StreamWriter writer = new(stream, Encoding.Unicode))
+                    using (StreamWriter writer = new StreamWriter(stream, Encoding.Unicode))
                     {
                         writer.Write(value);
                     }
