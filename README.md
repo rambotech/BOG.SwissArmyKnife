@@ -8,7 +8,7 @@
 | release | [![Build status](https://github.com/rambotech/BOG.SwissArmyKnife/actions/workflows/build-auto.yml/badge.svg?branch=release)](https://github.com/rambotech/BOG.SwissArmyKnife/tree/release) |
 | develop | [![Build status](https://github.com/rambotech/BOG.SwissArmyKnife/actions/workflows/build-auto.yml/badge.svg?branch=develop)](https://github.com/rambotech/BOG.SwissArmyKnife/tree/develop) |
 
-This is a .NET 10 port of BOG.Framework, which is deprecated.
+This is a .NET8/.NET9 port of BOG.Framework
 
 The classes are:
 

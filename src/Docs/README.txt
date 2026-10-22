@@ -5,6 +5,10 @@ various tasks which weren't native to the Microsoft assemblies.
 
 FUTURE -- No roadmap yet
 
+1.17.1 -- 10/21/2026
+  - Build for .NET8 and .NET9
+  - Nuget package updates
+
 1.17.0 -- 09/27/2026
   - Remove .NET Standard as a build target, use only .NET 9
 
