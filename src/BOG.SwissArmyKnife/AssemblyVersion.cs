@@ -15,9 +15,12 @@ namespace BOG.SwissArmyKnife
 		/// <summary>
 		/// The default format used for ToString()
 		/// </summary>
-		public const string DateFormatStringDefault =
-			// "{0:dddd MMMM dd, yyyy} at {0:hh:mm tt}";
-			"{0:f}";
+		public const string ToStringDefault = "{0}, {1}, {2:dddd MMMM dd, yyyy} at {2:hh:mm tt}";
+
+		/// <summary>
+		/// The default format used for ToString()
+		/// </summary>
+		public const string ToJsonDateFormatDefault = "{0:f}";
 
 		/// <summary>
 		/// Defines the source the assembly has to the executing application
@@ -138,24 +141,42 @@ namespace BOG.SwissArmyKnife
 
 		/// <summary>
 		/// Generate single line string summary. Date uses default format.
+		///   {0}, {1}, {2:dddd MMMM dd, yyyy} at {2:hh:mm tt}
+		/// 0 == (string) Filename
+		/// 1 == (string) Version
+		/// 2 == (DateTieme) BuildDate
+		/// 3 == (string) Source
+
 		/// </summary>
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return ToString(DateFormatStringDefault);
+			return ToString(ToStringDefault);
 		}
 
 		/// <summary>
 		/// Generate single line string summary using a user-provided format string
 		/// </summary>
+		/// <remarks>
+		/// This is an override for the consumer to provide a format string which overrides the default.
+		/// The format string can include or exclude items in the banner by their placeholder(s) in the format string.
+		/// <list>
+		///	<item>0 == (string) Filename</item>
+		/// <item>1 == (string) Version</item>
+		/// <item>2 == (DateTieme) BuildDate</item>
+		/// <item>3 == (string) Source</item>
+		/// </list>
+		/// </remarks>
 		/// <param name="formatStr">Provide format value as in these examples:
-		///		#1: "{0:g}"
-		///		#2: "{0:dddd MMMM dd, yyyy} at {0:hh:mm tt}"
-		///		<list type="bullet">
-		///		<item>"{0:g}"</item>
-		///		<item>"{0:dddd MMMM dd, yyyy} at {0:hh:mm tt}"</item>
-		///		</list>
-		///		example #2 is using the same DateTime (arg {0}) to create a complex date/time format.
+		/// Examples:
+		/// <list>
+		///		<item>{0}, {1}, {2:dddd MMMM dd, yyyy} at {2:hh:mm tt}  ...  Filename, 1.0, Wednesday, October 21, 2026 at 07:24:31 PM</item>
+		///		<item>{0} ({3}), v{1}, {2:s}  ...  Filename (Calling), v1.0, 2026-10-21T19:24:31</item>
+		///	</list>
+		///	<para>
+		///		for more examples, https://blog.stevex.net/string-formatting-in-csharp/
+		///		example #1 is using the same DateTime (arg {2}) to create a complex date/time format.
+		/// </para>
 		/// </param>
 		/// <returns>string with Banner content</returns>
 		public string ToString(string formatStr)
@@ -163,7 +184,7 @@ namespace BOG.SwissArmyKnife
 			var result = string.Format(formatStr,
 				Path.GetFileName(Filename),
 				Version,
-				string.Format(formatStr, BuildDate),
+				BuildDate,
 				Source
 			);
 			return result;
@@ -173,8 +194,15 @@ namespace BOG.SwissArmyKnife
 		/// Generate Json object for REST
 		/// </summary>
 		/// <param name="includeSource">Include the source (Undefined, Entry ... aka the role)</param>
-		/// <param name="dateFormatStr">see description in ToString(string formatStr)</param>
-		/// <returns></returns>
+		/// <param name="dateFormatStr">
+		/// Examples:
+		/// <list>
+		///		<item>{0}, {1}, {2:dddd MMMM dd, yyyy} at {2:hh:mm tt}  ...  </item>
+		///		<item>"{0:dddd MMMM dd, yyyy} at {0:hh:mm tt}"</item>
+		///		</list>
+		///		example #2 is using the same DateTime (arg {0}) to create a complex date/time format.
+		/// </param>
+		/// <returns>string with Banner content</returns>
 		public JObject ToJson(bool includeSource, string dateFormatStr)
 		{
 			JObject result;
@@ -221,7 +249,7 @@ namespace BOG.SwissArmyKnife
 		/// /// <returns>JSON KV object</returns>
 		public JObject ToJson(bool includeSource)
 		{
-			return ToJson(includeSource, DateFormatStringDefault);
+			return ToJson(includeSource, ToJsonDateFormatDefault);
 		}
 
 		/// <summary>
@@ -230,7 +258,7 @@ namespace BOG.SwissArmyKnife
 		/// <returns>JSON KV object</returns>
 		public JObject ToJson()
 		{
-			return ToJson(false, DateFormatStringDefault);
+			return ToJson(false, ToJsonDateFormatDefault);
 		}
 	}
 }

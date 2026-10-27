@@ -5,6 +5,10 @@ various tasks which weren't native to the Microsoft assemblies.
 
 ---
 
+1.18.1 -- 10/27/2026 - Fix documentation and custom format for ToString() and ToJson().
+  - Fixes some confusion between date format string for ToJson(), versus full banner format string in ToString().
+  - Expand documentation for examples in the XML comment docs.
+
 1.18.0 -- 10/22/2026 - Enhance AssemblyVersion output
   - *BREAKING: AssemblySource enumeration in AssemblyVersion renamed to AssemblyRole
   - Add override to AssemblyVersion ToString() and ToJson() to support user provided date formatting overrides

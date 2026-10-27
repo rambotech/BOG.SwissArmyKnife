@@ -1,4 +1,4 @@
-using NUnit.Framework;
+ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using BOG.SwissArmyKnife;
@@ -37,7 +37,7 @@ namespace BOG.SwissArmyKnife.Test
 		public void DO_Assembly_ToString_UserFormatStr()
 		{
 			var o = new AssemblyVersion(AssemblySource.Entry);
-			var s = o.ToString("{0:s}");
+			var s = o.ToString("{0} ({3}), v{1}, {2:s}");
 
 			Assert.That(0 == 0);  // break here for debug
 		}
@@ -50,7 +50,7 @@ namespace BOG.SwissArmyKnife.Test
 		public void DO_Assembly_ToJson_WithSource_FormatStr()
 		{
 			var o = new AssemblyVersion(AssemblySource.Entry);
-			var s = o.ToJson(true, "{0:hh:mm tt}");
+			var s = o.ToJson(true, "{0:ddd, MMM dd, yyyy} at {0:hh:mm tt}");
 
 			Assert.That(0 == 0);  // break here for debug
 		}
